@@ -7,6 +7,7 @@ class UserProfile {
   final String email;
   final String phone;
   final String country;
+  final List<ConditionType> conditions;
   final RoleType roleType;
   final List<int> workDays;
   final TimeOfDay? workStart;
@@ -18,9 +19,9 @@ class UserProfile {
   final List<BehaviorType> struggles;
   final ScrollingLinkage scrollingTriggersSexual;
   final List<TriggerType> triggers;
-  final StruggleDuration struggleDuration;
-  final ResistAbility resistAbility;
-  final GoalType goalType;
+  final StruggleDuration? struggleDuration;
+  final ResistAbility? resistAbility;
+  final GoalType? goalType;
   final List<MotivationType> motivations;
   final bool weekendDifferent;
 
@@ -30,6 +31,7 @@ class UserProfile {
     this.email = '',
     this.phone = '',
     this.country = '',
+    this.conditions = const [ConditionType.detoxRecovery],
     required this.roleType,
     this.workDays = const [],
     this.workStart,
@@ -41,9 +43,9 @@ class UserProfile {
     this.struggles = const [],
     this.scrollingTriggersSexual = ScrollingLinkage.never,
     this.triggers = const [],
-    required this.struggleDuration,
-    required this.resistAbility,
-    required this.goalType,
+    this.struggleDuration,
+    this.resistAbility,
+    this.goalType,
     this.motivations = const [],
     this.weekendDifferent = false,
   });
@@ -80,4 +82,16 @@ class UserProfile {
   bool get hasLinkedPathway =>
       scrollingTriggersSexual == ScrollingLinkage.always ||
       scrollingTriggersSexual == ScrollingLinkage.sometimes;
+
+  bool hasCondition(ConditionType c) => conditions.contains(c);
+  bool get hasPeriodTracking => hasCondition(ConditionType.periodTracking);
+  bool get hasDetox => hasCondition(ConditionType.detoxRecovery);
+  bool get hasDepression => hasCondition(ConditionType.depression);
+  bool get hasAnxiety => hasCondition(ConditionType.anxiety);
+  bool get hasAdhd => hasCondition(ConditionType.adhd);
+  bool get hasMoodTracking => hasCondition(ConditionType.moodTracking);
+
+  bool get isPinkTheme =>
+      hasPeriodTracking &&
+      conditions.length == 1;
 }

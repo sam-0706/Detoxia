@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:detoxia/data/database/app_database.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:detoxia/core/platform/safe_app_directories.dart';
 
 class DataExport {
   final AppDatabase _db;
@@ -36,7 +36,7 @@ class DataExport {
       },
     };
 
-    final dir = await getApplicationDocumentsDirectory();
+    final dir = await safeAppDocumentsDirectory();
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final file = File('${dir.path}/detoxia_export_$timestamp.json');
     await file.writeAsString(

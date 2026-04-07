@@ -21,14 +21,29 @@ const _steps = [
   _GuideStep(
     icon: Icons.shield_outlined,
     color: Color(0xFF6C63FF),
-    title: 'Your Personal Recovery Engine',
+    title: 'Your Personal Wellness Engine',
     subtitle:
-        'Detoxia isn\'t a generic habit tracker. It\'s a self-learning '
-        'system built around YOUR schedule, triggers, and patterns.',
+        'This app is a self-learning system built around YOU — your '
+        'schedule, patterns, triggers, and goals. Everything stays on your device.',
     bullets: [
-      'Predicts risky moments BEFORE they happen',
+      'Predicts challenges BEFORE they happen',
       'Learns from every interaction to get smarter',
+      'Adapts daily tasks and notifications to your needs',
       'All your data stays 100% on your device',
+    ],
+  ),
+  _GuideStep(
+    icon: Icons.task_alt,
+    color: Color(0xFF4ECDC4),
+    title: 'Daily Tasks',
+    subtitle:
+        'Every day, you\'ll receive personalized tasks based on your '
+        'active modules — breathing exercises, activities, focus sessions, and more.',
+    bullets: [
+      'Tasks adapt to your conditions and progress',
+      'Mix of quick (2 min) and deeper (30 min) activities',
+      'Different tasks each day to keep things fresh',
+      'Rate effectiveness to help the system learn',
     ],
   ),
   _GuideStep(
@@ -36,8 +51,8 @@ const _steps = [
     color: Color(0xFFFF6B6B),
     title: 'Risk Timeline',
     subtitle:
-        'Your home screen shows today\'s risk map — a visual timeline '
-        'of when you\'re most vulnerable.',
+        'For recovery, your home screen shows today\'s risk map — a '
+        'visual timeline of when you\'re most vulnerable.',
     bullets: [
       'Color-coded blocks show risk levels throughout the day',
       'Countdown to your next high-risk window',
@@ -45,16 +60,72 @@ const _steps = [
     ],
   ),
   _GuideStep(
-    icon: Icons.flash_on,
-    color: Color(0xFFFFB347),
-    title: 'Urge Rescue',
+    icon: Icons.air,
+    color: Color(0xFF4ECDC4),
+    title: 'Anxiety & Breathing',
     subtitle:
-        'When an urge hits, tap the Report button. The app will '
-        'guide you through a quick intervention.',
+        'Access 12 guided breathing techniques and 10 grounding exercises '
+        'anytime you need them.',
     bullets: [
-      'Rate your urge intensity',
-      'Get a personalized diversion activity',
-      'Track what works best for YOUR urges',
+      'Animated breathing guide with visual circle',
+      'Track anxiety before/after to see what works best',
+      'Emergency button when anxiety strikes',
+      'Grounding exercises with step-by-step instructions',
+    ],
+  ),
+  _GuideStep(
+    icon: Icons.emoji_emotions,
+    color: Color(0xFF9B59B6),
+    title: 'Mood Tracking',
+    subtitle:
+        'Log your mood in seconds and discover patterns you never noticed.',
+    bullets: [
+      'Quick 2-tap mood logging',
+      'Choose from 40+ emotions with categories',
+      'Year-in-pixels calendar view of your mood history',
+      'Activity-mood correlation insights',
+    ],
+  ),
+  _GuideStep(
+    icon: Icons.wb_sunny_outlined,
+    color: Color(0xFFFFB347),
+    title: 'Depression Support',
+    subtitle:
+        'Behavioral activation, CBT thought records, and weekly self-check '
+        'to help you build momentum.',
+    bullets: [
+      '100+ activities to schedule and track',
+      'Step-by-step thought challenging guide',
+      'Weekly self-assessments to monitor progress',
+      'Activity-mood correlation insights',
+    ],
+  ),
+  _GuideStep(
+    icon: Icons.psychology,
+    color: Color(0xFFFF6B6B),
+    title: 'ADHD Tools',
+    subtitle:
+        'Focus timer, dopamine menu, and task decomposer to help you '
+        'get things done.',
+    bullets: [
+      'Pomodoro-style timer with distraction tracking',
+      '40+ healthy dopamine activities by time available',
+      'Break overwhelming tasks into micro-steps',
+      'Discover your most productive hours',
+    ],
+  ),
+  _GuideStep(
+    icon: Icons.favorite,
+    color: Color(0xFFFF6B9D),
+    title: 'Period Tracker',
+    subtitle:
+        'Track your cycle, understand your phases, and get '
+        'phase-specific wellness recommendations.',
+    bullets: [
+      'Visual cycle day ring with phase colors',
+      '50+ symptom tracking with emoji labels',
+      'Phase-specific exercise, nutrition, and self-care tips',
+      'Cycle calendar with predictions',
     ],
   ),
   _GuideStep(
@@ -62,53 +133,13 @@ const _steps = [
     color: Color(0xFF4ECDC4),
     title: 'Daily Check-in',
     subtitle:
-        'Every evening before bed, you\'ll complete a quick status '
-        'report. This is mandatory — it\'s what fuels your recovery.',
+        'Every evening, complete a quick status report. '
+        'This fuels your personalized plan.',
     bullets: [
       'Takes under 2 minutes',
       'Records your mood, sleep, stress, and confidence',
-      'The app reminds you 1 hour before bedtime',
+      'The app reminds you before bedtime',
       'Your plan adjusts based on what you report',
-    ],
-  ),
-  _GuideStep(
-    icon: Icons.psychology,
-    color: Color(0xFF6C63FF),
-    title: 'Where You Stand',
-    subtitle:
-        'See a real-time analysis of your mental state — confidence, '
-        'self-control, vulnerability, and momentum.',
-    bullets: [
-      'Radar chart shows your recovery profile',
-      'See how setbacks affect your mood, sleep, and stress',
-      'Track which triggers hit you hardest',
-    ],
-  ),
-  _GuideStep(
-    icon: Icons.trending_up,
-    color: Color(0xFF4ECDC4),
-    title: 'Your Recovery Journey',
-    subtitle:
-        'See where you are now vs. where you\'ll be after following '
-        'the plan. Real numbers, not motivational fluff.',
-    bullets: [
-      'Week-by-week improvement projections',
-      'Based on YOUR actual data, recalibrated weekly',
-      'Watch the curve bend as your consistency grows',
-    ],
-  ),
-  _GuideStep(
-    icon: Icons.school,
-    color: Color(0xFFFFB347),
-    title: '12-Week Recovery Program',
-    subtitle:
-        'A structured, science-backed program with CBT & ACT techniques '
-        'that adapts to your pace.',
-    bullets: [
-      'Phase 1: Awareness & pattern interruption',
-      'Phase 2: Building new habits & coping skills',
-      'Phase 3: Deep rewiring & lifestyle integration',
-      'Pace adjusts if you need more time on any phase',
     ],
   ),
   _GuideStep(
@@ -116,12 +147,13 @@ const _steps = [
     color: Color(0xFFFF6B6B),
     title: 'Achievements & Streaks',
     subtitle:
-        'Every clean day, every resisted urge, every check-in earns '
-        'you real milestones.',
+        'Every effort counts. Track streaks, unlock milestones, '
+        'and see your progress grow.',
     bullets: [
       'Unlock achievements as you progress',
       'Streak system that rewards consistency',
-      'See what you\'ll unlock next to stay motivated',
+      'Complete daily tasks to build momentum',
+      "See what you'll unlock next",
     ],
   ),
 ];
@@ -170,8 +202,8 @@ class _FeatureGuideScreenState extends State<FeatureGuideScreen> {
                 children: [
                   Text(
                     '${_current + 1}/${_steps.length}',
-                    style:
-                        const TextStyle(color: Colors.white54, fontSize: 14),
+                    style: const TextStyle(
+                        color: Colors.white54, fontSize: 14),
                   ),
                   const Spacer(),
                   if (_current < _steps.length - 1)

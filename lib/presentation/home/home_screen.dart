@@ -1,12 +1,15 @@
 import 'package:detoxia/core/constants/daily_insights.dart';
+import 'package:detoxia/core/constants/enums.dart';
 import 'package:detoxia/core/theme/app_theme.dart';
 import 'package:detoxia/core/utils/time_utils.dart';
+import 'package:detoxia/data/database/app_database.dart';
 import 'package:detoxia/data/repositories/event_repository.dart';
 import 'package:detoxia/data/repositories/peak_repository.dart';
 import 'package:detoxia/data/repositories/user_repository.dart';
 import 'package:detoxia/domain/entities/peak_node.dart';
 import 'package:detoxia/domain/entities/user_profile.dart';
 import 'package:detoxia/domain/prediction/risk_calculator.dart';
+import 'package:detoxia/domain/tasks/daily_task_scheduler.dart';
 import 'package:detoxia/presentation/adhoc_report/adhoc_sheet.dart';
 import 'package:detoxia/presentation/daily_checkin/checkin_screen.dart';
 import 'package:detoxia/presentation/dashboard/weekly_review/weekly_review_screen.dart';
@@ -16,7 +19,13 @@ import 'package:detoxia/presentation/dashboard/achievements/achievements_screen.
 import 'package:detoxia/presentation/program/program_screen.dart';
 import 'package:detoxia/presentation/settings/settings_screen.dart';
 import 'package:detoxia/presentation/urge_rescue/rescue_screen.dart';
+import 'package:detoxia/presentation/mood/mood_home.dart';
+import 'package:detoxia/presentation/anxiety/anxiety_home.dart';
+import 'package:detoxia/presentation/depression/depression_home.dart';
+import 'package:detoxia/presentation/adhd/adhd_home.dart';
+import 'package:detoxia/presentation/period/period_home.dart';
 import 'package:detoxia/services/notification_service.dart';
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -33,6 +42,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<RiskBlock> _todayBlocks = [];
   int _slipsToday = 0;
   int _urgesToday = 0;
+  List<Map<String, dynamic>> _todayTasks = [];
+  Set<String> _completedTaskIds = {};
 
   @override
   void initState() {
@@ -44,59 +55,122 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final profile = await ref.read(userRepositoryProvider).getUser();
     if (profile == null) return;
 
-    final peaks = await ref.read(peakRepositoryProvider).getAllPeaks();
+    List<PeakNodeEntity> peaks = [];
+    int slipCount = 0;
+    int urgeCount = 0;
+    List<RiskBlock> blocks = [];
     final now = DateTime.now();
-    final slips =
-        await ref.read(eventRepositoryProvider).getSlipsForDate(now);
-    final urges =
-        await ref.read(eventRepositoryProvider).getUrgesForDate(now);
 
-    final calculator = RiskCalculator(profile: profile, peaks: peaks);
-    final state = RecentState(
-      slipsToday: slips.length,
-      recentSlip: slips.isNotEmpty,
+    if (profile.hasDetox) {
+      peaks = await ref.read(peakRepositoryProvider).getAllPeaks();
+      final slips =
+          await ref.read(eventRepositoryProvider).getSlipsForDate(now);
+      final urges =
+          await ref.read(eventRepositoryProvider).getUrgesForDate(now);
+      slipCount = slips.length;
+      urgeCount = urges.length;
+
+      final calculator = RiskCalculator(profile: profile, peaks: peaks);
+      final state = RecentState(
+        slipsToday: slipCount,
+        recentSlip: slipCount > 0,
+      );
+      blocks = calculator.calculateDay(now.weekday, state);
+    }
+
+    // Load daily tasks
+    List<Map<String, dynamic>> tasks = [];
+    Set<String> completedIds = {};
+    final conditions = profile.conditions.map((c) => c.name).toList();
+    final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays;
+    tasks = DailyTaskScheduler.selectTasks(
+      activeConditions: conditions,
+      dayOfYear: dayOfYear,
     );
-    final blocks = calculator.calculateDay(now.weekday, state);
+
+    final db = ref.read(databaseProvider);
+    final today = DateTime(now.year, now.month, now.day);
+    final completedRows = await (db.select(db.dailyTaskAssignments)
+          ..where((t) => t.date.isBetweenValues(
+              today, today.add(const Duration(days: 1))))
+          ..where((t) => t.completed.equals(true)))
+        .get();
+    completedIds = completedRows.map((r) => r.taskId).toSet();
 
     if (mounted) {
       setState(() {
         _profile = profile;
         _peaks = peaks;
         _todayBlocks = blocks;
-        _slipsToday = slips.length;
-        _urgesToday = urges.length;
+        _slipsToday = slipCount;
+        _urgesToday = urgeCount;
+        _todayTasks = tasks;
+        _completedTaskIds = completedIds;
       });
     }
 
-    // Schedule daily check-in reminders 1 hour before sleep
-    _scheduleCheckinReminders(profile);
+    if (profile.hasDetox) {
+      try {
+        _scheduleCheckinReminders(profile);
+      } catch (_) {}
+    }
   }
 
   void _scheduleCheckinReminders(UserProfile profile) {
     final now = DateTime.now();
     final isOffDay = profile.isOffDay(now.weekday);
-    final sleepTime = isOffDay ? profile.offdaySleepTime : profile.weekdaySleepTime;
+    final sleepTime =
+        isOffDay ? profile.offdaySleepTime : profile.weekdaySleepTime;
     var sleepDT = DateTime(
-      now.year, now.month, now.day,
-      sleepTime.hour, sleepTime.minute,
+      now.year,
+      now.month,
+      now.day,
+      sleepTime.hour,
+      sleepTime.minute,
     );
-    // If sleep time is past midnight (e.g. 00:30), it's technically the next day
     if (sleepDT.isBefore(now.subtract(const Duration(hours: 6)))) {
       sleepDT = sleepDT.add(const Duration(days: 1));
     }
     ref.read(notificationServiceProvider).scheduleCheckinReminders(sleepDT);
   }
 
+  Future<void> _completeTask(Map<String, dynamic> task) async {
+    final db = ref.read(databaseProvider);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    await db.into(db.dailyTaskAssignments).insert(
+          DailyTaskAssignmentsCompanion(
+            date: Value(today),
+            taskId: Value(task['id'] as String),
+            taskTitle: Value(task['title'] as String),
+            taskDescription: Value(task['description'] as String),
+            conditionType: Value(task['conditionType'] as String),
+            category: Value(task['category'] as String),
+            durationMinutes: Value(task['durationMinutes'] as int),
+            scheduledTime: Value(task['timeOfDay'] as String),
+            completed: const Value(true),
+          ),
+        );
+
+    setState(() {
+      _completedTaskIds.add(task['id'] as String);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final currentBlock = (now.hour * 60 + now.minute) ~/ 30;
+    final hasDetox = _profile?.hasDetox ?? false;
 
     RiskBlock? nextHighRisk;
-    for (final block in _todayBlocks) {
-      if (block.blockIndex > currentBlock && block.score >= 0.7) {
-        nextHighRisk = block;
-        break;
+    if (hasDetox) {
+      for (final block in _todayBlocks) {
+        if (block.blockIndex > currentBlock && block.score >= 0.7) {
+          nextHighRisk = block;
+          break;
+        }
       }
     }
 
@@ -113,32 +187,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const SizedBox(height: 16),
                     _buildDailyInsight(),
                     const SizedBox(height: 16),
-                    _buildQuickStats(),
+                    if (_todayTasks.isNotEmpty) ...[
+                      _buildDailyTasks(),
+                      const SizedBox(height: 16),
+                    ],
+                    _buildActiveModuleCards(),
                     const SizedBox(height: 16),
-                    _buildDailyProgress(),
-                    const SizedBox(height: 16),
-                    if (nextHighRisk != null)
-                      _buildNextRiskCard(nextHighRisk),
-                    const SizedBox(height: 16),
-                    _buildPeakCards(now),
-                    const SizedBox(height: 20),
-                    _buildTimeline(currentBlock),
-                    const SizedBox(height: 20),
+                    if (hasDetox) ...[
+                      _buildQuickStats(),
+                      const SizedBox(height: 16),
+                      _buildDailyProgress(),
+                      const SizedBox(height: 16),
+                      if (nextHighRisk != null)
+                        _buildNextRiskCard(nextHighRisk),
+                      if (nextHighRisk != null) const SizedBox(height: 16),
+                      _buildPeakCards(now),
+                      const SizedBox(height: 20),
+                      _buildTimeline(currentBlock),
+                      const SizedBox(height: 20),
+                    ],
                     _buildNavigationGrid(),
                     const SizedBox(height: 80),
                   ],
                 ),
               ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAdHocSheet(context),
-        backgroundColor: AppTheme.accent,
-        icon: const Icon(Icons.add),
-        label: const Text('Report'),
-      ),
+      floatingActionButton: hasDetox
+          ? FloatingActionButton.extended(
+              onPressed: () => _showAdHocSheet(context),
+              icon: const Icon(Icons.add),
+              label: const Text('Report'),
+            )
+          : null,
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: AppTheme.surface,
-        selectedItemColor: AppTheme.accent,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
         unselectedItemColor: Colors.white38,
         type: BottomNavigationBarType.fixed,
         items: const [
@@ -161,14 +244,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             case 2:
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (_) => const ProgramScreen()),
+                MaterialPageRoute(builder: (_) => const ProgramScreen()),
               );
             case 3:
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (_) => const SettingsScreen()),
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
               );
           }
         },
@@ -197,16 +278,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
           ),
         ),
-        IconButton(
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) => const CheckinScreen()),
+        if (_profile?.hasDetox ?? false)
+          IconButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const CheckinScreen()),
+            ),
+            icon:
+                const Icon(Icons.nightlight_round, color: Colors.white70),
+            tooltip: 'Daily Check-in',
           ),
-          icon: const Icon(Icons.nightlight_round,
-              color: Colors.white70),
-          tooltip: 'Daily Check-in',
-        ),
       ],
     );
   }
@@ -224,17 +305,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppTheme.accent.withValues(alpha: 0.12),
-            AppTheme.accent.withValues(alpha: 0.04),
+            Theme.of(context)
+                .colorScheme
+                .primary
+                .withValues(alpha: 0.12),
+            Theme.of(context)
+                .colorScheme
+                .primary
+                .withValues(alpha: 0.04),
           ],
         ),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.accent.withValues(alpha: 0.2)),
+        border: Border.all(
+            color: Theme.of(context)
+                .colorScheme
+                .primary
+                .withValues(alpha: 0.2)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.auto_awesome, color: AppTheme.accent, size: 20),
+          Icon(Icons.auto_awesome,
+              color: Theme.of(context).colorScheme.primary, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -259,8 +351,210 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  Widget _buildDailyTasks() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.task_alt,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 20),
+                const SizedBox(width: 8),
+                const Expanded(
+                  child: Text("Today's Tasks",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600)),
+                ),
+                Text(
+                  '${_completedTaskIds.length}/${_todayTasks.length}',
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ..._todayTasks.take(5).map((task) {
+              final taskId = task['id'] as String;
+              final done = _completedTaskIds.contains(taskId);
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: done ? null : () => _completeTask(task),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: done
+                          ? AppTheme.success.withValues(alpha: 0.08)
+                          : Colors.white.withValues(alpha: 0.04),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: done
+                            ? AppTheme.success.withValues(alpha: 0.3)
+                            : Colors.white10,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          done
+                              ? Icons.check_circle
+                              : Icons.radio_button_unchecked,
+                          color: done
+                              ? AppTheme.success
+                              : Colors.white38,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                task['title'] as String,
+                                style: TextStyle(
+                                  color: done
+                                      ? Colors.white54
+                                      : Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 13,
+                                  decoration: done
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                                ),
+                              ),
+                              Text(
+                                '${task['durationMinutes']}min',
+                                style: const TextStyle(
+                                    color: Colors.white38,
+                                    fontSize: 11),
+                              ),
+                            ],
+                          ),
+                        ),
+                        _conditionBadge(
+                            task['conditionType'] as String),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _conditionBadge(String condition) {
+    final config = _conditionConfig(condition);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: config.color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        config.shortLabel,
+        style: TextStyle(
+            color: config.color, fontSize: 9, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+
+  Widget _buildActiveModuleCards() {
+    final conditions = _profile?.conditions ?? [];
+    if (conditions.length <= 1 && conditions.contains(ConditionType.detoxRecovery)) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Your Modules',
+            style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 90,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: conditions.where((c) => c != ConditionType.detoxRecovery).map((c) {
+              final config = _conditionConfig(c.name);
+              return Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: () => _navigateToModule(c),
+                  child: Container(
+                    width: 130,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          config.color.withValues(alpha: 0.2),
+                          config.color.withValues(alpha: 0.06),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                          color: config.color.withValues(alpha: 0.3)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(config.icon, color: config.color, size: 24),
+                        Text(
+                          config.label,
+                          style: TextStyle(
+                              color: config.color,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _navigateToModule(ConditionType condition) {
+    Widget screen;
+    switch (condition) {
+      case ConditionType.moodTracking:
+        screen = const MoodHome();
+      case ConditionType.anxiety:
+        screen = const AnxietyHome();
+      case ConditionType.depression:
+        screen = const DepressionHome();
+      case ConditionType.adhd:
+        screen = const AdhdHome();
+      case ConditionType.periodTracking:
+        screen = const PeriodHome();
+      default:
+        return;
+    }
+    Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+  }
+
   Widget _buildDailyProgress() {
-    final cleanDays = _peaks.isNotEmpty ? _peaks.first.currentPeakStreak : 0;
+    final cleanDays =
+        _peaks.isNotEmpty ? _peaks.first.currentPeakStreak : 0;
 
     return Card(
       child: Padding(
@@ -270,8 +564,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.show_chart,
-                    color: AppTheme.success, size: 20),
+                Icon(Icons.show_chart, color: AppTheme.success, size: 20),
                 const SizedBox(width: 8),
                 const Text("Today's Status",
                     style: TextStyle(
@@ -290,7 +583,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               label: 'Urges resisted today',
               value: '$_urgesToday',
               icon: Icons.shield,
-              color: AppTheme.accent,
+              color: Theme.of(context).colorScheme.primary,
             ),
             _ProgressRow(
               label: 'Risk windows survived',
@@ -332,7 +625,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       children: [
         _StatChip(
           label: 'Clean streak',
-          value: '${_peaks.isNotEmpty ? _peaks.first.currentPeakStreak : 0}d',
+          value:
+              '${_peaks.isNotEmpty ? _peaks.first.currentPeakStreak : 0}d',
           color: AppTheme.success,
         ),
         const SizedBox(width: 8),
@@ -352,8 +646,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildNextRiskCard(RiskBlock block) {
-    final minutesUntil =
-        block.startMinute - (DateTime.now().hour * 60 + DateTime.now().minute);
+    final minutesUntil = block.startMinute -
+        (DateTime.now().hour * 60 + DateTime.now().minute);
     final countdownText = minutesUntil > 60
         ? '${minutesUntil ~/ 60}h ${minutesUntil % 60}m'
         : '${minutesUntil}m';
@@ -386,8 +680,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ElevatedButton(
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (_) => const RescueScreen()),
+                MaterialPageRoute(builder: (_) => const RescueScreen()),
               ),
               style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.danger),
@@ -451,12 +744,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             children: List.generate(
               48,
               (i) {
-                final block = i < _todayBlocks.length
-                    ? _todayBlocks[i]
-                    : null;
+                final block =
+                    i < _todayBlocks.length ? _todayBlocks[i] : null;
                 return Expanded(
                   child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 0.5),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 0.5),
                     decoration: BoxDecoration(
                       color: block != null
                           ? AppTheme.riskColor(block.score)
@@ -474,18 +767,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         const SizedBox(height: 4),
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('12AM',
+            Text('12AM',
                 style: TextStyle(color: Colors.white38, fontSize: 10)),
-            const Text('6AM',
+            Text('6AM',
                 style: TextStyle(color: Colors.white38, fontSize: 10)),
-            const Text('12PM',
+            Text('12PM',
                 style: TextStyle(color: Colors.white38, fontSize: 10)),
-            const Text('6PM',
+            Text('6PM',
                 style: TextStyle(color: Colors.white38, fontSize: 10)),
-            const Text('12AM',
+            Text('12AM',
                 style: TextStyle(color: Colors.white38, fontSize: 10)),
           ],
         ),
@@ -494,21 +787,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildNavigationGrid() {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      childAspectRatio: 1.6,
-      children: [
+    final hasDetox = _profile?.hasDetox ?? false;
+    final cards = <Widget>[];
+
+    if (hasDetox) {
+      cards.addAll([
         _NavCard(
           icon: Icons.psychology,
           label: 'Where You Stand',
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (_) => const ConfidenceScreen()),
+            MaterialPageRoute(builder: (_) => const ConfidenceScreen()),
           ),
         ),
         _NavCard(
@@ -516,8 +805,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           label: 'My Journey',
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (_) => const ProjectionScreen()),
+            MaterialPageRoute(builder: (_) => const ProjectionScreen()),
           ),
         ),
         _NavCard(
@@ -537,7 +825,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             MaterialPageRoute(builder: (_) => const RescueScreen()),
           ),
         ),
-      ],
+      ]);
+    }
+
+    // Add module-specific nav cards
+    for (final condition in _profile?.conditions ?? <ConditionType>[]) {
+      if (condition == ConditionType.detoxRecovery) continue;
+      final config = _conditionConfig(condition.name);
+      cards.add(_NavCard(
+        icon: config.icon,
+        label: config.label,
+        color: config.color,
+        onTap: () => _navigateToModule(condition),
+      ));
+    }
+
+    if (cards.isEmpty) return const SizedBox.shrink();
+
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 12,
+      childAspectRatio: 1.6,
+      children: cards,
     );
   }
 
@@ -545,7 +857,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppTheme.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -564,28 +876,48 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       final text = diff > 60
           ? 'Approaching in ${diff ~/ 60}h ${diff % 60}m'
           : 'Approaching in ${diff}m';
-      return _PeakStatus(
-        Icons.schedule,
-        AppTheme.warning,
-        text,
-      );
+      return _PeakStatus(Icons.schedule, AppTheme.warning, text);
     }
     if (currentMinute <= peak.endMinutes) {
       return _PeakStatus(
-        Icons.warning,
-        AppTheme.danger,
-        'Active now - stay strong',
-      );
+          Icons.warning, AppTheme.danger, 'Active now - stay strong');
     }
     return _PeakStatus(
-      Icons.check_circle,
-      AppTheme.success,
-      'Passed - held',
-    );
+        Icons.check_circle, AppTheme.success, 'Passed - held');
   }
 
-  String _formatDate(DateTime dt) =>
-      '${dt.day}/${dt.month}/${dt.year}';
+  String _formatDate(DateTime dt) => '${dt.day}/${dt.month}/${dt.year}';
+}
+
+class _ConditionConfig {
+  final String label;
+  final String shortLabel;
+  final IconData icon;
+  final Color color;
+  const _ConditionConfig(this.label, this.shortLabel, this.icon, this.color);
+}
+
+_ConditionConfig _conditionConfig(String condition) {
+  switch (condition) {
+    case 'anxiety':
+      return const _ConditionConfig(
+          'Anxiety', 'ANX', Icons.air, Color(0xFF4ECDC4));
+    case 'depression':
+      return const _ConditionConfig(
+          'Depression', 'DEP', Icons.wb_sunny_outlined, Color(0xFFFFB347));
+    case 'adhd':
+      return const _ConditionConfig(
+          'ADHD', 'ADHD', Icons.psychology, Color(0xFFFF6B6B));
+    case 'periodTracking':
+      return const _ConditionConfig(
+          'Period Tracker', 'PER', Icons.favorite, Color(0xFFFF6B9D));
+    case 'moodTracking':
+      return const _ConditionConfig(
+          'Mood Tracker', 'MOOD', Icons.emoji_emotions, Color(0xFF9B59B6));
+    default:
+      return const _ConditionConfig(
+          'Recovery', 'REC', Icons.shield, Color(0xFF6C63FF));
+  }
 }
 
 class _PeakStatus {
@@ -624,8 +956,8 @@ class _StatChip extends StatelessWidget {
                     fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
             Text(label,
-                style:
-                    const TextStyle(color: Colors.white54, fontSize: 11)),
+                style: const TextStyle(
+                    color: Colors.white54, fontSize: 11)),
           ],
         ),
       ),
@@ -674,15 +1006,19 @@ class _NavCard extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final Color? color;
 
   const _NavCard({
     required this.icon,
     required this.label,
     required this.onTap,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
+    final accentColor =
+        color ?? Theme.of(context).colorScheme.primary;
     return Card(
       child: InkWell(
         onTap: onTap,
@@ -692,7 +1028,7 @@ class _NavCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: AppTheme.accent, size: 28),
+              Icon(icon, color: accentColor, size: 28),
               const SizedBox(height: 8),
               Text(
                 label,

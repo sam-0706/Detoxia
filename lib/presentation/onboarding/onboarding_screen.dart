@@ -6,10 +6,12 @@ import 'package:detoxia/domain/entities/peak_node.dart';
 import 'package:detoxia/domain/entities/user_profile.dart';
 import 'package:detoxia/presentation/guide/feature_guide_screen.dart';
 import 'package:detoxia/presentation/onboarding/pages/personal_info_page.dart';
+import 'package:detoxia/presentation/onboarding/pages/condition_select_page.dart';
 import 'package:detoxia/presentation/onboarding/pages/goal_page.dart';
 import 'package:detoxia/presentation/onboarding/pages/life_structure_page.dart';
 import 'package:detoxia/presentation/onboarding/pages/scope_timing_page.dart';
 import 'package:detoxia/presentation/onboarding/pages/triggers_depth_page.dart';
+import 'package:detoxia/core/theme/app_theme.dart';
 import 'package:detoxia/services/data_sync_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +21,8 @@ class OnboardingState {
   String email = '';
   String phone = '';
   String country = '';
+
+  Set<ConditionType> conditions = {};
 
   RoleType? roleType;
   Set<int> workDays = {1, 2, 3, 4, 5};
@@ -75,14 +79,43 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _pageController = PageController();
   int _currentPage = 0;
 
+  List<Widget> _buildPages() {
+    final state = ref.watch(onboardingStateProvider);
+    final hasDetox = state.conditions.contains(ConditionType.detoxRecovery);
+
+    return [
+      PersonalInfoPage(onNext: _nextPage),
+      ConditionSelectPage(onNext: _onConditionsNext),
+      LifeStructurePage(onNext: _nextPage),
+      if (hasDetox) ScopeTimingPage(onNext: _nextPage),
+      if (hasDetox) TriggersDepthPage(onNext: _nextPage),
+      GoalPage(onComplete: _complete),
+    ];
+  }
+
+  int get _totalPages => _buildPages().length;
+
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
   }
 
+  void _onConditionsNext() {
+    // After condition selection, rebuild the page list then animate
+    setState(() {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _pageController.animateToPage(
+        _currentPage + 1,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
   void _nextPage() {
-    if (_currentPage < 4) {
+    final pages = _buildPages();
+    if (_currentPage < pages.length - 1) {
       _pageController.animateToPage(
         _currentPage + 1,
         duration: const Duration(milliseconds: 300),
@@ -105,11 +138,26 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Future<void> _complete() async {
     final state = ref.read(onboardingStateProvider);
+    final hasDetox = state.conditions.contains(ConditionType.detoxRecovery);
 
-    if (state.roleType == null ||
-        state.struggleDuration == null ||
-        state.resistAbility == null ||
-        state.goalType == null) {
+    if (state.conditions.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select at least one condition')),
+      );
+      return;
+    }
+
+    if (state.roleType == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please complete all fields')),
+      );
+      return;
+    }
+
+    if (hasDetox &&
+        (state.struggleDuration == null ||
+            state.resistAbility == null ||
+            state.goalType == null)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please complete all fields')),
       );
@@ -121,6 +169,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       email: state.email,
       phone: state.phone,
       country: state.country,
+      conditions: state.conditions.toList(),
       roleType: state.roleType!,
       workDays: state.workDays.toList(),
       workStart: state.workStart,
@@ -132,49 +181,57 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       struggles: state.struggles.toList(),
       scrollingTriggersSexual: state.scrollingLinkage,
       triggers: state.triggers.toList(),
-      struggleDuration: state.struggleDuration!,
-      resistAbility: state.resistAbility!,
-      goalType: state.goalType!,
+      struggleDuration: state.struggleDuration,
+      resistAbility: state.resistAbility,
+      goalType: state.goalType,
       motivations: state.motivations.toList(),
       weekendDifferent: state.weekendDifferent,
     );
 
     await ref.read(userRepositoryProvider).saveUser(profile);
 
-    final peakRepo = ref.read(peakRepositoryProvider);
-    final allPins = [...state.peakPins];
+    if (hasDetox) {
+      final peakRepo = ref.read(peakRepositoryProvider);
+      final allPins = [...state.peakPins];
 
-    for (int i = 0; i < allPins.length; i++) {
-      final pin = allPins[i];
-      final label = _labelForTime(pin.time);
-      await peakRepo.insertPeak(PeakNodeEntity(
-        label: label,
-        centerTime: pin.time,
-        frequency: pin.frequency,
-        isHardest: i == 0,
-        dayTypes: const ['both'],
-      ));
-    }
-
-    if (state.weekendDifferent) {
-      for (final pin in state.weekendPeakPins) {
-        final label = 'Weekend ${_labelForTime(pin.time)}';
+      for (int i = 0; i < allPins.length; i++) {
+        final pin = allPins[i];
+        final label = _labelForTime(pin.time);
         await peakRepo.insertPeak(PeakNodeEntity(
           label: label,
           centerTime: pin.time,
           frequency: pin.frequency,
-          dayTypes: const ['weekend'],
+          isHardest: i == 0,
+          dayTypes: const ['both'],
         ));
+      }
+
+      if (state.weekendDifferent) {
+        for (final pin in state.weekendPeakPins) {
+          final label = 'Weekend ${_labelForTime(pin.time)}';
+          await peakRepo.insertPeak(PeakNodeEntity(
+            label: label,
+            centerTime: pin.time,
+            frequency: pin.frequency,
+            dayTypes: const ['weekend'],
+          ));
+        }
       }
     }
 
-    // Send registration data to your backend (fire-and-forget)
-    DataSyncService.sendRegistration(
-      name: state.name,
-      email: state.email,
-      phone: state.phone,
-      country: state.country,
-    );
+    if (profile.isPinkTheme) {
+      ref.read(activeThemeProvider.notifier).setTheme(AppTheme.pinkTheme);
+    }
+
+    // Fire-and-forget data sync (non-critical)
+    try {
+      DataSyncService.sendRegistration(
+        name: state.name,
+        email: state.email,
+        phone: state.phone,
+        country: state.country,
+      );
+    } catch (_) {}
 
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
@@ -208,7 +265,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     ),
                   const Spacer(),
                   Text(
-                    '${_currentPage + 1}/5',
+                    '${_currentPage + 1}/$_totalPages',
                     style: const TextStyle(
                       color: Colors.white54,
                       fontSize: 14,
@@ -221,7 +278,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: LinearProgressIndicator(
-                value: (_currentPage + 1) / 5,
+                value: (_currentPage + 1) / _totalPages,
                 backgroundColor: Colors.white12,
                 borderRadius: BorderRadius.circular(4),
               ),
@@ -233,13 +290,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 onPageChanged: (page) =>
                     setState(() => _currentPage = page),
-                children: [
-                  PersonalInfoPage(onNext: _nextPage),
-                  LifeStructurePage(onNext: _nextPage),
-                  ScopeTimingPage(onNext: _nextPage),
-                  TriggersDepthPage(onNext: _nextPage),
-                  GoalPage(onComplete: _complete),
-                ],
+                children: _buildPages(),
               ),
             ),
           ],

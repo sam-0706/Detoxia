@@ -38,14 +38,23 @@ class _DetoxiaAppState extends ConsumerState<DetoxiaApp> {
     } catch (e) {
       debugPrint('Event processor init failed (non-fatal): $e');
     }
+
+    // Set theme based on user's conditions
+    try {
+      final user = await ref.read(userRepositoryProvider).getUser();
+      if (user != null && user.isPinkTheme) {
+        ref.read(activeThemeProvider.notifier).setTheme(AppTheme.pinkTheme);
+      }
+    } catch (_) {}
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = ref.watch(activeThemeProvider);
     return MaterialApp(
       title: 'Detoxia',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
+      theme: theme,
       home: const _EntryGate(),
     );
   }

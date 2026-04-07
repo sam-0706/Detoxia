@@ -24,6 +24,8 @@ class UserRepository {
       email: Value(profile.email),
       phone: Value(profile.phone),
       country: Value(profile.country),
+      conditions: Value(
+          jsonEncode(profile.conditions.map((c) => c.name).toList())),
       roleType: Value(profile.roleType.name),
       workDays: Value(jsonEncode(profile.workDays)),
       workStart: Value(profile.workStart != null
@@ -46,9 +48,9 @@ class UserRepository {
           Value(profile.scrollingTriggersSexual.name),
       triggers: Value(
           jsonEncode(profile.triggers.map((t) => t.name).toList())),
-      struggleDuration: Value(profile.struggleDuration.name),
-      resistAbility: Value(profile.resistAbility.name),
-      goalType: Value(profile.goalType.name),
+      struggleDuration: Value(profile.struggleDuration?.name ?? 'twoToFiveYears'),
+      resistAbility: Value(profile.resistAbility?.name ?? 'sometimes'),
+      goalType: Value(profile.goalType?.name ?? 'quit'),
       motivations: Value(
           jsonEncode(profile.motivations.map((m) => m.name).toList())),
       weekendDifferent: Value(profile.weekendDifferent),
@@ -85,6 +87,12 @@ class UserRepository {
       email: row.email,
       phone: row.phone,
       country: row.country,
+      conditions: (jsonDecode(row.conditions) as List)
+          .map((c) => ConditionType.values.firstWhere(
+                (e) => e.name == c,
+                orElse: () => ConditionType.detoxRecovery,
+              ))
+          .toList(),
       roleType: RoleType.values.firstWhere(
         (e) => e.name == row.roleType,
         orElse: () => RoleType.working,

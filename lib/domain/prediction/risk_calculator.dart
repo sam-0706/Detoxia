@@ -180,7 +180,7 @@ class RiskCalculator {
 
   double _habitStrength() {
     double durationScore;
-    switch (profile.struggleDuration) {
+    switch (profile.struggleDuration ?? StruggleDuration.twoToFiveYears) {
       case StruggleDuration.lessThan6Months:
         durationScore = 0.3;
       case StruggleDuration.sixToTwoYears:
@@ -192,7 +192,7 @@ class RiskCalculator {
     }
 
     double controlScore;
-    switch (profile.resistAbility) {
+    switch (profile.resistAbility ?? ResistAbility.sometimes) {
       case ResistAbility.rarely:
         controlScore = 1.0;
       case ResistAbility.sometimes:

@@ -1,5 +1,6 @@
 import 'package:detoxia/core/constants/enums.dart';
 import 'package:detoxia/domain/prediction/risk_calculator.dart';
+import 'package:detoxia/domain/tasks/daily_task_scheduler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -40,13 +41,15 @@ class NotificationService {
   int get _maxNotifications {
     switch (_mode) {
       case NotificationMode.strict:
-        return 5;
+        return 8;
       case NotificationMode.balanced:
-        return 3;
+        return 5;
       case NotificationMode.gentle:
-        return 1;
+        return 3;
     }
   }
+
+  // ─── Risk Notifications (Detox Recovery) ───
 
   Future<void> scheduleRiskNotifications(
     List<RiskBlock> blocks,
@@ -123,6 +126,225 @@ class NotificationService {
     _scheduledToday++;
   }
 
+  // ─── Wellness Task Notifications ───
+
+  Future<void> scheduleWellnessNotifications({
+    required List<String> activeConditions,
+    required DateTime wakeTime,
+    required DateTime sleepTime,
+  }) async {
+    if (!_initialized) return;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays;
+
+    final tasks = DailyTaskScheduler.selectTasks(
+      activeConditions: activeConditions,
+      dayOfYear: dayOfYear,
+      count: 5,
+    );
+
+    // Morning task notification (30 min after wake)
+    final morningTime = wakeTime.add(const Duration(minutes: 30));
+    if (morningTime.isAfter(now)) {
+      final morningTask = tasks.firstWhere(
+        (t) => t['timeOfDay'] == 'morning',
+        orElse: () => tasks.first,
+      );
+      await _scheduleNotification(
+        id: 700,
+        title: 'Morning task ready',
+        body: morningTask['title'] as String,
+        scheduledTime: morningTime,
+        channelId: 'detoxia_wellness',
+        channelName: 'Wellness Tasks',
+      );
+    }
+
+    // Midday check-in (1 PM or 5 hours after wake)
+    final middayTime = today.add(const Duration(hours: 13));
+    if (middayTime.isAfter(now) && middayTime.isBefore(sleepTime)) {
+      await _scheduleNotification(
+        id: 701,
+        title: 'Midday check-in',
+        body: _middayMessage(activeConditions),
+        scheduledTime: middayTime,
+        channelId: 'detoxia_wellness',
+        channelName: 'Wellness Tasks',
+      );
+    }
+
+    // Afternoon task (3 PM)
+    final afternoonTime = today.add(const Duration(hours: 15));
+    if (afternoonTime.isAfter(now) && afternoonTime.isBefore(sleepTime)) {
+      final afternoonTask = tasks.firstWhere(
+        (t) => t['timeOfDay'] == 'afternoon',
+        orElse: () => tasks.length > 1 ? tasks[1] : tasks.first,
+      );
+      await _scheduleNotification(
+        id: 702,
+        title: 'Afternoon activity',
+        body: '${afternoonTask['title']} (${afternoonTask['durationMinutes']}min)',
+        scheduledTime: afternoonTime,
+        channelId: 'detoxia_wellness',
+        channelName: 'Wellness Tasks',
+      );
+    }
+
+    // Evening wind-down (2 hours before sleep)
+    final eveningTime =
+        sleepTime.subtract(const Duration(hours: 2));
+    if (eveningTime.isAfter(now)) {
+      final eveningTask = tasks.firstWhere(
+        (t) => t['timeOfDay'] == 'evening',
+        orElse: () => tasks.last,
+      );
+      await _scheduleNotification(
+        id: 703,
+        title: 'Evening wind-down',
+        body: eveningTask['title'] as String,
+        scheduledTime: eveningTime,
+        channelId: 'detoxia_wellness',
+        channelName: 'Wellness Tasks',
+      );
+    }
+
+    // Random micro-task (pick a random time between noon and 6 PM)
+    final microHour = 12 + (dayOfYear % 6);
+    final microTime = today.add(Duration(hours: microHour, minutes: 15));
+    if (microTime.isAfter(now) && microTime.isBefore(sleepTime)) {
+      final microTask = tasks.firstWhere(
+        (t) => (t['durationMinutes'] as int) <= 5,
+        orElse: () => tasks.first,
+      );
+      await _scheduleNotification(
+        id: 704,
+        title: 'Quick task',
+        body: '${microTask['title']} — just ${microTask['durationMinutes']} minutes',
+        scheduledTime: microTime,
+        channelId: 'detoxia_wellness',
+        channelName: 'Wellness Tasks',
+      );
+    }
+  }
+
+  String _middayMessage(List<String> conditions) {
+    if (conditions.contains('anxiety')) {
+      return 'Take a moment to check your anxiety level. A quick breathing exercise can help.';
+    }
+    if (conditions.contains('depression')) {
+      return 'How are you feeling? Consider logging your mood or scheduling an activity.';
+    }
+    if (conditions.contains('adhd')) {
+      return 'Quick focus check — have you completed any of your top 3 tasks?';
+    }
+    if (conditions.contains('moodTracking')) {
+      return 'How\'s your mood right now? A quick log takes 10 seconds.';
+    }
+    return 'How are you doing? Take a moment to check in with yourself.';
+  }
+
+  // ─── Condition-Specific Quick Notifications ───
+
+  Future<void> scheduleConditionReminder({
+    required String conditionType,
+    required DateTime time,
+  }) async {
+    if (!_initialized) return;
+    final messages = _conditionMessages(conditionType);
+    if (messages.isEmpty) return;
+
+    final dayOfYear =
+        DateTime.now().difference(DateTime(DateTime.now().year, 1, 1)).inDays;
+    final message = messages[dayOfYear % messages.length];
+
+    await _scheduleNotification(
+      id: 710 + conditionType.hashCode % 50,
+      title: _conditionTitle(conditionType),
+      body: message,
+      scheduledTime: time,
+      channelId: 'detoxia_condition',
+      channelName: 'Condition Reminders',
+    );
+  }
+
+  String _conditionTitle(String condition) {
+    switch (condition) {
+      case 'anxiety':
+        return 'Anxiety check';
+      case 'depression':
+        return 'Mood boost';
+      case 'adhd':
+        return 'Focus nudge';
+      case 'periodTracking':
+        return 'Cycle reminder';
+      case 'moodTracking':
+        return 'Mood log';
+      default:
+        return 'Wellness reminder';
+    }
+  }
+
+  List<String> _conditionMessages(String condition) {
+    switch (condition) {
+      case 'anxiety':
+        return [
+          'Try 2 minutes of box breathing right now.',
+          'Ground yourself: Name 5 things you can see.',
+          'Shoulders down, jaw relaxed. You\'re safe.',
+          'Anxiety is temporary. This feeling will pass.',
+          'Take 3 slow, deep breaths right now.',
+          'Try the 4-7-8 breathing technique.',
+          'Notice your feet on the ground. You\'re here, you\'re okay.',
+        ];
+      case 'depression':
+        return [
+          'One small action can shift your mood. Try a 5-minute walk.',
+          'Have you done something enjoyable today? You deserve it.',
+          'Text someone you care about. Connection helps.',
+          'Step outside for just 2 minutes of sunlight.',
+          'You showed up today. That counts.',
+          'Try scheduling one pleasant activity for this hour.',
+          'Name one good thing that happened today.',
+        ];
+      case 'adhd':
+        return [
+          'Set a 5-minute timer and just start.',
+          'What\'s the ONE thing you need to do right now?',
+          'Body doubling: Tell someone what you\'re working on.',
+          'Quick dopamine hit: 10 jumping jacks, then back to it.',
+          'Break your current task into 3 tiny steps.',
+          'Drink some water and set a 15-minute focus block.',
+          'Park your distracting thoughts on paper, then refocus.',
+        ];
+      case 'periodTracking':
+        return [
+          'Don\'t forget to log today\'s symptoms.',
+          'Drink extra water today — hydration helps with cramps.',
+          'Be gentle with yourself today. Your body is doing a lot.',
+          'A warm compress can help with discomfort.',
+          'Consider some gentle stretching or yoga.',
+          'Iron-rich foods can help with energy during your period.',
+          'Track your mood today to spot cycle patterns.',
+        ];
+      case 'moodTracking':
+        return [
+          'How are you feeling right now? Quick-log your mood.',
+          'Take a moment to name your emotions.',
+          'Your mood data builds powerful insights over time.',
+          'Notice your energy level. High? Low? Just right?',
+          'Mood check: Rate yourself 1-10 right now.',
+          'What activity affected your mood most today?',
+          'Evening reflection: What was the highlight of your day?',
+        ];
+      default:
+        return [];
+    }
+  }
+
+  // ─── Immediate & Scheduled Core ───
+
   Future<void> showImmediate({
     required String title,
     required String body,
@@ -156,16 +378,18 @@ class NotificationService {
     required String title,
     required String body,
     required DateTime scheduledTime,
+    String channelId = 'detoxia_scheduled',
+    String channelName = 'Scheduled',
   }) async {
-    const details = NotificationDetails(
+    final details = NotificationDetails(
       android: AndroidNotificationDetails(
-        'detoxia_scheduled',
-        'Scheduled',
+        channelId,
+        channelName,
         importance: Importance.high,
         priority: Priority.high,
         visibility: NotificationVisibility.private,
       ),
-      iOS: DarwinNotificationDetails(),
+      iOS: const DarwinNotificationDetails(),
     );
 
     await _plugin.zonedSchedule(
@@ -190,8 +414,6 @@ class NotificationService {
 
   void resetDailyCount() => _scheduledToday = 0;
 
-  /// Schedules persistent check-in reminders starting 1 hour before
-  /// sleepTime, repeating every 5 minutes for up to 1 hour.
   Future<void> scheduleCheckinReminders(DateTime sleepTime) async {
     if (!_initialized) return;
 

@@ -78,6 +78,18 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _conditionsMeta = const VerificationMeta(
+    'conditions',
+  );
+  @override
+  late final GeneratedColumn<String> conditions = GeneratedColumn<String>(
+    'conditions',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('["detoxRecovery"]'),
+  );
   static const VerificationMeta _roleTypeMeta = const VerificationMeta(
     'roleType',
   );
@@ -295,6 +307,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     phone,
     country,
     checkedInToday,
+    conditions,
     roleType,
     workDays,
     workStart,
@@ -360,6 +373,12 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
           data['checked_in_today']!,
           _checkedInTodayMeta,
         ),
+      );
+    }
+    if (data.containsKey('conditions')) {
+      context.handle(
+        _conditionsMeta,
+        conditions.isAcceptableOrUnknown(data['conditions']!, _conditionsMeta),
       );
     }
     if (data.containsKey('role_type')) {
@@ -546,6 +565,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.bool,
         data['${effectivePrefix}checked_in_today'],
       )!,
+      conditions: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}conditions'],
+      )!,
       roleType: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}role_type'],
@@ -634,6 +657,7 @@ class User extends DataClass implements Insertable<User> {
   final String phone;
   final String country;
   final bool checkedInToday;
+  final String conditions;
   final String roleType;
   final String workDays;
   final String? workStart;
@@ -659,6 +683,7 @@ class User extends DataClass implements Insertable<User> {
     required this.phone,
     required this.country,
     required this.checkedInToday,
+    required this.conditions,
     required this.roleType,
     required this.workDays,
     this.workStart,
@@ -687,6 +712,7 @@ class User extends DataClass implements Insertable<User> {
     map['phone'] = Variable<String>(phone);
     map['country'] = Variable<String>(country);
     map['checked_in_today'] = Variable<bool>(checkedInToday);
+    map['conditions'] = Variable<String>(conditions);
     map['role_type'] = Variable<String>(roleType);
     map['work_days'] = Variable<String>(workDays);
     if (!nullToAbsent || workStart != null) {
@@ -722,6 +748,7 @@ class User extends DataClass implements Insertable<User> {
       phone: Value(phone),
       country: Value(country),
       checkedInToday: Value(checkedInToday),
+      conditions: Value(conditions),
       roleType: Value(roleType),
       workDays: Value(workDays),
       workStart: workStart == null && nullToAbsent
@@ -759,6 +786,7 @@ class User extends DataClass implements Insertable<User> {
       phone: serializer.fromJson<String>(json['phone']),
       country: serializer.fromJson<String>(json['country']),
       checkedInToday: serializer.fromJson<bool>(json['checkedInToday']),
+      conditions: serializer.fromJson<String>(json['conditions']),
       roleType: serializer.fromJson<String>(json['roleType']),
       workDays: serializer.fromJson<String>(json['workDays']),
       workStart: serializer.fromJson<String?>(json['workStart']),
@@ -791,6 +819,7 @@ class User extends DataClass implements Insertable<User> {
       'phone': serializer.toJson<String>(phone),
       'country': serializer.toJson<String>(country),
       'checkedInToday': serializer.toJson<bool>(checkedInToday),
+      'conditions': serializer.toJson<String>(conditions),
       'roleType': serializer.toJson<String>(roleType),
       'workDays': serializer.toJson<String>(workDays),
       'workStart': serializer.toJson<String?>(workStart),
@@ -821,6 +850,7 @@ class User extends DataClass implements Insertable<User> {
     String? phone,
     String? country,
     bool? checkedInToday,
+    String? conditions,
     String? roleType,
     String? workDays,
     Value<String?> workStart = const Value.absent(),
@@ -846,6 +876,7 @@ class User extends DataClass implements Insertable<User> {
     phone: phone ?? this.phone,
     country: country ?? this.country,
     checkedInToday: checkedInToday ?? this.checkedInToday,
+    conditions: conditions ?? this.conditions,
     roleType: roleType ?? this.roleType,
     workDays: workDays ?? this.workDays,
     workStart: workStart.present ? workStart.value : this.workStart,
@@ -876,6 +907,9 @@ class User extends DataClass implements Insertable<User> {
       checkedInToday: data.checkedInToday.present
           ? data.checkedInToday.value
           : this.checkedInToday,
+      conditions: data.conditions.present
+          ? data.conditions.value
+          : this.conditions,
       roleType: data.roleType.present ? data.roleType.value : this.roleType,
       workDays: data.workDays.present ? data.workDays.value : this.workDays,
       workStart: data.workStart.present ? data.workStart.value : this.workStart,
@@ -924,6 +958,7 @@ class User extends DataClass implements Insertable<User> {
           ..write('phone: $phone, ')
           ..write('country: $country, ')
           ..write('checkedInToday: $checkedInToday, ')
+          ..write('conditions: $conditions, ')
           ..write('roleType: $roleType, ')
           ..write('workDays: $workDays, ')
           ..write('workStart: $workStart, ')
@@ -954,6 +989,7 @@ class User extends DataClass implements Insertable<User> {
     phone,
     country,
     checkedInToday,
+    conditions,
     roleType,
     workDays,
     workStart,
@@ -983,6 +1019,7 @@ class User extends DataClass implements Insertable<User> {
           other.phone == this.phone &&
           other.country == this.country &&
           other.checkedInToday == this.checkedInToday &&
+          other.conditions == this.conditions &&
           other.roleType == this.roleType &&
           other.workDays == this.workDays &&
           other.workStart == this.workStart &&
@@ -1010,6 +1047,7 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<String> phone;
   final Value<String> country;
   final Value<bool> checkedInToday;
+  final Value<String> conditions;
   final Value<String> roleType;
   final Value<String> workDays;
   final Value<String?> workStart;
@@ -1035,6 +1073,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.phone = const Value.absent(),
     this.country = const Value.absent(),
     this.checkedInToday = const Value.absent(),
+    this.conditions = const Value.absent(),
     this.roleType = const Value.absent(),
     this.workDays = const Value.absent(),
     this.workStart = const Value.absent(),
@@ -1061,6 +1100,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.phone = const Value.absent(),
     this.country = const Value.absent(),
     this.checkedInToday = const Value.absent(),
+    this.conditions = const Value.absent(),
     required String roleType,
     this.workDays = const Value.absent(),
     this.workStart = const Value.absent(),
@@ -1094,6 +1134,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<String>? phone,
     Expression<String>? country,
     Expression<bool>? checkedInToday,
+    Expression<String>? conditions,
     Expression<String>? roleType,
     Expression<String>? workDays,
     Expression<String>? workStart,
@@ -1120,6 +1161,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (phone != null) 'phone': phone,
       if (country != null) 'country': country,
       if (checkedInToday != null) 'checked_in_today': checkedInToday,
+      if (conditions != null) 'conditions': conditions,
       if (roleType != null) 'role_type': roleType,
       if (workDays != null) 'work_days': workDays,
       if (workStart != null) 'work_start': workStart,
@@ -1149,6 +1191,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Value<String>? phone,
     Value<String>? country,
     Value<bool>? checkedInToday,
+    Value<String>? conditions,
     Value<String>? roleType,
     Value<String>? workDays,
     Value<String?>? workStart,
@@ -1175,6 +1218,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       phone: phone ?? this.phone,
       country: country ?? this.country,
       checkedInToday: checkedInToday ?? this.checkedInToday,
+      conditions: conditions ?? this.conditions,
       roleType: roleType ?? this.roleType,
       workDays: workDays ?? this.workDays,
       workStart: workStart ?? this.workStart,
@@ -1217,6 +1261,9 @@ class UsersCompanion extends UpdateCompanion<User> {
     }
     if (checkedInToday.present) {
       map['checked_in_today'] = Variable<bool>(checkedInToday.value);
+    }
+    if (conditions.present) {
+      map['conditions'] = Variable<String>(conditions.value);
     }
     if (roleType.present) {
       map['role_type'] = Variable<String>(roleType.value);
@@ -1286,6 +1333,7 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('phone: $phone, ')
           ..write('country: $country, ')
           ..write('checkedInToday: $checkedInToday, ')
+          ..write('conditions: $conditions, ')
           ..write('roleType: $roleType, ')
           ..write('workDays: $workDays, ')
           ..write('workStart: $workStart, ')
@@ -12892,6 +12940,6151 @@ class PassiveUsagesCompanion extends UpdateCompanion<PassiveUsage> {
   }
 }
 
+class $MoodEntriesTable extends MoodEntries
+    with TableInfo<$MoodEntriesTable, MoodEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MoodEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _timestampMeta = const VerificationMeta(
+    'timestamp',
+  );
+  @override
+  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
+    'timestamp',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _moodLevelMeta = const VerificationMeta(
+    'moodLevel',
+  );
+  @override
+  late final GeneratedColumn<int> moodLevel = GeneratedColumn<int>(
+    'mood_level',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _energyMeta = const VerificationMeta('energy');
+  @override
+  late final GeneratedColumn<int> energy = GeneratedColumn<int>(
+    'energy',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _emotionsMeta = const VerificationMeta(
+    'emotions',
+  );
+  @override
+  late final GeneratedColumn<String> emotions = GeneratedColumn<String>(
+    'emotions',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _activitiesMeta = const VerificationMeta(
+    'activities',
+  );
+  @override
+  late final GeneratedColumn<String> activities = GeneratedColumn<String>(
+    'activities',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _socialContextMeta = const VerificationMeta(
+    'socialContext',
+  );
+  @override
+  late final GeneratedColumn<String> socialContext = GeneratedColumn<String>(
+    'social_context',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    timestamp,
+    moodLevel,
+    energy,
+    emotions,
+    activities,
+    socialContext,
+    note,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mood_entries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MoodEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(
+        _timestampMeta,
+        timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_timestampMeta);
+    }
+    if (data.containsKey('mood_level')) {
+      context.handle(
+        _moodLevelMeta,
+        moodLevel.isAcceptableOrUnknown(data['mood_level']!, _moodLevelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_moodLevelMeta);
+    }
+    if (data.containsKey('energy')) {
+      context.handle(
+        _energyMeta,
+        energy.isAcceptableOrUnknown(data['energy']!, _energyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_energyMeta);
+    }
+    if (data.containsKey('emotions')) {
+      context.handle(
+        _emotionsMeta,
+        emotions.isAcceptableOrUnknown(data['emotions']!, _emotionsMeta),
+      );
+    }
+    if (data.containsKey('activities')) {
+      context.handle(
+        _activitiesMeta,
+        activities.isAcceptableOrUnknown(data['activities']!, _activitiesMeta),
+      );
+    }
+    if (data.containsKey('social_context')) {
+      context.handle(
+        _socialContextMeta,
+        socialContext.isAcceptableOrUnknown(
+          data['social_context']!,
+          _socialContextMeta,
+        ),
+      );
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MoodEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MoodEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      timestamp: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}timestamp'],
+      )!,
+      moodLevel: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}mood_level'],
+      )!,
+      energy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}energy'],
+      )!,
+      emotions: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}emotions'],
+      )!,
+      activities: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}activities'],
+      )!,
+      socialContext: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}social_context'],
+      ),
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+    );
+  }
+
+  @override
+  $MoodEntriesTable createAlias(String alias) {
+    return $MoodEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class MoodEntry extends DataClass implements Insertable<MoodEntry> {
+  final int id;
+  final DateTime timestamp;
+  final int moodLevel;
+  final int energy;
+  final String emotions;
+  final String activities;
+  final String? socialContext;
+  final String? note;
+  const MoodEntry({
+    required this.id,
+    required this.timestamp,
+    required this.moodLevel,
+    required this.energy,
+    required this.emotions,
+    required this.activities,
+    this.socialContext,
+    this.note,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['timestamp'] = Variable<DateTime>(timestamp);
+    map['mood_level'] = Variable<int>(moodLevel);
+    map['energy'] = Variable<int>(energy);
+    map['emotions'] = Variable<String>(emotions);
+    map['activities'] = Variable<String>(activities);
+    if (!nullToAbsent || socialContext != null) {
+      map['social_context'] = Variable<String>(socialContext);
+    }
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    return map;
+  }
+
+  MoodEntriesCompanion toCompanion(bool nullToAbsent) {
+    return MoodEntriesCompanion(
+      id: Value(id),
+      timestamp: Value(timestamp),
+      moodLevel: Value(moodLevel),
+      energy: Value(energy),
+      emotions: Value(emotions),
+      activities: Value(activities),
+      socialContext: socialContext == null && nullToAbsent
+          ? const Value.absent()
+          : Value(socialContext),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+    );
+  }
+
+  factory MoodEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MoodEntry(
+      id: serializer.fromJson<int>(json['id']),
+      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+      moodLevel: serializer.fromJson<int>(json['moodLevel']),
+      energy: serializer.fromJson<int>(json['energy']),
+      emotions: serializer.fromJson<String>(json['emotions']),
+      activities: serializer.fromJson<String>(json['activities']),
+      socialContext: serializer.fromJson<String?>(json['socialContext']),
+      note: serializer.fromJson<String?>(json['note']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'timestamp': serializer.toJson<DateTime>(timestamp),
+      'moodLevel': serializer.toJson<int>(moodLevel),
+      'energy': serializer.toJson<int>(energy),
+      'emotions': serializer.toJson<String>(emotions),
+      'activities': serializer.toJson<String>(activities),
+      'socialContext': serializer.toJson<String?>(socialContext),
+      'note': serializer.toJson<String?>(note),
+    };
+  }
+
+  MoodEntry copyWith({
+    int? id,
+    DateTime? timestamp,
+    int? moodLevel,
+    int? energy,
+    String? emotions,
+    String? activities,
+    Value<String?> socialContext = const Value.absent(),
+    Value<String?> note = const Value.absent(),
+  }) => MoodEntry(
+    id: id ?? this.id,
+    timestamp: timestamp ?? this.timestamp,
+    moodLevel: moodLevel ?? this.moodLevel,
+    energy: energy ?? this.energy,
+    emotions: emotions ?? this.emotions,
+    activities: activities ?? this.activities,
+    socialContext: socialContext.present
+        ? socialContext.value
+        : this.socialContext,
+    note: note.present ? note.value : this.note,
+  );
+  MoodEntry copyWithCompanion(MoodEntriesCompanion data) {
+    return MoodEntry(
+      id: data.id.present ? data.id.value : this.id,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+      moodLevel: data.moodLevel.present ? data.moodLevel.value : this.moodLevel,
+      energy: data.energy.present ? data.energy.value : this.energy,
+      emotions: data.emotions.present ? data.emotions.value : this.emotions,
+      activities: data.activities.present
+          ? data.activities.value
+          : this.activities,
+      socialContext: data.socialContext.present
+          ? data.socialContext.value
+          : this.socialContext,
+      note: data.note.present ? data.note.value : this.note,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MoodEntry(')
+          ..write('id: $id, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('moodLevel: $moodLevel, ')
+          ..write('energy: $energy, ')
+          ..write('emotions: $emotions, ')
+          ..write('activities: $activities, ')
+          ..write('socialContext: $socialContext, ')
+          ..write('note: $note')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    timestamp,
+    moodLevel,
+    energy,
+    emotions,
+    activities,
+    socialContext,
+    note,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MoodEntry &&
+          other.id == this.id &&
+          other.timestamp == this.timestamp &&
+          other.moodLevel == this.moodLevel &&
+          other.energy == this.energy &&
+          other.emotions == this.emotions &&
+          other.activities == this.activities &&
+          other.socialContext == this.socialContext &&
+          other.note == this.note);
+}
+
+class MoodEntriesCompanion extends UpdateCompanion<MoodEntry> {
+  final Value<int> id;
+  final Value<DateTime> timestamp;
+  final Value<int> moodLevel;
+  final Value<int> energy;
+  final Value<String> emotions;
+  final Value<String> activities;
+  final Value<String?> socialContext;
+  final Value<String?> note;
+  const MoodEntriesCompanion({
+    this.id = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.moodLevel = const Value.absent(),
+    this.energy = const Value.absent(),
+    this.emotions = const Value.absent(),
+    this.activities = const Value.absent(),
+    this.socialContext = const Value.absent(),
+    this.note = const Value.absent(),
+  });
+  MoodEntriesCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime timestamp,
+    required int moodLevel,
+    required int energy,
+    this.emotions = const Value.absent(),
+    this.activities = const Value.absent(),
+    this.socialContext = const Value.absent(),
+    this.note = const Value.absent(),
+  }) : timestamp = Value(timestamp),
+       moodLevel = Value(moodLevel),
+       energy = Value(energy);
+  static Insertable<MoodEntry> custom({
+    Expression<int>? id,
+    Expression<DateTime>? timestamp,
+    Expression<int>? moodLevel,
+    Expression<int>? energy,
+    Expression<String>? emotions,
+    Expression<String>? activities,
+    Expression<String>? socialContext,
+    Expression<String>? note,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (moodLevel != null) 'mood_level': moodLevel,
+      if (energy != null) 'energy': energy,
+      if (emotions != null) 'emotions': emotions,
+      if (activities != null) 'activities': activities,
+      if (socialContext != null) 'social_context': socialContext,
+      if (note != null) 'note': note,
+    });
+  }
+
+  MoodEntriesCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? timestamp,
+    Value<int>? moodLevel,
+    Value<int>? energy,
+    Value<String>? emotions,
+    Value<String>? activities,
+    Value<String?>? socialContext,
+    Value<String?>? note,
+  }) {
+    return MoodEntriesCompanion(
+      id: id ?? this.id,
+      timestamp: timestamp ?? this.timestamp,
+      moodLevel: moodLevel ?? this.moodLevel,
+      energy: energy ?? this.energy,
+      emotions: emotions ?? this.emotions,
+      activities: activities ?? this.activities,
+      socialContext: socialContext ?? this.socialContext,
+      note: note ?? this.note,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    }
+    if (moodLevel.present) {
+      map['mood_level'] = Variable<int>(moodLevel.value);
+    }
+    if (energy.present) {
+      map['energy'] = Variable<int>(energy.value);
+    }
+    if (emotions.present) {
+      map['emotions'] = Variable<String>(emotions.value);
+    }
+    if (activities.present) {
+      map['activities'] = Variable<String>(activities.value);
+    }
+    if (socialContext.present) {
+      map['social_context'] = Variable<String>(socialContext.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MoodEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('moodLevel: $moodLevel, ')
+          ..write('energy: $energy, ')
+          ..write('emotions: $emotions, ')
+          ..write('activities: $activities, ')
+          ..write('socialContext: $socialContext, ')
+          ..write('note: $note')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AnxietyEventsTable extends AnxietyEvents
+    with TableInfo<$AnxietyEventsTable, AnxietyEvent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AnxietyEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _timestampMeta = const VerificationMeta(
+    'timestamp',
+  );
+  @override
+  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
+    'timestamp',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _triggerSituationMeta = const VerificationMeta(
+    'triggerSituation',
+  );
+  @override
+  late final GeneratedColumn<String> triggerSituation = GeneratedColumn<String>(
+    'trigger_situation',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _anxietyLevelMeta = const VerificationMeta(
+    'anxietyLevel',
+  );
+  @override
+  late final GeneratedColumn<int> anxietyLevel = GeneratedColumn<int>(
+    'anxiety_level',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _physicalSymptomsMeta = const VerificationMeta(
+    'physicalSymptoms',
+  );
+  @override
+  late final GeneratedColumn<String> physicalSymptoms = GeneratedColumn<String>(
+    'physical_symptoms',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _copingUsedMeta = const VerificationMeta(
+    'copingUsed',
+  );
+  @override
+  late final GeneratedColumn<String> copingUsed = GeneratedColumn<String>(
+    'coping_used',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _anxietyAfterMeta = const VerificationMeta(
+    'anxietyAfter',
+  );
+  @override
+  late final GeneratedColumn<int> anxietyAfter = GeneratedColumn<int>(
+    'anxiety_after',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _avoidanceBehaviorMeta = const VerificationMeta(
+    'avoidanceBehavior',
+  );
+  @override
+  late final GeneratedColumn<bool> avoidanceBehavior = GeneratedColumn<bool>(
+    'avoidance_behavior',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("avoidance_behavior" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    timestamp,
+    triggerSituation,
+    anxietyLevel,
+    physicalSymptoms,
+    copingUsed,
+    anxietyAfter,
+    avoidanceBehavior,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'anxiety_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AnxietyEvent> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(
+        _timestampMeta,
+        timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_timestampMeta);
+    }
+    if (data.containsKey('trigger_situation')) {
+      context.handle(
+        _triggerSituationMeta,
+        triggerSituation.isAcceptableOrUnknown(
+          data['trigger_situation']!,
+          _triggerSituationMeta,
+        ),
+      );
+    }
+    if (data.containsKey('anxiety_level')) {
+      context.handle(
+        _anxietyLevelMeta,
+        anxietyLevel.isAcceptableOrUnknown(
+          data['anxiety_level']!,
+          _anxietyLevelMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_anxietyLevelMeta);
+    }
+    if (data.containsKey('physical_symptoms')) {
+      context.handle(
+        _physicalSymptomsMeta,
+        physicalSymptoms.isAcceptableOrUnknown(
+          data['physical_symptoms']!,
+          _physicalSymptomsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('coping_used')) {
+      context.handle(
+        _copingUsedMeta,
+        copingUsed.isAcceptableOrUnknown(data['coping_used']!, _copingUsedMeta),
+      );
+    }
+    if (data.containsKey('anxiety_after')) {
+      context.handle(
+        _anxietyAfterMeta,
+        anxietyAfter.isAcceptableOrUnknown(
+          data['anxiety_after']!,
+          _anxietyAfterMeta,
+        ),
+      );
+    }
+    if (data.containsKey('avoidance_behavior')) {
+      context.handle(
+        _avoidanceBehaviorMeta,
+        avoidanceBehavior.isAcceptableOrUnknown(
+          data['avoidance_behavior']!,
+          _avoidanceBehaviorMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AnxietyEvent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AnxietyEvent(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      timestamp: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}timestamp'],
+      )!,
+      triggerSituation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}trigger_situation'],
+      ),
+      anxietyLevel: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}anxiety_level'],
+      )!,
+      physicalSymptoms: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}physical_symptoms'],
+      )!,
+      copingUsed: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}coping_used'],
+      ),
+      anxietyAfter: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}anxiety_after'],
+      ),
+      avoidanceBehavior: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}avoidance_behavior'],
+      )!,
+    );
+  }
+
+  @override
+  $AnxietyEventsTable createAlias(String alias) {
+    return $AnxietyEventsTable(attachedDatabase, alias);
+  }
+}
+
+class AnxietyEvent extends DataClass implements Insertable<AnxietyEvent> {
+  final int id;
+  final DateTime timestamp;
+  final String? triggerSituation;
+  final int anxietyLevel;
+  final String physicalSymptoms;
+  final String? copingUsed;
+  final int? anxietyAfter;
+  final bool avoidanceBehavior;
+  const AnxietyEvent({
+    required this.id,
+    required this.timestamp,
+    this.triggerSituation,
+    required this.anxietyLevel,
+    required this.physicalSymptoms,
+    this.copingUsed,
+    this.anxietyAfter,
+    required this.avoidanceBehavior,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['timestamp'] = Variable<DateTime>(timestamp);
+    if (!nullToAbsent || triggerSituation != null) {
+      map['trigger_situation'] = Variable<String>(triggerSituation);
+    }
+    map['anxiety_level'] = Variable<int>(anxietyLevel);
+    map['physical_symptoms'] = Variable<String>(physicalSymptoms);
+    if (!nullToAbsent || copingUsed != null) {
+      map['coping_used'] = Variable<String>(copingUsed);
+    }
+    if (!nullToAbsent || anxietyAfter != null) {
+      map['anxiety_after'] = Variable<int>(anxietyAfter);
+    }
+    map['avoidance_behavior'] = Variable<bool>(avoidanceBehavior);
+    return map;
+  }
+
+  AnxietyEventsCompanion toCompanion(bool nullToAbsent) {
+    return AnxietyEventsCompanion(
+      id: Value(id),
+      timestamp: Value(timestamp),
+      triggerSituation: triggerSituation == null && nullToAbsent
+          ? const Value.absent()
+          : Value(triggerSituation),
+      anxietyLevel: Value(anxietyLevel),
+      physicalSymptoms: Value(physicalSymptoms),
+      copingUsed: copingUsed == null && nullToAbsent
+          ? const Value.absent()
+          : Value(copingUsed),
+      anxietyAfter: anxietyAfter == null && nullToAbsent
+          ? const Value.absent()
+          : Value(anxietyAfter),
+      avoidanceBehavior: Value(avoidanceBehavior),
+    );
+  }
+
+  factory AnxietyEvent.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AnxietyEvent(
+      id: serializer.fromJson<int>(json['id']),
+      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+      triggerSituation: serializer.fromJson<String?>(json['triggerSituation']),
+      anxietyLevel: serializer.fromJson<int>(json['anxietyLevel']),
+      physicalSymptoms: serializer.fromJson<String>(json['physicalSymptoms']),
+      copingUsed: serializer.fromJson<String?>(json['copingUsed']),
+      anxietyAfter: serializer.fromJson<int?>(json['anxietyAfter']),
+      avoidanceBehavior: serializer.fromJson<bool>(json['avoidanceBehavior']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'timestamp': serializer.toJson<DateTime>(timestamp),
+      'triggerSituation': serializer.toJson<String?>(triggerSituation),
+      'anxietyLevel': serializer.toJson<int>(anxietyLevel),
+      'physicalSymptoms': serializer.toJson<String>(physicalSymptoms),
+      'copingUsed': serializer.toJson<String?>(copingUsed),
+      'anxietyAfter': serializer.toJson<int?>(anxietyAfter),
+      'avoidanceBehavior': serializer.toJson<bool>(avoidanceBehavior),
+    };
+  }
+
+  AnxietyEvent copyWith({
+    int? id,
+    DateTime? timestamp,
+    Value<String?> triggerSituation = const Value.absent(),
+    int? anxietyLevel,
+    String? physicalSymptoms,
+    Value<String?> copingUsed = const Value.absent(),
+    Value<int?> anxietyAfter = const Value.absent(),
+    bool? avoidanceBehavior,
+  }) => AnxietyEvent(
+    id: id ?? this.id,
+    timestamp: timestamp ?? this.timestamp,
+    triggerSituation: triggerSituation.present
+        ? triggerSituation.value
+        : this.triggerSituation,
+    anxietyLevel: anxietyLevel ?? this.anxietyLevel,
+    physicalSymptoms: physicalSymptoms ?? this.physicalSymptoms,
+    copingUsed: copingUsed.present ? copingUsed.value : this.copingUsed,
+    anxietyAfter: anxietyAfter.present ? anxietyAfter.value : this.anxietyAfter,
+    avoidanceBehavior: avoidanceBehavior ?? this.avoidanceBehavior,
+  );
+  AnxietyEvent copyWithCompanion(AnxietyEventsCompanion data) {
+    return AnxietyEvent(
+      id: data.id.present ? data.id.value : this.id,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+      triggerSituation: data.triggerSituation.present
+          ? data.triggerSituation.value
+          : this.triggerSituation,
+      anxietyLevel: data.anxietyLevel.present
+          ? data.anxietyLevel.value
+          : this.anxietyLevel,
+      physicalSymptoms: data.physicalSymptoms.present
+          ? data.physicalSymptoms.value
+          : this.physicalSymptoms,
+      copingUsed: data.copingUsed.present
+          ? data.copingUsed.value
+          : this.copingUsed,
+      anxietyAfter: data.anxietyAfter.present
+          ? data.anxietyAfter.value
+          : this.anxietyAfter,
+      avoidanceBehavior: data.avoidanceBehavior.present
+          ? data.avoidanceBehavior.value
+          : this.avoidanceBehavior,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AnxietyEvent(')
+          ..write('id: $id, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('triggerSituation: $triggerSituation, ')
+          ..write('anxietyLevel: $anxietyLevel, ')
+          ..write('physicalSymptoms: $physicalSymptoms, ')
+          ..write('copingUsed: $copingUsed, ')
+          ..write('anxietyAfter: $anxietyAfter, ')
+          ..write('avoidanceBehavior: $avoidanceBehavior')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    timestamp,
+    triggerSituation,
+    anxietyLevel,
+    physicalSymptoms,
+    copingUsed,
+    anxietyAfter,
+    avoidanceBehavior,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AnxietyEvent &&
+          other.id == this.id &&
+          other.timestamp == this.timestamp &&
+          other.triggerSituation == this.triggerSituation &&
+          other.anxietyLevel == this.anxietyLevel &&
+          other.physicalSymptoms == this.physicalSymptoms &&
+          other.copingUsed == this.copingUsed &&
+          other.anxietyAfter == this.anxietyAfter &&
+          other.avoidanceBehavior == this.avoidanceBehavior);
+}
+
+class AnxietyEventsCompanion extends UpdateCompanion<AnxietyEvent> {
+  final Value<int> id;
+  final Value<DateTime> timestamp;
+  final Value<String?> triggerSituation;
+  final Value<int> anxietyLevel;
+  final Value<String> physicalSymptoms;
+  final Value<String?> copingUsed;
+  final Value<int?> anxietyAfter;
+  final Value<bool> avoidanceBehavior;
+  const AnxietyEventsCompanion({
+    this.id = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.triggerSituation = const Value.absent(),
+    this.anxietyLevel = const Value.absent(),
+    this.physicalSymptoms = const Value.absent(),
+    this.copingUsed = const Value.absent(),
+    this.anxietyAfter = const Value.absent(),
+    this.avoidanceBehavior = const Value.absent(),
+  });
+  AnxietyEventsCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime timestamp,
+    this.triggerSituation = const Value.absent(),
+    required int anxietyLevel,
+    this.physicalSymptoms = const Value.absent(),
+    this.copingUsed = const Value.absent(),
+    this.anxietyAfter = const Value.absent(),
+    this.avoidanceBehavior = const Value.absent(),
+  }) : timestamp = Value(timestamp),
+       anxietyLevel = Value(anxietyLevel);
+  static Insertable<AnxietyEvent> custom({
+    Expression<int>? id,
+    Expression<DateTime>? timestamp,
+    Expression<String>? triggerSituation,
+    Expression<int>? anxietyLevel,
+    Expression<String>? physicalSymptoms,
+    Expression<String>? copingUsed,
+    Expression<int>? anxietyAfter,
+    Expression<bool>? avoidanceBehavior,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (triggerSituation != null) 'trigger_situation': triggerSituation,
+      if (anxietyLevel != null) 'anxiety_level': anxietyLevel,
+      if (physicalSymptoms != null) 'physical_symptoms': physicalSymptoms,
+      if (copingUsed != null) 'coping_used': copingUsed,
+      if (anxietyAfter != null) 'anxiety_after': anxietyAfter,
+      if (avoidanceBehavior != null) 'avoidance_behavior': avoidanceBehavior,
+    });
+  }
+
+  AnxietyEventsCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? timestamp,
+    Value<String?>? triggerSituation,
+    Value<int>? anxietyLevel,
+    Value<String>? physicalSymptoms,
+    Value<String?>? copingUsed,
+    Value<int?>? anxietyAfter,
+    Value<bool>? avoidanceBehavior,
+  }) {
+    return AnxietyEventsCompanion(
+      id: id ?? this.id,
+      timestamp: timestamp ?? this.timestamp,
+      triggerSituation: triggerSituation ?? this.triggerSituation,
+      anxietyLevel: anxietyLevel ?? this.anxietyLevel,
+      physicalSymptoms: physicalSymptoms ?? this.physicalSymptoms,
+      copingUsed: copingUsed ?? this.copingUsed,
+      anxietyAfter: anxietyAfter ?? this.anxietyAfter,
+      avoidanceBehavior: avoidanceBehavior ?? this.avoidanceBehavior,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    }
+    if (triggerSituation.present) {
+      map['trigger_situation'] = Variable<String>(triggerSituation.value);
+    }
+    if (anxietyLevel.present) {
+      map['anxiety_level'] = Variable<int>(anxietyLevel.value);
+    }
+    if (physicalSymptoms.present) {
+      map['physical_symptoms'] = Variable<String>(physicalSymptoms.value);
+    }
+    if (copingUsed.present) {
+      map['coping_used'] = Variable<String>(copingUsed.value);
+    }
+    if (anxietyAfter.present) {
+      map['anxiety_after'] = Variable<int>(anxietyAfter.value);
+    }
+    if (avoidanceBehavior.present) {
+      map['avoidance_behavior'] = Variable<bool>(avoidanceBehavior.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AnxietyEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('triggerSituation: $triggerSituation, ')
+          ..write('anxietyLevel: $anxietyLevel, ')
+          ..write('physicalSymptoms: $physicalSymptoms, ')
+          ..write('copingUsed: $copingUsed, ')
+          ..write('anxietyAfter: $anxietyAfter, ')
+          ..write('avoidanceBehavior: $avoidanceBehavior')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $BreathingLogsTable extends BreathingLogs
+    with TableInfo<$BreathingLogsTable, BreathingLog> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BreathingLogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _timestampMeta = const VerificationMeta(
+    'timestamp',
+  );
+  @override
+  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
+    'timestamp',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _techniqueMeta = const VerificationMeta(
+    'technique',
+  );
+  @override
+  late final GeneratedColumn<String> technique = GeneratedColumn<String>(
+    'technique',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _durationSecondsMeta = const VerificationMeta(
+    'durationSeconds',
+  );
+  @override
+  late final GeneratedColumn<int> durationSeconds = GeneratedColumn<int>(
+    'duration_seconds',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _anxietyBeforeMeta = const VerificationMeta(
+    'anxietyBefore',
+  );
+  @override
+  late final GeneratedColumn<int> anxietyBefore = GeneratedColumn<int>(
+    'anxiety_before',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _anxietyAfterMeta = const VerificationMeta(
+    'anxietyAfter',
+  );
+  @override
+  late final GeneratedColumn<int> anxietyAfter = GeneratedColumn<int>(
+    'anxiety_after',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    timestamp,
+    technique,
+    durationSeconds,
+    anxietyBefore,
+    anxietyAfter,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'breathing_logs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<BreathingLog> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(
+        _timestampMeta,
+        timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_timestampMeta);
+    }
+    if (data.containsKey('technique')) {
+      context.handle(
+        _techniqueMeta,
+        technique.isAcceptableOrUnknown(data['technique']!, _techniqueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_techniqueMeta);
+    }
+    if (data.containsKey('duration_seconds')) {
+      context.handle(
+        _durationSecondsMeta,
+        durationSeconds.isAcceptableOrUnknown(
+          data['duration_seconds']!,
+          _durationSecondsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_durationSecondsMeta);
+    }
+    if (data.containsKey('anxiety_before')) {
+      context.handle(
+        _anxietyBeforeMeta,
+        anxietyBefore.isAcceptableOrUnknown(
+          data['anxiety_before']!,
+          _anxietyBeforeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('anxiety_after')) {
+      context.handle(
+        _anxietyAfterMeta,
+        anxietyAfter.isAcceptableOrUnknown(
+          data['anxiety_after']!,
+          _anxietyAfterMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BreathingLog map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BreathingLog(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      timestamp: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}timestamp'],
+      )!,
+      technique: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}technique'],
+      )!,
+      durationSeconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_seconds'],
+      )!,
+      anxietyBefore: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}anxiety_before'],
+      ),
+      anxietyAfter: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}anxiety_after'],
+      ),
+    );
+  }
+
+  @override
+  $BreathingLogsTable createAlias(String alias) {
+    return $BreathingLogsTable(attachedDatabase, alias);
+  }
+}
+
+class BreathingLog extends DataClass implements Insertable<BreathingLog> {
+  final int id;
+  final DateTime timestamp;
+  final String technique;
+  final int durationSeconds;
+  final int? anxietyBefore;
+  final int? anxietyAfter;
+  const BreathingLog({
+    required this.id,
+    required this.timestamp,
+    required this.technique,
+    required this.durationSeconds,
+    this.anxietyBefore,
+    this.anxietyAfter,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['timestamp'] = Variable<DateTime>(timestamp);
+    map['technique'] = Variable<String>(technique);
+    map['duration_seconds'] = Variable<int>(durationSeconds);
+    if (!nullToAbsent || anxietyBefore != null) {
+      map['anxiety_before'] = Variable<int>(anxietyBefore);
+    }
+    if (!nullToAbsent || anxietyAfter != null) {
+      map['anxiety_after'] = Variable<int>(anxietyAfter);
+    }
+    return map;
+  }
+
+  BreathingLogsCompanion toCompanion(bool nullToAbsent) {
+    return BreathingLogsCompanion(
+      id: Value(id),
+      timestamp: Value(timestamp),
+      technique: Value(technique),
+      durationSeconds: Value(durationSeconds),
+      anxietyBefore: anxietyBefore == null && nullToAbsent
+          ? const Value.absent()
+          : Value(anxietyBefore),
+      anxietyAfter: anxietyAfter == null && nullToAbsent
+          ? const Value.absent()
+          : Value(anxietyAfter),
+    );
+  }
+
+  factory BreathingLog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BreathingLog(
+      id: serializer.fromJson<int>(json['id']),
+      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+      technique: serializer.fromJson<String>(json['technique']),
+      durationSeconds: serializer.fromJson<int>(json['durationSeconds']),
+      anxietyBefore: serializer.fromJson<int?>(json['anxietyBefore']),
+      anxietyAfter: serializer.fromJson<int?>(json['anxietyAfter']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'timestamp': serializer.toJson<DateTime>(timestamp),
+      'technique': serializer.toJson<String>(technique),
+      'durationSeconds': serializer.toJson<int>(durationSeconds),
+      'anxietyBefore': serializer.toJson<int?>(anxietyBefore),
+      'anxietyAfter': serializer.toJson<int?>(anxietyAfter),
+    };
+  }
+
+  BreathingLog copyWith({
+    int? id,
+    DateTime? timestamp,
+    String? technique,
+    int? durationSeconds,
+    Value<int?> anxietyBefore = const Value.absent(),
+    Value<int?> anxietyAfter = const Value.absent(),
+  }) => BreathingLog(
+    id: id ?? this.id,
+    timestamp: timestamp ?? this.timestamp,
+    technique: technique ?? this.technique,
+    durationSeconds: durationSeconds ?? this.durationSeconds,
+    anxietyBefore: anxietyBefore.present
+        ? anxietyBefore.value
+        : this.anxietyBefore,
+    anxietyAfter: anxietyAfter.present ? anxietyAfter.value : this.anxietyAfter,
+  );
+  BreathingLog copyWithCompanion(BreathingLogsCompanion data) {
+    return BreathingLog(
+      id: data.id.present ? data.id.value : this.id,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+      technique: data.technique.present ? data.technique.value : this.technique,
+      durationSeconds: data.durationSeconds.present
+          ? data.durationSeconds.value
+          : this.durationSeconds,
+      anxietyBefore: data.anxietyBefore.present
+          ? data.anxietyBefore.value
+          : this.anxietyBefore,
+      anxietyAfter: data.anxietyAfter.present
+          ? data.anxietyAfter.value
+          : this.anxietyAfter,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BreathingLog(')
+          ..write('id: $id, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('technique: $technique, ')
+          ..write('durationSeconds: $durationSeconds, ')
+          ..write('anxietyBefore: $anxietyBefore, ')
+          ..write('anxietyAfter: $anxietyAfter')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    timestamp,
+    technique,
+    durationSeconds,
+    anxietyBefore,
+    anxietyAfter,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BreathingLog &&
+          other.id == this.id &&
+          other.timestamp == this.timestamp &&
+          other.technique == this.technique &&
+          other.durationSeconds == this.durationSeconds &&
+          other.anxietyBefore == this.anxietyBefore &&
+          other.anxietyAfter == this.anxietyAfter);
+}
+
+class BreathingLogsCompanion extends UpdateCompanion<BreathingLog> {
+  final Value<int> id;
+  final Value<DateTime> timestamp;
+  final Value<String> technique;
+  final Value<int> durationSeconds;
+  final Value<int?> anxietyBefore;
+  final Value<int?> anxietyAfter;
+  const BreathingLogsCompanion({
+    this.id = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.technique = const Value.absent(),
+    this.durationSeconds = const Value.absent(),
+    this.anxietyBefore = const Value.absent(),
+    this.anxietyAfter = const Value.absent(),
+  });
+  BreathingLogsCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime timestamp,
+    required String technique,
+    required int durationSeconds,
+    this.anxietyBefore = const Value.absent(),
+    this.anxietyAfter = const Value.absent(),
+  }) : timestamp = Value(timestamp),
+       technique = Value(technique),
+       durationSeconds = Value(durationSeconds);
+  static Insertable<BreathingLog> custom({
+    Expression<int>? id,
+    Expression<DateTime>? timestamp,
+    Expression<String>? technique,
+    Expression<int>? durationSeconds,
+    Expression<int>? anxietyBefore,
+    Expression<int>? anxietyAfter,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (technique != null) 'technique': technique,
+      if (durationSeconds != null) 'duration_seconds': durationSeconds,
+      if (anxietyBefore != null) 'anxiety_before': anxietyBefore,
+      if (anxietyAfter != null) 'anxiety_after': anxietyAfter,
+    });
+  }
+
+  BreathingLogsCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? timestamp,
+    Value<String>? technique,
+    Value<int>? durationSeconds,
+    Value<int?>? anxietyBefore,
+    Value<int?>? anxietyAfter,
+  }) {
+    return BreathingLogsCompanion(
+      id: id ?? this.id,
+      timestamp: timestamp ?? this.timestamp,
+      technique: technique ?? this.technique,
+      durationSeconds: durationSeconds ?? this.durationSeconds,
+      anxietyBefore: anxietyBefore ?? this.anxietyBefore,
+      anxietyAfter: anxietyAfter ?? this.anxietyAfter,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    }
+    if (technique.present) {
+      map['technique'] = Variable<String>(technique.value);
+    }
+    if (durationSeconds.present) {
+      map['duration_seconds'] = Variable<int>(durationSeconds.value);
+    }
+    if (anxietyBefore.present) {
+      map['anxiety_before'] = Variable<int>(anxietyBefore.value);
+    }
+    if (anxietyAfter.present) {
+      map['anxiety_after'] = Variable<int>(anxietyAfter.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BreathingLogsCompanion(')
+          ..write('id: $id, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('technique: $technique, ')
+          ..write('durationSeconds: $durationSeconds, ')
+          ..write('anxietyBefore: $anxietyBefore, ')
+          ..write('anxietyAfter: $anxietyAfter')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ExposureHierarchyItemsTable extends ExposureHierarchyItems
+    with TableInfo<$ExposureHierarchyItemsTable, ExposureHierarchyItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExposureHierarchyItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _situationMeta = const VerificationMeta(
+    'situation',
+  );
+  @override
+  late final GeneratedColumn<String> situation = GeneratedColumn<String>(
+    'situation',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fearRatingMeta = const VerificationMeta(
+    'fearRating',
+  );
+  @override
+  late final GeneratedColumn<int> fearRating = GeneratedColumn<int>(
+    'fear_rating',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _timesExposedMeta = const VerificationMeta(
+    'timesExposed',
+  );
+  @override
+  late final GeneratedColumn<int> timesExposed = GeneratedColumn<int>(
+    'times_exposed',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _currentFearRatingMeta = const VerificationMeta(
+    'currentFearRating',
+  );
+  @override
+  late final GeneratedColumn<int> currentFearRating = GeneratedColumn<int>(
+    'current_fear_rating',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _masteredMeta = const VerificationMeta(
+    'mastered',
+  );
+  @override
+  late final GeneratedColumn<bool> mastered = GeneratedColumn<bool>(
+    'mastered',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("mastered" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    situation,
+    fearRating,
+    timesExposed,
+    currentFearRating,
+    mastered,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'exposure_hierarchy_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ExposureHierarchyItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('situation')) {
+      context.handle(
+        _situationMeta,
+        situation.isAcceptableOrUnknown(data['situation']!, _situationMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_situationMeta);
+    }
+    if (data.containsKey('fear_rating')) {
+      context.handle(
+        _fearRatingMeta,
+        fearRating.isAcceptableOrUnknown(data['fear_rating']!, _fearRatingMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fearRatingMeta);
+    }
+    if (data.containsKey('times_exposed')) {
+      context.handle(
+        _timesExposedMeta,
+        timesExposed.isAcceptableOrUnknown(
+          data['times_exposed']!,
+          _timesExposedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('current_fear_rating')) {
+      context.handle(
+        _currentFearRatingMeta,
+        currentFearRating.isAcceptableOrUnknown(
+          data['current_fear_rating']!,
+          _currentFearRatingMeta,
+        ),
+      );
+    }
+    if (data.containsKey('mastered')) {
+      context.handle(
+        _masteredMeta,
+        mastered.isAcceptableOrUnknown(data['mastered']!, _masteredMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ExposureHierarchyItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExposureHierarchyItem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      situation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}situation'],
+      )!,
+      fearRating: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}fear_rating'],
+      )!,
+      timesExposed: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}times_exposed'],
+      )!,
+      currentFearRating: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}current_fear_rating'],
+      ),
+      mastered: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}mastered'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ExposureHierarchyItemsTable createAlias(String alias) {
+    return $ExposureHierarchyItemsTable(attachedDatabase, alias);
+  }
+}
+
+class ExposureHierarchyItem extends DataClass
+    implements Insertable<ExposureHierarchyItem> {
+  final int id;
+  final String situation;
+  final int fearRating;
+  final int timesExposed;
+  final int? currentFearRating;
+  final bool mastered;
+  final DateTime createdAt;
+  const ExposureHierarchyItem({
+    required this.id,
+    required this.situation,
+    required this.fearRating,
+    required this.timesExposed,
+    this.currentFearRating,
+    required this.mastered,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['situation'] = Variable<String>(situation);
+    map['fear_rating'] = Variable<int>(fearRating);
+    map['times_exposed'] = Variable<int>(timesExposed);
+    if (!nullToAbsent || currentFearRating != null) {
+      map['current_fear_rating'] = Variable<int>(currentFearRating);
+    }
+    map['mastered'] = Variable<bool>(mastered);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  ExposureHierarchyItemsCompanion toCompanion(bool nullToAbsent) {
+    return ExposureHierarchyItemsCompanion(
+      id: Value(id),
+      situation: Value(situation),
+      fearRating: Value(fearRating),
+      timesExposed: Value(timesExposed),
+      currentFearRating: currentFearRating == null && nullToAbsent
+          ? const Value.absent()
+          : Value(currentFearRating),
+      mastered: Value(mastered),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory ExposureHierarchyItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExposureHierarchyItem(
+      id: serializer.fromJson<int>(json['id']),
+      situation: serializer.fromJson<String>(json['situation']),
+      fearRating: serializer.fromJson<int>(json['fearRating']),
+      timesExposed: serializer.fromJson<int>(json['timesExposed']),
+      currentFearRating: serializer.fromJson<int?>(json['currentFearRating']),
+      mastered: serializer.fromJson<bool>(json['mastered']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'situation': serializer.toJson<String>(situation),
+      'fearRating': serializer.toJson<int>(fearRating),
+      'timesExposed': serializer.toJson<int>(timesExposed),
+      'currentFearRating': serializer.toJson<int?>(currentFearRating),
+      'mastered': serializer.toJson<bool>(mastered),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  ExposureHierarchyItem copyWith({
+    int? id,
+    String? situation,
+    int? fearRating,
+    int? timesExposed,
+    Value<int?> currentFearRating = const Value.absent(),
+    bool? mastered,
+    DateTime? createdAt,
+  }) => ExposureHierarchyItem(
+    id: id ?? this.id,
+    situation: situation ?? this.situation,
+    fearRating: fearRating ?? this.fearRating,
+    timesExposed: timesExposed ?? this.timesExposed,
+    currentFearRating: currentFearRating.present
+        ? currentFearRating.value
+        : this.currentFearRating,
+    mastered: mastered ?? this.mastered,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  ExposureHierarchyItem copyWithCompanion(
+    ExposureHierarchyItemsCompanion data,
+  ) {
+    return ExposureHierarchyItem(
+      id: data.id.present ? data.id.value : this.id,
+      situation: data.situation.present ? data.situation.value : this.situation,
+      fearRating: data.fearRating.present
+          ? data.fearRating.value
+          : this.fearRating,
+      timesExposed: data.timesExposed.present
+          ? data.timesExposed.value
+          : this.timesExposed,
+      currentFearRating: data.currentFearRating.present
+          ? data.currentFearRating.value
+          : this.currentFearRating,
+      mastered: data.mastered.present ? data.mastered.value : this.mastered,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExposureHierarchyItem(')
+          ..write('id: $id, ')
+          ..write('situation: $situation, ')
+          ..write('fearRating: $fearRating, ')
+          ..write('timesExposed: $timesExposed, ')
+          ..write('currentFearRating: $currentFearRating, ')
+          ..write('mastered: $mastered, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    situation,
+    fearRating,
+    timesExposed,
+    currentFearRating,
+    mastered,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExposureHierarchyItem &&
+          other.id == this.id &&
+          other.situation == this.situation &&
+          other.fearRating == this.fearRating &&
+          other.timesExposed == this.timesExposed &&
+          other.currentFearRating == this.currentFearRating &&
+          other.mastered == this.mastered &&
+          other.createdAt == this.createdAt);
+}
+
+class ExposureHierarchyItemsCompanion
+    extends UpdateCompanion<ExposureHierarchyItem> {
+  final Value<int> id;
+  final Value<String> situation;
+  final Value<int> fearRating;
+  final Value<int> timesExposed;
+  final Value<int?> currentFearRating;
+  final Value<bool> mastered;
+  final Value<DateTime> createdAt;
+  const ExposureHierarchyItemsCompanion({
+    this.id = const Value.absent(),
+    this.situation = const Value.absent(),
+    this.fearRating = const Value.absent(),
+    this.timesExposed = const Value.absent(),
+    this.currentFearRating = const Value.absent(),
+    this.mastered = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  ExposureHierarchyItemsCompanion.insert({
+    this.id = const Value.absent(),
+    required String situation,
+    required int fearRating,
+    this.timesExposed = const Value.absent(),
+    this.currentFearRating = const Value.absent(),
+    this.mastered = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  }) : situation = Value(situation),
+       fearRating = Value(fearRating);
+  static Insertable<ExposureHierarchyItem> custom({
+    Expression<int>? id,
+    Expression<String>? situation,
+    Expression<int>? fearRating,
+    Expression<int>? timesExposed,
+    Expression<int>? currentFearRating,
+    Expression<bool>? mastered,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (situation != null) 'situation': situation,
+      if (fearRating != null) 'fear_rating': fearRating,
+      if (timesExposed != null) 'times_exposed': timesExposed,
+      if (currentFearRating != null) 'current_fear_rating': currentFearRating,
+      if (mastered != null) 'mastered': mastered,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  ExposureHierarchyItemsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? situation,
+    Value<int>? fearRating,
+    Value<int>? timesExposed,
+    Value<int?>? currentFearRating,
+    Value<bool>? mastered,
+    Value<DateTime>? createdAt,
+  }) {
+    return ExposureHierarchyItemsCompanion(
+      id: id ?? this.id,
+      situation: situation ?? this.situation,
+      fearRating: fearRating ?? this.fearRating,
+      timesExposed: timesExposed ?? this.timesExposed,
+      currentFearRating: currentFearRating ?? this.currentFearRating,
+      mastered: mastered ?? this.mastered,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (situation.present) {
+      map['situation'] = Variable<String>(situation.value);
+    }
+    if (fearRating.present) {
+      map['fear_rating'] = Variable<int>(fearRating.value);
+    }
+    if (timesExposed.present) {
+      map['times_exposed'] = Variable<int>(timesExposed.value);
+    }
+    if (currentFearRating.present) {
+      map['current_fear_rating'] = Variable<int>(currentFearRating.value);
+    }
+    if (mastered.present) {
+      map['mastered'] = Variable<bool>(mastered.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExposureHierarchyItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('situation: $situation, ')
+          ..write('fearRating: $fearRating, ')
+          ..write('timesExposed: $timesExposed, ')
+          ..write('currentFearRating: $currentFearRating, ')
+          ..write('mastered: $mastered, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $BehavioralActivitiesTable extends BehavioralActivities
+    with TableInfo<$BehavioralActivitiesTable, BehavioralActivity> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BehavioralActivitiesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _activityTypeMeta = const VerificationMeta(
+    'activityType',
+  );
+  @override
+  late final GeneratedColumn<String> activityType = GeneratedColumn<String>(
+    'activity_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pleasureRatingMeta = const VerificationMeta(
+    'pleasureRating',
+  );
+  @override
+  late final GeneratedColumn<int> pleasureRating = GeneratedColumn<int>(
+    'pleasure_rating',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _masteryRatingMeta = const VerificationMeta(
+    'masteryRating',
+  );
+  @override
+  late final GeneratedColumn<int> masteryRating = GeneratedColumn<int>(
+    'mastery_rating',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _durationMinutesMeta = const VerificationMeta(
+    'durationMinutes',
+  );
+  @override
+  late final GeneratedColumn<int> durationMinutes = GeneratedColumn<int>(
+    'duration_minutes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _wasScheduledMeta = const VerificationMeta(
+    'wasScheduled',
+  );
+  @override
+  late final GeneratedColumn<bool> wasScheduled = GeneratedColumn<bool>(
+    'was_scheduled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("was_scheduled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    date,
+    activityType,
+    category,
+    pleasureRating,
+    masteryRating,
+    durationMinutes,
+    wasScheduled,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'behavioral_activities';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<BehavioralActivity> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('activity_type')) {
+      context.handle(
+        _activityTypeMeta,
+        activityType.isAcceptableOrUnknown(
+          data['activity_type']!,
+          _activityTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_activityTypeMeta);
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    if (data.containsKey('pleasure_rating')) {
+      context.handle(
+        _pleasureRatingMeta,
+        pleasureRating.isAcceptableOrUnknown(
+          data['pleasure_rating']!,
+          _pleasureRatingMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_pleasureRatingMeta);
+    }
+    if (data.containsKey('mastery_rating')) {
+      context.handle(
+        _masteryRatingMeta,
+        masteryRating.isAcceptableOrUnknown(
+          data['mastery_rating']!,
+          _masteryRatingMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_masteryRatingMeta);
+    }
+    if (data.containsKey('duration_minutes')) {
+      context.handle(
+        _durationMinutesMeta,
+        durationMinutes.isAcceptableOrUnknown(
+          data['duration_minutes']!,
+          _durationMinutesMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_durationMinutesMeta);
+    }
+    if (data.containsKey('was_scheduled')) {
+      context.handle(
+        _wasScheduledMeta,
+        wasScheduled.isAcceptableOrUnknown(
+          data['was_scheduled']!,
+          _wasScheduledMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BehavioralActivity map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BehavioralActivity(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      activityType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}activity_type'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      pleasureRating: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}pleasure_rating'],
+      )!,
+      masteryRating: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}mastery_rating'],
+      )!,
+      durationMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_minutes'],
+      )!,
+      wasScheduled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}was_scheduled'],
+      )!,
+    );
+  }
+
+  @override
+  $BehavioralActivitiesTable createAlias(String alias) {
+    return $BehavioralActivitiesTable(attachedDatabase, alias);
+  }
+}
+
+class BehavioralActivity extends DataClass
+    implements Insertable<BehavioralActivity> {
+  final int id;
+  final DateTime date;
+  final String activityType;
+  final String category;
+  final int pleasureRating;
+  final int masteryRating;
+  final int durationMinutes;
+  final bool wasScheduled;
+  const BehavioralActivity({
+    required this.id,
+    required this.date,
+    required this.activityType,
+    required this.category,
+    required this.pleasureRating,
+    required this.masteryRating,
+    required this.durationMinutes,
+    required this.wasScheduled,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['date'] = Variable<DateTime>(date);
+    map['activity_type'] = Variable<String>(activityType);
+    map['category'] = Variable<String>(category);
+    map['pleasure_rating'] = Variable<int>(pleasureRating);
+    map['mastery_rating'] = Variable<int>(masteryRating);
+    map['duration_minutes'] = Variable<int>(durationMinutes);
+    map['was_scheduled'] = Variable<bool>(wasScheduled);
+    return map;
+  }
+
+  BehavioralActivitiesCompanion toCompanion(bool nullToAbsent) {
+    return BehavioralActivitiesCompanion(
+      id: Value(id),
+      date: Value(date),
+      activityType: Value(activityType),
+      category: Value(category),
+      pleasureRating: Value(pleasureRating),
+      masteryRating: Value(masteryRating),
+      durationMinutes: Value(durationMinutes),
+      wasScheduled: Value(wasScheduled),
+    );
+  }
+
+  factory BehavioralActivity.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BehavioralActivity(
+      id: serializer.fromJson<int>(json['id']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      activityType: serializer.fromJson<String>(json['activityType']),
+      category: serializer.fromJson<String>(json['category']),
+      pleasureRating: serializer.fromJson<int>(json['pleasureRating']),
+      masteryRating: serializer.fromJson<int>(json['masteryRating']),
+      durationMinutes: serializer.fromJson<int>(json['durationMinutes']),
+      wasScheduled: serializer.fromJson<bool>(json['wasScheduled']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'date': serializer.toJson<DateTime>(date),
+      'activityType': serializer.toJson<String>(activityType),
+      'category': serializer.toJson<String>(category),
+      'pleasureRating': serializer.toJson<int>(pleasureRating),
+      'masteryRating': serializer.toJson<int>(masteryRating),
+      'durationMinutes': serializer.toJson<int>(durationMinutes),
+      'wasScheduled': serializer.toJson<bool>(wasScheduled),
+    };
+  }
+
+  BehavioralActivity copyWith({
+    int? id,
+    DateTime? date,
+    String? activityType,
+    String? category,
+    int? pleasureRating,
+    int? masteryRating,
+    int? durationMinutes,
+    bool? wasScheduled,
+  }) => BehavioralActivity(
+    id: id ?? this.id,
+    date: date ?? this.date,
+    activityType: activityType ?? this.activityType,
+    category: category ?? this.category,
+    pleasureRating: pleasureRating ?? this.pleasureRating,
+    masteryRating: masteryRating ?? this.masteryRating,
+    durationMinutes: durationMinutes ?? this.durationMinutes,
+    wasScheduled: wasScheduled ?? this.wasScheduled,
+  );
+  BehavioralActivity copyWithCompanion(BehavioralActivitiesCompanion data) {
+    return BehavioralActivity(
+      id: data.id.present ? data.id.value : this.id,
+      date: data.date.present ? data.date.value : this.date,
+      activityType: data.activityType.present
+          ? data.activityType.value
+          : this.activityType,
+      category: data.category.present ? data.category.value : this.category,
+      pleasureRating: data.pleasureRating.present
+          ? data.pleasureRating.value
+          : this.pleasureRating,
+      masteryRating: data.masteryRating.present
+          ? data.masteryRating.value
+          : this.masteryRating,
+      durationMinutes: data.durationMinutes.present
+          ? data.durationMinutes.value
+          : this.durationMinutes,
+      wasScheduled: data.wasScheduled.present
+          ? data.wasScheduled.value
+          : this.wasScheduled,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BehavioralActivity(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('activityType: $activityType, ')
+          ..write('category: $category, ')
+          ..write('pleasureRating: $pleasureRating, ')
+          ..write('masteryRating: $masteryRating, ')
+          ..write('durationMinutes: $durationMinutes, ')
+          ..write('wasScheduled: $wasScheduled')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    date,
+    activityType,
+    category,
+    pleasureRating,
+    masteryRating,
+    durationMinutes,
+    wasScheduled,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BehavioralActivity &&
+          other.id == this.id &&
+          other.date == this.date &&
+          other.activityType == this.activityType &&
+          other.category == this.category &&
+          other.pleasureRating == this.pleasureRating &&
+          other.masteryRating == this.masteryRating &&
+          other.durationMinutes == this.durationMinutes &&
+          other.wasScheduled == this.wasScheduled);
+}
+
+class BehavioralActivitiesCompanion
+    extends UpdateCompanion<BehavioralActivity> {
+  final Value<int> id;
+  final Value<DateTime> date;
+  final Value<String> activityType;
+  final Value<String> category;
+  final Value<int> pleasureRating;
+  final Value<int> masteryRating;
+  final Value<int> durationMinutes;
+  final Value<bool> wasScheduled;
+  const BehavioralActivitiesCompanion({
+    this.id = const Value.absent(),
+    this.date = const Value.absent(),
+    this.activityType = const Value.absent(),
+    this.category = const Value.absent(),
+    this.pleasureRating = const Value.absent(),
+    this.masteryRating = const Value.absent(),
+    this.durationMinutes = const Value.absent(),
+    this.wasScheduled = const Value.absent(),
+  });
+  BehavioralActivitiesCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime date,
+    required String activityType,
+    required String category,
+    required int pleasureRating,
+    required int masteryRating,
+    required int durationMinutes,
+    this.wasScheduled = const Value.absent(),
+  }) : date = Value(date),
+       activityType = Value(activityType),
+       category = Value(category),
+       pleasureRating = Value(pleasureRating),
+       masteryRating = Value(masteryRating),
+       durationMinutes = Value(durationMinutes);
+  static Insertable<BehavioralActivity> custom({
+    Expression<int>? id,
+    Expression<DateTime>? date,
+    Expression<String>? activityType,
+    Expression<String>? category,
+    Expression<int>? pleasureRating,
+    Expression<int>? masteryRating,
+    Expression<int>? durationMinutes,
+    Expression<bool>? wasScheduled,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (date != null) 'date': date,
+      if (activityType != null) 'activity_type': activityType,
+      if (category != null) 'category': category,
+      if (pleasureRating != null) 'pleasure_rating': pleasureRating,
+      if (masteryRating != null) 'mastery_rating': masteryRating,
+      if (durationMinutes != null) 'duration_minutes': durationMinutes,
+      if (wasScheduled != null) 'was_scheduled': wasScheduled,
+    });
+  }
+
+  BehavioralActivitiesCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? date,
+    Value<String>? activityType,
+    Value<String>? category,
+    Value<int>? pleasureRating,
+    Value<int>? masteryRating,
+    Value<int>? durationMinutes,
+    Value<bool>? wasScheduled,
+  }) {
+    return BehavioralActivitiesCompanion(
+      id: id ?? this.id,
+      date: date ?? this.date,
+      activityType: activityType ?? this.activityType,
+      category: category ?? this.category,
+      pleasureRating: pleasureRating ?? this.pleasureRating,
+      masteryRating: masteryRating ?? this.masteryRating,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
+      wasScheduled: wasScheduled ?? this.wasScheduled,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (activityType.present) {
+      map['activity_type'] = Variable<String>(activityType.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (pleasureRating.present) {
+      map['pleasure_rating'] = Variable<int>(pleasureRating.value);
+    }
+    if (masteryRating.present) {
+      map['mastery_rating'] = Variable<int>(masteryRating.value);
+    }
+    if (durationMinutes.present) {
+      map['duration_minutes'] = Variable<int>(durationMinutes.value);
+    }
+    if (wasScheduled.present) {
+      map['was_scheduled'] = Variable<bool>(wasScheduled.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BehavioralActivitiesCompanion(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('activityType: $activityType, ')
+          ..write('category: $category, ')
+          ..write('pleasureRating: $pleasureRating, ')
+          ..write('masteryRating: $masteryRating, ')
+          ..write('durationMinutes: $durationMinutes, ')
+          ..write('wasScheduled: $wasScheduled')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ThoughtRecordsTable extends ThoughtRecords
+    with TableInfo<$ThoughtRecordsTable, ThoughtRecord> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ThoughtRecordsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _situationMeta = const VerificationMeta(
+    'situation',
+  );
+  @override
+  late final GeneratedColumn<String> situation = GeneratedColumn<String>(
+    'situation',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _automaticThoughtMeta = const VerificationMeta(
+    'automaticThought',
+  );
+  @override
+  late final GeneratedColumn<String> automaticThought = GeneratedColumn<String>(
+    'automatic_thought',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _emotionMeta = const VerificationMeta(
+    'emotion',
+  );
+  @override
+  late final GeneratedColumn<String> emotion = GeneratedColumn<String>(
+    'emotion',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _emotionIntensityMeta = const VerificationMeta(
+    'emotionIntensity',
+  );
+  @override
+  late final GeneratedColumn<int> emotionIntensity = GeneratedColumn<int>(
+    'emotion_intensity',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _evidenceForMeta = const VerificationMeta(
+    'evidenceFor',
+  );
+  @override
+  late final GeneratedColumn<String> evidenceFor = GeneratedColumn<String>(
+    'evidence_for',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _evidenceAgainstMeta = const VerificationMeta(
+    'evidenceAgainst',
+  );
+  @override
+  late final GeneratedColumn<String> evidenceAgainst = GeneratedColumn<String>(
+    'evidence_against',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _balancedThoughtMeta = const VerificationMeta(
+    'balancedThought',
+  );
+  @override
+  late final GeneratedColumn<String> balancedThought = GeneratedColumn<String>(
+    'balanced_thought',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _newIntensityMeta = const VerificationMeta(
+    'newIntensity',
+  );
+  @override
+  late final GeneratedColumn<int> newIntensity = GeneratedColumn<int>(
+    'new_intensity',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _distortionTypeMeta = const VerificationMeta(
+    'distortionType',
+  );
+  @override
+  late final GeneratedColumn<String> distortionType = GeneratedColumn<String>(
+    'distortion_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    date,
+    situation,
+    automaticThought,
+    emotion,
+    emotionIntensity,
+    evidenceFor,
+    evidenceAgainst,
+    balancedThought,
+    newIntensity,
+    distortionType,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'thought_records';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ThoughtRecord> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('situation')) {
+      context.handle(
+        _situationMeta,
+        situation.isAcceptableOrUnknown(data['situation']!, _situationMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_situationMeta);
+    }
+    if (data.containsKey('automatic_thought')) {
+      context.handle(
+        _automaticThoughtMeta,
+        automaticThought.isAcceptableOrUnknown(
+          data['automatic_thought']!,
+          _automaticThoughtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_automaticThoughtMeta);
+    }
+    if (data.containsKey('emotion')) {
+      context.handle(
+        _emotionMeta,
+        emotion.isAcceptableOrUnknown(data['emotion']!, _emotionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_emotionMeta);
+    }
+    if (data.containsKey('emotion_intensity')) {
+      context.handle(
+        _emotionIntensityMeta,
+        emotionIntensity.isAcceptableOrUnknown(
+          data['emotion_intensity']!,
+          _emotionIntensityMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_emotionIntensityMeta);
+    }
+    if (data.containsKey('evidence_for')) {
+      context.handle(
+        _evidenceForMeta,
+        evidenceFor.isAcceptableOrUnknown(
+          data['evidence_for']!,
+          _evidenceForMeta,
+        ),
+      );
+    }
+    if (data.containsKey('evidence_against')) {
+      context.handle(
+        _evidenceAgainstMeta,
+        evidenceAgainst.isAcceptableOrUnknown(
+          data['evidence_against']!,
+          _evidenceAgainstMeta,
+        ),
+      );
+    }
+    if (data.containsKey('balanced_thought')) {
+      context.handle(
+        _balancedThoughtMeta,
+        balancedThought.isAcceptableOrUnknown(
+          data['balanced_thought']!,
+          _balancedThoughtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('new_intensity')) {
+      context.handle(
+        _newIntensityMeta,
+        newIntensity.isAcceptableOrUnknown(
+          data['new_intensity']!,
+          _newIntensityMeta,
+        ),
+      );
+    }
+    if (data.containsKey('distortion_type')) {
+      context.handle(
+        _distortionTypeMeta,
+        distortionType.isAcceptableOrUnknown(
+          data['distortion_type']!,
+          _distortionTypeMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ThoughtRecord map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ThoughtRecord(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      situation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}situation'],
+      )!,
+      automaticThought: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}automatic_thought'],
+      )!,
+      emotion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}emotion'],
+      )!,
+      emotionIntensity: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}emotion_intensity'],
+      )!,
+      evidenceFor: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}evidence_for'],
+      ),
+      evidenceAgainst: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}evidence_against'],
+      ),
+      balancedThought: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}balanced_thought'],
+      ),
+      newIntensity: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}new_intensity'],
+      ),
+      distortionType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}distortion_type'],
+      ),
+    );
+  }
+
+  @override
+  $ThoughtRecordsTable createAlias(String alias) {
+    return $ThoughtRecordsTable(attachedDatabase, alias);
+  }
+}
+
+class ThoughtRecord extends DataClass implements Insertable<ThoughtRecord> {
+  final int id;
+  final DateTime date;
+  final String situation;
+  final String automaticThought;
+  final String emotion;
+  final int emotionIntensity;
+  final String? evidenceFor;
+  final String? evidenceAgainst;
+  final String? balancedThought;
+  final int? newIntensity;
+  final String? distortionType;
+  const ThoughtRecord({
+    required this.id,
+    required this.date,
+    required this.situation,
+    required this.automaticThought,
+    required this.emotion,
+    required this.emotionIntensity,
+    this.evidenceFor,
+    this.evidenceAgainst,
+    this.balancedThought,
+    this.newIntensity,
+    this.distortionType,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['date'] = Variable<DateTime>(date);
+    map['situation'] = Variable<String>(situation);
+    map['automatic_thought'] = Variable<String>(automaticThought);
+    map['emotion'] = Variable<String>(emotion);
+    map['emotion_intensity'] = Variable<int>(emotionIntensity);
+    if (!nullToAbsent || evidenceFor != null) {
+      map['evidence_for'] = Variable<String>(evidenceFor);
+    }
+    if (!nullToAbsent || evidenceAgainst != null) {
+      map['evidence_against'] = Variable<String>(evidenceAgainst);
+    }
+    if (!nullToAbsent || balancedThought != null) {
+      map['balanced_thought'] = Variable<String>(balancedThought);
+    }
+    if (!nullToAbsent || newIntensity != null) {
+      map['new_intensity'] = Variable<int>(newIntensity);
+    }
+    if (!nullToAbsent || distortionType != null) {
+      map['distortion_type'] = Variable<String>(distortionType);
+    }
+    return map;
+  }
+
+  ThoughtRecordsCompanion toCompanion(bool nullToAbsent) {
+    return ThoughtRecordsCompanion(
+      id: Value(id),
+      date: Value(date),
+      situation: Value(situation),
+      automaticThought: Value(automaticThought),
+      emotion: Value(emotion),
+      emotionIntensity: Value(emotionIntensity),
+      evidenceFor: evidenceFor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(evidenceFor),
+      evidenceAgainst: evidenceAgainst == null && nullToAbsent
+          ? const Value.absent()
+          : Value(evidenceAgainst),
+      balancedThought: balancedThought == null && nullToAbsent
+          ? const Value.absent()
+          : Value(balancedThought),
+      newIntensity: newIntensity == null && nullToAbsent
+          ? const Value.absent()
+          : Value(newIntensity),
+      distortionType: distortionType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(distortionType),
+    );
+  }
+
+  factory ThoughtRecord.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ThoughtRecord(
+      id: serializer.fromJson<int>(json['id']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      situation: serializer.fromJson<String>(json['situation']),
+      automaticThought: serializer.fromJson<String>(json['automaticThought']),
+      emotion: serializer.fromJson<String>(json['emotion']),
+      emotionIntensity: serializer.fromJson<int>(json['emotionIntensity']),
+      evidenceFor: serializer.fromJson<String?>(json['evidenceFor']),
+      evidenceAgainst: serializer.fromJson<String?>(json['evidenceAgainst']),
+      balancedThought: serializer.fromJson<String?>(json['balancedThought']),
+      newIntensity: serializer.fromJson<int?>(json['newIntensity']),
+      distortionType: serializer.fromJson<String?>(json['distortionType']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'date': serializer.toJson<DateTime>(date),
+      'situation': serializer.toJson<String>(situation),
+      'automaticThought': serializer.toJson<String>(automaticThought),
+      'emotion': serializer.toJson<String>(emotion),
+      'emotionIntensity': serializer.toJson<int>(emotionIntensity),
+      'evidenceFor': serializer.toJson<String?>(evidenceFor),
+      'evidenceAgainst': serializer.toJson<String?>(evidenceAgainst),
+      'balancedThought': serializer.toJson<String?>(balancedThought),
+      'newIntensity': serializer.toJson<int?>(newIntensity),
+      'distortionType': serializer.toJson<String?>(distortionType),
+    };
+  }
+
+  ThoughtRecord copyWith({
+    int? id,
+    DateTime? date,
+    String? situation,
+    String? automaticThought,
+    String? emotion,
+    int? emotionIntensity,
+    Value<String?> evidenceFor = const Value.absent(),
+    Value<String?> evidenceAgainst = const Value.absent(),
+    Value<String?> balancedThought = const Value.absent(),
+    Value<int?> newIntensity = const Value.absent(),
+    Value<String?> distortionType = const Value.absent(),
+  }) => ThoughtRecord(
+    id: id ?? this.id,
+    date: date ?? this.date,
+    situation: situation ?? this.situation,
+    automaticThought: automaticThought ?? this.automaticThought,
+    emotion: emotion ?? this.emotion,
+    emotionIntensity: emotionIntensity ?? this.emotionIntensity,
+    evidenceFor: evidenceFor.present ? evidenceFor.value : this.evidenceFor,
+    evidenceAgainst: evidenceAgainst.present
+        ? evidenceAgainst.value
+        : this.evidenceAgainst,
+    balancedThought: balancedThought.present
+        ? balancedThought.value
+        : this.balancedThought,
+    newIntensity: newIntensity.present ? newIntensity.value : this.newIntensity,
+    distortionType: distortionType.present
+        ? distortionType.value
+        : this.distortionType,
+  );
+  ThoughtRecord copyWithCompanion(ThoughtRecordsCompanion data) {
+    return ThoughtRecord(
+      id: data.id.present ? data.id.value : this.id,
+      date: data.date.present ? data.date.value : this.date,
+      situation: data.situation.present ? data.situation.value : this.situation,
+      automaticThought: data.automaticThought.present
+          ? data.automaticThought.value
+          : this.automaticThought,
+      emotion: data.emotion.present ? data.emotion.value : this.emotion,
+      emotionIntensity: data.emotionIntensity.present
+          ? data.emotionIntensity.value
+          : this.emotionIntensity,
+      evidenceFor: data.evidenceFor.present
+          ? data.evidenceFor.value
+          : this.evidenceFor,
+      evidenceAgainst: data.evidenceAgainst.present
+          ? data.evidenceAgainst.value
+          : this.evidenceAgainst,
+      balancedThought: data.balancedThought.present
+          ? data.balancedThought.value
+          : this.balancedThought,
+      newIntensity: data.newIntensity.present
+          ? data.newIntensity.value
+          : this.newIntensity,
+      distortionType: data.distortionType.present
+          ? data.distortionType.value
+          : this.distortionType,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ThoughtRecord(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('situation: $situation, ')
+          ..write('automaticThought: $automaticThought, ')
+          ..write('emotion: $emotion, ')
+          ..write('emotionIntensity: $emotionIntensity, ')
+          ..write('evidenceFor: $evidenceFor, ')
+          ..write('evidenceAgainst: $evidenceAgainst, ')
+          ..write('balancedThought: $balancedThought, ')
+          ..write('newIntensity: $newIntensity, ')
+          ..write('distortionType: $distortionType')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    date,
+    situation,
+    automaticThought,
+    emotion,
+    emotionIntensity,
+    evidenceFor,
+    evidenceAgainst,
+    balancedThought,
+    newIntensity,
+    distortionType,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ThoughtRecord &&
+          other.id == this.id &&
+          other.date == this.date &&
+          other.situation == this.situation &&
+          other.automaticThought == this.automaticThought &&
+          other.emotion == this.emotion &&
+          other.emotionIntensity == this.emotionIntensity &&
+          other.evidenceFor == this.evidenceFor &&
+          other.evidenceAgainst == this.evidenceAgainst &&
+          other.balancedThought == this.balancedThought &&
+          other.newIntensity == this.newIntensity &&
+          other.distortionType == this.distortionType);
+}
+
+class ThoughtRecordsCompanion extends UpdateCompanion<ThoughtRecord> {
+  final Value<int> id;
+  final Value<DateTime> date;
+  final Value<String> situation;
+  final Value<String> automaticThought;
+  final Value<String> emotion;
+  final Value<int> emotionIntensity;
+  final Value<String?> evidenceFor;
+  final Value<String?> evidenceAgainst;
+  final Value<String?> balancedThought;
+  final Value<int?> newIntensity;
+  final Value<String?> distortionType;
+  const ThoughtRecordsCompanion({
+    this.id = const Value.absent(),
+    this.date = const Value.absent(),
+    this.situation = const Value.absent(),
+    this.automaticThought = const Value.absent(),
+    this.emotion = const Value.absent(),
+    this.emotionIntensity = const Value.absent(),
+    this.evidenceFor = const Value.absent(),
+    this.evidenceAgainst = const Value.absent(),
+    this.balancedThought = const Value.absent(),
+    this.newIntensity = const Value.absent(),
+    this.distortionType = const Value.absent(),
+  });
+  ThoughtRecordsCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime date,
+    required String situation,
+    required String automaticThought,
+    required String emotion,
+    required int emotionIntensity,
+    this.evidenceFor = const Value.absent(),
+    this.evidenceAgainst = const Value.absent(),
+    this.balancedThought = const Value.absent(),
+    this.newIntensity = const Value.absent(),
+    this.distortionType = const Value.absent(),
+  }) : date = Value(date),
+       situation = Value(situation),
+       automaticThought = Value(automaticThought),
+       emotion = Value(emotion),
+       emotionIntensity = Value(emotionIntensity);
+  static Insertable<ThoughtRecord> custom({
+    Expression<int>? id,
+    Expression<DateTime>? date,
+    Expression<String>? situation,
+    Expression<String>? automaticThought,
+    Expression<String>? emotion,
+    Expression<int>? emotionIntensity,
+    Expression<String>? evidenceFor,
+    Expression<String>? evidenceAgainst,
+    Expression<String>? balancedThought,
+    Expression<int>? newIntensity,
+    Expression<String>? distortionType,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (date != null) 'date': date,
+      if (situation != null) 'situation': situation,
+      if (automaticThought != null) 'automatic_thought': automaticThought,
+      if (emotion != null) 'emotion': emotion,
+      if (emotionIntensity != null) 'emotion_intensity': emotionIntensity,
+      if (evidenceFor != null) 'evidence_for': evidenceFor,
+      if (evidenceAgainst != null) 'evidence_against': evidenceAgainst,
+      if (balancedThought != null) 'balanced_thought': balancedThought,
+      if (newIntensity != null) 'new_intensity': newIntensity,
+      if (distortionType != null) 'distortion_type': distortionType,
+    });
+  }
+
+  ThoughtRecordsCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? date,
+    Value<String>? situation,
+    Value<String>? automaticThought,
+    Value<String>? emotion,
+    Value<int>? emotionIntensity,
+    Value<String?>? evidenceFor,
+    Value<String?>? evidenceAgainst,
+    Value<String?>? balancedThought,
+    Value<int?>? newIntensity,
+    Value<String?>? distortionType,
+  }) {
+    return ThoughtRecordsCompanion(
+      id: id ?? this.id,
+      date: date ?? this.date,
+      situation: situation ?? this.situation,
+      automaticThought: automaticThought ?? this.automaticThought,
+      emotion: emotion ?? this.emotion,
+      emotionIntensity: emotionIntensity ?? this.emotionIntensity,
+      evidenceFor: evidenceFor ?? this.evidenceFor,
+      evidenceAgainst: evidenceAgainst ?? this.evidenceAgainst,
+      balancedThought: balancedThought ?? this.balancedThought,
+      newIntensity: newIntensity ?? this.newIntensity,
+      distortionType: distortionType ?? this.distortionType,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (situation.present) {
+      map['situation'] = Variable<String>(situation.value);
+    }
+    if (automaticThought.present) {
+      map['automatic_thought'] = Variable<String>(automaticThought.value);
+    }
+    if (emotion.present) {
+      map['emotion'] = Variable<String>(emotion.value);
+    }
+    if (emotionIntensity.present) {
+      map['emotion_intensity'] = Variable<int>(emotionIntensity.value);
+    }
+    if (evidenceFor.present) {
+      map['evidence_for'] = Variable<String>(evidenceFor.value);
+    }
+    if (evidenceAgainst.present) {
+      map['evidence_against'] = Variable<String>(evidenceAgainst.value);
+    }
+    if (balancedThought.present) {
+      map['balanced_thought'] = Variable<String>(balancedThought.value);
+    }
+    if (newIntensity.present) {
+      map['new_intensity'] = Variable<int>(newIntensity.value);
+    }
+    if (distortionType.present) {
+      map['distortion_type'] = Variable<String>(distortionType.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ThoughtRecordsCompanion(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('situation: $situation, ')
+          ..write('automaticThought: $automaticThought, ')
+          ..write('emotion: $emotion, ')
+          ..write('emotionIntensity: $emotionIntensity, ')
+          ..write('evidenceFor: $evidenceFor, ')
+          ..write('evidenceAgainst: $evidenceAgainst, ')
+          ..write('balancedThought: $balancedThought, ')
+          ..write('newIntensity: $newIntensity, ')
+          ..write('distortionType: $distortionType')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FocusSessionsTable extends FocusSessions
+    with TableInfo<$FocusSessionsTable, FocusSession> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FocusSessionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _startTimeMeta = const VerificationMeta(
+    'startTime',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startTime = GeneratedColumn<DateTime>(
+    'start_time',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endTimeMeta = const VerificationMeta(
+    'endTime',
+  );
+  @override
+  late final GeneratedColumn<DateTime> endTime = GeneratedColumn<DateTime>(
+    'end_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _taskDescriptionMeta = const VerificationMeta(
+    'taskDescription',
+  );
+  @override
+  late final GeneratedColumn<String> taskDescription = GeneratedColumn<String>(
+    'task_description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _focusRatingMeta = const VerificationMeta(
+    'focusRating',
+  );
+  @override
+  late final GeneratedColumn<int> focusRating = GeneratedColumn<int>(
+    'focus_rating',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _distractionsMeta = const VerificationMeta(
+    'distractions',
+  );
+  @override
+  late final GeneratedColumn<int> distractions = GeneratedColumn<int>(
+    'distractions',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _techniqueMeta = const VerificationMeta(
+    'technique',
+  );
+  @override
+  late final GeneratedColumn<String> technique = GeneratedColumn<String>(
+    'technique',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    startTime,
+    endTime,
+    taskDescription,
+    focusRating,
+    distractions,
+    technique,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'focus_sessions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FocusSession> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('start_time')) {
+      context.handle(
+        _startTimeMeta,
+        startTime.isAcceptableOrUnknown(data['start_time']!, _startTimeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startTimeMeta);
+    }
+    if (data.containsKey('end_time')) {
+      context.handle(
+        _endTimeMeta,
+        endTime.isAcceptableOrUnknown(data['end_time']!, _endTimeMeta),
+      );
+    }
+    if (data.containsKey('task_description')) {
+      context.handle(
+        _taskDescriptionMeta,
+        taskDescription.isAcceptableOrUnknown(
+          data['task_description']!,
+          _taskDescriptionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_taskDescriptionMeta);
+    }
+    if (data.containsKey('focus_rating')) {
+      context.handle(
+        _focusRatingMeta,
+        focusRating.isAcceptableOrUnknown(
+          data['focus_rating']!,
+          _focusRatingMeta,
+        ),
+      );
+    }
+    if (data.containsKey('distractions')) {
+      context.handle(
+        _distractionsMeta,
+        distractions.isAcceptableOrUnknown(
+          data['distractions']!,
+          _distractionsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('technique')) {
+      context.handle(
+        _techniqueMeta,
+        technique.isAcceptableOrUnknown(data['technique']!, _techniqueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_techniqueMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FocusSession map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FocusSession(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      startTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}start_time'],
+      )!,
+      endTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}end_time'],
+      ),
+      taskDescription: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}task_description'],
+      )!,
+      focusRating: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}focus_rating'],
+      ),
+      distractions: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}distractions'],
+      )!,
+      technique: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}technique'],
+      )!,
+    );
+  }
+
+  @override
+  $FocusSessionsTable createAlias(String alias) {
+    return $FocusSessionsTable(attachedDatabase, alias);
+  }
+}
+
+class FocusSession extends DataClass implements Insertable<FocusSession> {
+  final int id;
+  final DateTime startTime;
+  final DateTime? endTime;
+  final String taskDescription;
+  final int? focusRating;
+  final int distractions;
+  final String technique;
+  const FocusSession({
+    required this.id,
+    required this.startTime,
+    this.endTime,
+    required this.taskDescription,
+    this.focusRating,
+    required this.distractions,
+    required this.technique,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['start_time'] = Variable<DateTime>(startTime);
+    if (!nullToAbsent || endTime != null) {
+      map['end_time'] = Variable<DateTime>(endTime);
+    }
+    map['task_description'] = Variable<String>(taskDescription);
+    if (!nullToAbsent || focusRating != null) {
+      map['focus_rating'] = Variable<int>(focusRating);
+    }
+    map['distractions'] = Variable<int>(distractions);
+    map['technique'] = Variable<String>(technique);
+    return map;
+  }
+
+  FocusSessionsCompanion toCompanion(bool nullToAbsent) {
+    return FocusSessionsCompanion(
+      id: Value(id),
+      startTime: Value(startTime),
+      endTime: endTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endTime),
+      taskDescription: Value(taskDescription),
+      focusRating: focusRating == null && nullToAbsent
+          ? const Value.absent()
+          : Value(focusRating),
+      distractions: Value(distractions),
+      technique: Value(technique),
+    );
+  }
+
+  factory FocusSession.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FocusSession(
+      id: serializer.fromJson<int>(json['id']),
+      startTime: serializer.fromJson<DateTime>(json['startTime']),
+      endTime: serializer.fromJson<DateTime?>(json['endTime']),
+      taskDescription: serializer.fromJson<String>(json['taskDescription']),
+      focusRating: serializer.fromJson<int?>(json['focusRating']),
+      distractions: serializer.fromJson<int>(json['distractions']),
+      technique: serializer.fromJson<String>(json['technique']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'startTime': serializer.toJson<DateTime>(startTime),
+      'endTime': serializer.toJson<DateTime?>(endTime),
+      'taskDescription': serializer.toJson<String>(taskDescription),
+      'focusRating': serializer.toJson<int?>(focusRating),
+      'distractions': serializer.toJson<int>(distractions),
+      'technique': serializer.toJson<String>(technique),
+    };
+  }
+
+  FocusSession copyWith({
+    int? id,
+    DateTime? startTime,
+    Value<DateTime?> endTime = const Value.absent(),
+    String? taskDescription,
+    Value<int?> focusRating = const Value.absent(),
+    int? distractions,
+    String? technique,
+  }) => FocusSession(
+    id: id ?? this.id,
+    startTime: startTime ?? this.startTime,
+    endTime: endTime.present ? endTime.value : this.endTime,
+    taskDescription: taskDescription ?? this.taskDescription,
+    focusRating: focusRating.present ? focusRating.value : this.focusRating,
+    distractions: distractions ?? this.distractions,
+    technique: technique ?? this.technique,
+  );
+  FocusSession copyWithCompanion(FocusSessionsCompanion data) {
+    return FocusSession(
+      id: data.id.present ? data.id.value : this.id,
+      startTime: data.startTime.present ? data.startTime.value : this.startTime,
+      endTime: data.endTime.present ? data.endTime.value : this.endTime,
+      taskDescription: data.taskDescription.present
+          ? data.taskDescription.value
+          : this.taskDescription,
+      focusRating: data.focusRating.present
+          ? data.focusRating.value
+          : this.focusRating,
+      distractions: data.distractions.present
+          ? data.distractions.value
+          : this.distractions,
+      technique: data.technique.present ? data.technique.value : this.technique,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FocusSession(')
+          ..write('id: $id, ')
+          ..write('startTime: $startTime, ')
+          ..write('endTime: $endTime, ')
+          ..write('taskDescription: $taskDescription, ')
+          ..write('focusRating: $focusRating, ')
+          ..write('distractions: $distractions, ')
+          ..write('technique: $technique')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    startTime,
+    endTime,
+    taskDescription,
+    focusRating,
+    distractions,
+    technique,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FocusSession &&
+          other.id == this.id &&
+          other.startTime == this.startTime &&
+          other.endTime == this.endTime &&
+          other.taskDescription == this.taskDescription &&
+          other.focusRating == this.focusRating &&
+          other.distractions == this.distractions &&
+          other.technique == this.technique);
+}
+
+class FocusSessionsCompanion extends UpdateCompanion<FocusSession> {
+  final Value<int> id;
+  final Value<DateTime> startTime;
+  final Value<DateTime?> endTime;
+  final Value<String> taskDescription;
+  final Value<int?> focusRating;
+  final Value<int> distractions;
+  final Value<String> technique;
+  const FocusSessionsCompanion({
+    this.id = const Value.absent(),
+    this.startTime = const Value.absent(),
+    this.endTime = const Value.absent(),
+    this.taskDescription = const Value.absent(),
+    this.focusRating = const Value.absent(),
+    this.distractions = const Value.absent(),
+    this.technique = const Value.absent(),
+  });
+  FocusSessionsCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime startTime,
+    this.endTime = const Value.absent(),
+    required String taskDescription,
+    this.focusRating = const Value.absent(),
+    this.distractions = const Value.absent(),
+    required String technique,
+  }) : startTime = Value(startTime),
+       taskDescription = Value(taskDescription),
+       technique = Value(technique);
+  static Insertable<FocusSession> custom({
+    Expression<int>? id,
+    Expression<DateTime>? startTime,
+    Expression<DateTime>? endTime,
+    Expression<String>? taskDescription,
+    Expression<int>? focusRating,
+    Expression<int>? distractions,
+    Expression<String>? technique,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (startTime != null) 'start_time': startTime,
+      if (endTime != null) 'end_time': endTime,
+      if (taskDescription != null) 'task_description': taskDescription,
+      if (focusRating != null) 'focus_rating': focusRating,
+      if (distractions != null) 'distractions': distractions,
+      if (technique != null) 'technique': technique,
+    });
+  }
+
+  FocusSessionsCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? startTime,
+    Value<DateTime?>? endTime,
+    Value<String>? taskDescription,
+    Value<int?>? focusRating,
+    Value<int>? distractions,
+    Value<String>? technique,
+  }) {
+    return FocusSessionsCompanion(
+      id: id ?? this.id,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      taskDescription: taskDescription ?? this.taskDescription,
+      focusRating: focusRating ?? this.focusRating,
+      distractions: distractions ?? this.distractions,
+      technique: technique ?? this.technique,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (startTime.present) {
+      map['start_time'] = Variable<DateTime>(startTime.value);
+    }
+    if (endTime.present) {
+      map['end_time'] = Variable<DateTime>(endTime.value);
+    }
+    if (taskDescription.present) {
+      map['task_description'] = Variable<String>(taskDescription.value);
+    }
+    if (focusRating.present) {
+      map['focus_rating'] = Variable<int>(focusRating.value);
+    }
+    if (distractions.present) {
+      map['distractions'] = Variable<int>(distractions.value);
+    }
+    if (technique.present) {
+      map['technique'] = Variable<String>(technique.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FocusSessionsCompanion(')
+          ..write('id: $id, ')
+          ..write('startTime: $startTime, ')
+          ..write('endTime: $endTime, ')
+          ..write('taskDescription: $taskDescription, ')
+          ..write('focusRating: $focusRating, ')
+          ..write('distractions: $distractions, ')
+          ..write('technique: $technique')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AdhdDailyPlansTable extends AdhdDailyPlans
+    with TableInfo<$AdhdDailyPlansTable, AdhdDailyPlan> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AdhdDailyPlansTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _top3TasksMeta = const VerificationMeta(
+    'top3Tasks',
+  );
+  @override
+  late final GeneratedColumn<String> top3Tasks = GeneratedColumn<String>(
+    'top3_tasks',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _completedTasksMeta = const VerificationMeta(
+    'completedTasks',
+  );
+  @override
+  late final GeneratedColumn<String> completedTasks = GeneratedColumn<String>(
+    'completed_tasks',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _energyPatternMeta = const VerificationMeta(
+    'energyPattern',
+  );
+  @override
+  late final GeneratedColumn<String> energyPattern = GeneratedColumn<String>(
+    'energy_pattern',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _bestFocusTimeMeta = const VerificationMeta(
+    'bestFocusTime',
+  );
+  @override
+  late final GeneratedColumn<String> bestFocusTime = GeneratedColumn<String>(
+    'best_focus_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    date,
+    top3Tasks,
+    completedTasks,
+    energyPattern,
+    bestFocusTime,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'adhd_daily_plans';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AdhdDailyPlan> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('top3_tasks')) {
+      context.handle(
+        _top3TasksMeta,
+        top3Tasks.isAcceptableOrUnknown(data['top3_tasks']!, _top3TasksMeta),
+      );
+    }
+    if (data.containsKey('completed_tasks')) {
+      context.handle(
+        _completedTasksMeta,
+        completedTasks.isAcceptableOrUnknown(
+          data['completed_tasks']!,
+          _completedTasksMeta,
+        ),
+      );
+    }
+    if (data.containsKey('energy_pattern')) {
+      context.handle(
+        _energyPatternMeta,
+        energyPattern.isAcceptableOrUnknown(
+          data['energy_pattern']!,
+          _energyPatternMeta,
+        ),
+      );
+    }
+    if (data.containsKey('best_focus_time')) {
+      context.handle(
+        _bestFocusTimeMeta,
+        bestFocusTime.isAcceptableOrUnknown(
+          data['best_focus_time']!,
+          _bestFocusTimeMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AdhdDailyPlan map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AdhdDailyPlan(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      top3Tasks: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}top3_tasks'],
+      )!,
+      completedTasks: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}completed_tasks'],
+      )!,
+      energyPattern: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}energy_pattern'],
+      ),
+      bestFocusTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}best_focus_time'],
+      ),
+    );
+  }
+
+  @override
+  $AdhdDailyPlansTable createAlias(String alias) {
+    return $AdhdDailyPlansTable(attachedDatabase, alias);
+  }
+}
+
+class AdhdDailyPlan extends DataClass implements Insertable<AdhdDailyPlan> {
+  final int id;
+  final DateTime date;
+  final String top3Tasks;
+  final String completedTasks;
+  final String? energyPattern;
+  final String? bestFocusTime;
+  const AdhdDailyPlan({
+    required this.id,
+    required this.date,
+    required this.top3Tasks,
+    required this.completedTasks,
+    this.energyPattern,
+    this.bestFocusTime,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['date'] = Variable<DateTime>(date);
+    map['top3_tasks'] = Variable<String>(top3Tasks);
+    map['completed_tasks'] = Variable<String>(completedTasks);
+    if (!nullToAbsent || energyPattern != null) {
+      map['energy_pattern'] = Variable<String>(energyPattern);
+    }
+    if (!nullToAbsent || bestFocusTime != null) {
+      map['best_focus_time'] = Variable<String>(bestFocusTime);
+    }
+    return map;
+  }
+
+  AdhdDailyPlansCompanion toCompanion(bool nullToAbsent) {
+    return AdhdDailyPlansCompanion(
+      id: Value(id),
+      date: Value(date),
+      top3Tasks: Value(top3Tasks),
+      completedTasks: Value(completedTasks),
+      energyPattern: energyPattern == null && nullToAbsent
+          ? const Value.absent()
+          : Value(energyPattern),
+      bestFocusTime: bestFocusTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bestFocusTime),
+    );
+  }
+
+  factory AdhdDailyPlan.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AdhdDailyPlan(
+      id: serializer.fromJson<int>(json['id']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      top3Tasks: serializer.fromJson<String>(json['top3Tasks']),
+      completedTasks: serializer.fromJson<String>(json['completedTasks']),
+      energyPattern: serializer.fromJson<String?>(json['energyPattern']),
+      bestFocusTime: serializer.fromJson<String?>(json['bestFocusTime']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'date': serializer.toJson<DateTime>(date),
+      'top3Tasks': serializer.toJson<String>(top3Tasks),
+      'completedTasks': serializer.toJson<String>(completedTasks),
+      'energyPattern': serializer.toJson<String?>(energyPattern),
+      'bestFocusTime': serializer.toJson<String?>(bestFocusTime),
+    };
+  }
+
+  AdhdDailyPlan copyWith({
+    int? id,
+    DateTime? date,
+    String? top3Tasks,
+    String? completedTasks,
+    Value<String?> energyPattern = const Value.absent(),
+    Value<String?> bestFocusTime = const Value.absent(),
+  }) => AdhdDailyPlan(
+    id: id ?? this.id,
+    date: date ?? this.date,
+    top3Tasks: top3Tasks ?? this.top3Tasks,
+    completedTasks: completedTasks ?? this.completedTasks,
+    energyPattern: energyPattern.present
+        ? energyPattern.value
+        : this.energyPattern,
+    bestFocusTime: bestFocusTime.present
+        ? bestFocusTime.value
+        : this.bestFocusTime,
+  );
+  AdhdDailyPlan copyWithCompanion(AdhdDailyPlansCompanion data) {
+    return AdhdDailyPlan(
+      id: data.id.present ? data.id.value : this.id,
+      date: data.date.present ? data.date.value : this.date,
+      top3Tasks: data.top3Tasks.present ? data.top3Tasks.value : this.top3Tasks,
+      completedTasks: data.completedTasks.present
+          ? data.completedTasks.value
+          : this.completedTasks,
+      energyPattern: data.energyPattern.present
+          ? data.energyPattern.value
+          : this.energyPattern,
+      bestFocusTime: data.bestFocusTime.present
+          ? data.bestFocusTime.value
+          : this.bestFocusTime,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AdhdDailyPlan(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('top3Tasks: $top3Tasks, ')
+          ..write('completedTasks: $completedTasks, ')
+          ..write('energyPattern: $energyPattern, ')
+          ..write('bestFocusTime: $bestFocusTime')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    date,
+    top3Tasks,
+    completedTasks,
+    energyPattern,
+    bestFocusTime,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AdhdDailyPlan &&
+          other.id == this.id &&
+          other.date == this.date &&
+          other.top3Tasks == this.top3Tasks &&
+          other.completedTasks == this.completedTasks &&
+          other.energyPattern == this.energyPattern &&
+          other.bestFocusTime == this.bestFocusTime);
+}
+
+class AdhdDailyPlansCompanion extends UpdateCompanion<AdhdDailyPlan> {
+  final Value<int> id;
+  final Value<DateTime> date;
+  final Value<String> top3Tasks;
+  final Value<String> completedTasks;
+  final Value<String?> energyPattern;
+  final Value<String?> bestFocusTime;
+  const AdhdDailyPlansCompanion({
+    this.id = const Value.absent(),
+    this.date = const Value.absent(),
+    this.top3Tasks = const Value.absent(),
+    this.completedTasks = const Value.absent(),
+    this.energyPattern = const Value.absent(),
+    this.bestFocusTime = const Value.absent(),
+  });
+  AdhdDailyPlansCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime date,
+    this.top3Tasks = const Value.absent(),
+    this.completedTasks = const Value.absent(),
+    this.energyPattern = const Value.absent(),
+    this.bestFocusTime = const Value.absent(),
+  }) : date = Value(date);
+  static Insertable<AdhdDailyPlan> custom({
+    Expression<int>? id,
+    Expression<DateTime>? date,
+    Expression<String>? top3Tasks,
+    Expression<String>? completedTasks,
+    Expression<String>? energyPattern,
+    Expression<String>? bestFocusTime,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (date != null) 'date': date,
+      if (top3Tasks != null) 'top3_tasks': top3Tasks,
+      if (completedTasks != null) 'completed_tasks': completedTasks,
+      if (energyPattern != null) 'energy_pattern': energyPattern,
+      if (bestFocusTime != null) 'best_focus_time': bestFocusTime,
+    });
+  }
+
+  AdhdDailyPlansCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? date,
+    Value<String>? top3Tasks,
+    Value<String>? completedTasks,
+    Value<String?>? energyPattern,
+    Value<String?>? bestFocusTime,
+  }) {
+    return AdhdDailyPlansCompanion(
+      id: id ?? this.id,
+      date: date ?? this.date,
+      top3Tasks: top3Tasks ?? this.top3Tasks,
+      completedTasks: completedTasks ?? this.completedTasks,
+      energyPattern: energyPattern ?? this.energyPattern,
+      bestFocusTime: bestFocusTime ?? this.bestFocusTime,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (top3Tasks.present) {
+      map['top3_tasks'] = Variable<String>(top3Tasks.value);
+    }
+    if (completedTasks.present) {
+      map['completed_tasks'] = Variable<String>(completedTasks.value);
+    }
+    if (energyPattern.present) {
+      map['energy_pattern'] = Variable<String>(energyPattern.value);
+    }
+    if (bestFocusTime.present) {
+      map['best_focus_time'] = Variable<String>(bestFocusTime.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AdhdDailyPlansCompanion(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('top3Tasks: $top3Tasks, ')
+          ..write('completedTasks: $completedTasks, ')
+          ..write('energyPattern: $energyPattern, ')
+          ..write('bestFocusTime: $bestFocusTime')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CycleEntriesTable extends CycleEntries
+    with TableInfo<$CycleEntriesTable, CycleEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CycleEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _flowIntensityMeta = const VerificationMeta(
+    'flowIntensity',
+  );
+  @override
+  late final GeneratedColumn<int> flowIntensity = GeneratedColumn<int>(
+    'flow_intensity',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _symptomsMeta = const VerificationMeta(
+    'symptoms',
+  );
+  @override
+  late final GeneratedColumn<String> symptoms = GeneratedColumn<String>(
+    'symptoms',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _moodMeta = const VerificationMeta('mood');
+  @override
+  late final GeneratedColumn<int> mood = GeneratedColumn<int>(
+    'mood',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _energyMeta = const VerificationMeta('energy');
+  @override
+  late final GeneratedColumn<int> energy = GeneratedColumn<int>(
+    'energy',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _cycleDayMeta = const VerificationMeta(
+    'cycleDay',
+  );
+  @override
+  late final GeneratedColumn<int> cycleDay = GeneratedColumn<int>(
+    'cycle_day',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _phaseMeta = const VerificationMeta('phase');
+  @override
+  late final GeneratedColumn<String> phase = GeneratedColumn<String>(
+    'phase',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    date,
+    flowIntensity,
+    symptoms,
+    mood,
+    energy,
+    cycleDay,
+    phase,
+    notes,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cycle_entries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CycleEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('flow_intensity')) {
+      context.handle(
+        _flowIntensityMeta,
+        flowIntensity.isAcceptableOrUnknown(
+          data['flow_intensity']!,
+          _flowIntensityMeta,
+        ),
+      );
+    }
+    if (data.containsKey('symptoms')) {
+      context.handle(
+        _symptomsMeta,
+        symptoms.isAcceptableOrUnknown(data['symptoms']!, _symptomsMeta),
+      );
+    }
+    if (data.containsKey('mood')) {
+      context.handle(
+        _moodMeta,
+        mood.isAcceptableOrUnknown(data['mood']!, _moodMeta),
+      );
+    }
+    if (data.containsKey('energy')) {
+      context.handle(
+        _energyMeta,
+        energy.isAcceptableOrUnknown(data['energy']!, _energyMeta),
+      );
+    }
+    if (data.containsKey('cycle_day')) {
+      context.handle(
+        _cycleDayMeta,
+        cycleDay.isAcceptableOrUnknown(data['cycle_day']!, _cycleDayMeta),
+      );
+    }
+    if (data.containsKey('phase')) {
+      context.handle(
+        _phaseMeta,
+        phase.isAcceptableOrUnknown(data['phase']!, _phaseMeta),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CycleEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CycleEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      flowIntensity: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}flow_intensity'],
+      ),
+      symptoms: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}symptoms'],
+      )!,
+      mood: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}mood'],
+      ),
+      energy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}energy'],
+      ),
+      cycleDay: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}cycle_day'],
+      ),
+      phase: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}phase'],
+      ),
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+    );
+  }
+
+  @override
+  $CycleEntriesTable createAlias(String alias) {
+    return $CycleEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class CycleEntry extends DataClass implements Insertable<CycleEntry> {
+  final int id;
+  final DateTime date;
+  final int? flowIntensity;
+  final String symptoms;
+  final int? mood;
+  final int? energy;
+  final int? cycleDay;
+  final String? phase;
+  final String? notes;
+  const CycleEntry({
+    required this.id,
+    required this.date,
+    this.flowIntensity,
+    required this.symptoms,
+    this.mood,
+    this.energy,
+    this.cycleDay,
+    this.phase,
+    this.notes,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['date'] = Variable<DateTime>(date);
+    if (!nullToAbsent || flowIntensity != null) {
+      map['flow_intensity'] = Variable<int>(flowIntensity);
+    }
+    map['symptoms'] = Variable<String>(symptoms);
+    if (!nullToAbsent || mood != null) {
+      map['mood'] = Variable<int>(mood);
+    }
+    if (!nullToAbsent || energy != null) {
+      map['energy'] = Variable<int>(energy);
+    }
+    if (!nullToAbsent || cycleDay != null) {
+      map['cycle_day'] = Variable<int>(cycleDay);
+    }
+    if (!nullToAbsent || phase != null) {
+      map['phase'] = Variable<String>(phase);
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    return map;
+  }
+
+  CycleEntriesCompanion toCompanion(bool nullToAbsent) {
+    return CycleEntriesCompanion(
+      id: Value(id),
+      date: Value(date),
+      flowIntensity: flowIntensity == null && nullToAbsent
+          ? const Value.absent()
+          : Value(flowIntensity),
+      symptoms: Value(symptoms),
+      mood: mood == null && nullToAbsent ? const Value.absent() : Value(mood),
+      energy: energy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(energy),
+      cycleDay: cycleDay == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cycleDay),
+      phase: phase == null && nullToAbsent
+          ? const Value.absent()
+          : Value(phase),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+    );
+  }
+
+  factory CycleEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CycleEntry(
+      id: serializer.fromJson<int>(json['id']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      flowIntensity: serializer.fromJson<int?>(json['flowIntensity']),
+      symptoms: serializer.fromJson<String>(json['symptoms']),
+      mood: serializer.fromJson<int?>(json['mood']),
+      energy: serializer.fromJson<int?>(json['energy']),
+      cycleDay: serializer.fromJson<int?>(json['cycleDay']),
+      phase: serializer.fromJson<String?>(json['phase']),
+      notes: serializer.fromJson<String?>(json['notes']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'date': serializer.toJson<DateTime>(date),
+      'flowIntensity': serializer.toJson<int?>(flowIntensity),
+      'symptoms': serializer.toJson<String>(symptoms),
+      'mood': serializer.toJson<int?>(mood),
+      'energy': serializer.toJson<int?>(energy),
+      'cycleDay': serializer.toJson<int?>(cycleDay),
+      'phase': serializer.toJson<String?>(phase),
+      'notes': serializer.toJson<String?>(notes),
+    };
+  }
+
+  CycleEntry copyWith({
+    int? id,
+    DateTime? date,
+    Value<int?> flowIntensity = const Value.absent(),
+    String? symptoms,
+    Value<int?> mood = const Value.absent(),
+    Value<int?> energy = const Value.absent(),
+    Value<int?> cycleDay = const Value.absent(),
+    Value<String?> phase = const Value.absent(),
+    Value<String?> notes = const Value.absent(),
+  }) => CycleEntry(
+    id: id ?? this.id,
+    date: date ?? this.date,
+    flowIntensity: flowIntensity.present
+        ? flowIntensity.value
+        : this.flowIntensity,
+    symptoms: symptoms ?? this.symptoms,
+    mood: mood.present ? mood.value : this.mood,
+    energy: energy.present ? energy.value : this.energy,
+    cycleDay: cycleDay.present ? cycleDay.value : this.cycleDay,
+    phase: phase.present ? phase.value : this.phase,
+    notes: notes.present ? notes.value : this.notes,
+  );
+  CycleEntry copyWithCompanion(CycleEntriesCompanion data) {
+    return CycleEntry(
+      id: data.id.present ? data.id.value : this.id,
+      date: data.date.present ? data.date.value : this.date,
+      flowIntensity: data.flowIntensity.present
+          ? data.flowIntensity.value
+          : this.flowIntensity,
+      symptoms: data.symptoms.present ? data.symptoms.value : this.symptoms,
+      mood: data.mood.present ? data.mood.value : this.mood,
+      energy: data.energy.present ? data.energy.value : this.energy,
+      cycleDay: data.cycleDay.present ? data.cycleDay.value : this.cycleDay,
+      phase: data.phase.present ? data.phase.value : this.phase,
+      notes: data.notes.present ? data.notes.value : this.notes,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CycleEntry(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('flowIntensity: $flowIntensity, ')
+          ..write('symptoms: $symptoms, ')
+          ..write('mood: $mood, ')
+          ..write('energy: $energy, ')
+          ..write('cycleDay: $cycleDay, ')
+          ..write('phase: $phase, ')
+          ..write('notes: $notes')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    date,
+    flowIntensity,
+    symptoms,
+    mood,
+    energy,
+    cycleDay,
+    phase,
+    notes,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CycleEntry &&
+          other.id == this.id &&
+          other.date == this.date &&
+          other.flowIntensity == this.flowIntensity &&
+          other.symptoms == this.symptoms &&
+          other.mood == this.mood &&
+          other.energy == this.energy &&
+          other.cycleDay == this.cycleDay &&
+          other.phase == this.phase &&
+          other.notes == this.notes);
+}
+
+class CycleEntriesCompanion extends UpdateCompanion<CycleEntry> {
+  final Value<int> id;
+  final Value<DateTime> date;
+  final Value<int?> flowIntensity;
+  final Value<String> symptoms;
+  final Value<int?> mood;
+  final Value<int?> energy;
+  final Value<int?> cycleDay;
+  final Value<String?> phase;
+  final Value<String?> notes;
+  const CycleEntriesCompanion({
+    this.id = const Value.absent(),
+    this.date = const Value.absent(),
+    this.flowIntensity = const Value.absent(),
+    this.symptoms = const Value.absent(),
+    this.mood = const Value.absent(),
+    this.energy = const Value.absent(),
+    this.cycleDay = const Value.absent(),
+    this.phase = const Value.absent(),
+    this.notes = const Value.absent(),
+  });
+  CycleEntriesCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime date,
+    this.flowIntensity = const Value.absent(),
+    this.symptoms = const Value.absent(),
+    this.mood = const Value.absent(),
+    this.energy = const Value.absent(),
+    this.cycleDay = const Value.absent(),
+    this.phase = const Value.absent(),
+    this.notes = const Value.absent(),
+  }) : date = Value(date);
+  static Insertable<CycleEntry> custom({
+    Expression<int>? id,
+    Expression<DateTime>? date,
+    Expression<int>? flowIntensity,
+    Expression<String>? symptoms,
+    Expression<int>? mood,
+    Expression<int>? energy,
+    Expression<int>? cycleDay,
+    Expression<String>? phase,
+    Expression<String>? notes,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (date != null) 'date': date,
+      if (flowIntensity != null) 'flow_intensity': flowIntensity,
+      if (symptoms != null) 'symptoms': symptoms,
+      if (mood != null) 'mood': mood,
+      if (energy != null) 'energy': energy,
+      if (cycleDay != null) 'cycle_day': cycleDay,
+      if (phase != null) 'phase': phase,
+      if (notes != null) 'notes': notes,
+    });
+  }
+
+  CycleEntriesCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? date,
+    Value<int?>? flowIntensity,
+    Value<String>? symptoms,
+    Value<int?>? mood,
+    Value<int?>? energy,
+    Value<int?>? cycleDay,
+    Value<String?>? phase,
+    Value<String?>? notes,
+  }) {
+    return CycleEntriesCompanion(
+      id: id ?? this.id,
+      date: date ?? this.date,
+      flowIntensity: flowIntensity ?? this.flowIntensity,
+      symptoms: symptoms ?? this.symptoms,
+      mood: mood ?? this.mood,
+      energy: energy ?? this.energy,
+      cycleDay: cycleDay ?? this.cycleDay,
+      phase: phase ?? this.phase,
+      notes: notes ?? this.notes,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (flowIntensity.present) {
+      map['flow_intensity'] = Variable<int>(flowIntensity.value);
+    }
+    if (symptoms.present) {
+      map['symptoms'] = Variable<String>(symptoms.value);
+    }
+    if (mood.present) {
+      map['mood'] = Variable<int>(mood.value);
+    }
+    if (energy.present) {
+      map['energy'] = Variable<int>(energy.value);
+    }
+    if (cycleDay.present) {
+      map['cycle_day'] = Variable<int>(cycleDay.value);
+    }
+    if (phase.present) {
+      map['phase'] = Variable<String>(phase.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CycleEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('flowIntensity: $flowIntensity, ')
+          ..write('symptoms: $symptoms, ')
+          ..write('mood: $mood, ')
+          ..write('energy: $energy, ')
+          ..write('cycleDay: $cycleDay, ')
+          ..write('phase: $phase, ')
+          ..write('notes: $notes')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CyclePredictionsTable extends CyclePredictions
+    with TableInfo<$CyclePredictionsTable, CyclePrediction> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CyclePredictionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _predictedStartMeta = const VerificationMeta(
+    'predictedStart',
+  );
+  @override
+  late final GeneratedColumn<DateTime> predictedStart =
+      GeneratedColumn<DateTime>(
+        'predicted_start',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _predictedEndMeta = const VerificationMeta(
+    'predictedEnd',
+  );
+  @override
+  late final GeneratedColumn<DateTime> predictedEnd = GeneratedColumn<DateTime>(
+    'predicted_end',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _predictedOvulationMeta =
+      const VerificationMeta('predictedOvulation');
+  @override
+  late final GeneratedColumn<DateTime> predictedOvulation =
+      GeneratedColumn<DateTime>(
+        'predicted_ovulation',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _confidenceMeta = const VerificationMeta(
+    'confidence',
+  );
+  @override
+  late final GeneratedColumn<double> confidence = GeneratedColumn<double>(
+    'confidence',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.5),
+  );
+  static const VerificationMeta _basedOnCyclesMeta = const VerificationMeta(
+    'basedOnCycles',
+  );
+  @override
+  late final GeneratedColumn<int> basedOnCycles = GeneratedColumn<int>(
+    'based_on_cycles',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    predictedStart,
+    predictedEnd,
+    predictedOvulation,
+    confidence,
+    basedOnCycles,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cycle_predictions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CyclePrediction> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('predicted_start')) {
+      context.handle(
+        _predictedStartMeta,
+        predictedStart.isAcceptableOrUnknown(
+          data['predicted_start']!,
+          _predictedStartMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_predictedStartMeta);
+    }
+    if (data.containsKey('predicted_end')) {
+      context.handle(
+        _predictedEndMeta,
+        predictedEnd.isAcceptableOrUnknown(
+          data['predicted_end']!,
+          _predictedEndMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_predictedEndMeta);
+    }
+    if (data.containsKey('predicted_ovulation')) {
+      context.handle(
+        _predictedOvulationMeta,
+        predictedOvulation.isAcceptableOrUnknown(
+          data['predicted_ovulation']!,
+          _predictedOvulationMeta,
+        ),
+      );
+    }
+    if (data.containsKey('confidence')) {
+      context.handle(
+        _confidenceMeta,
+        confidence.isAcceptableOrUnknown(data['confidence']!, _confidenceMeta),
+      );
+    }
+    if (data.containsKey('based_on_cycles')) {
+      context.handle(
+        _basedOnCyclesMeta,
+        basedOnCycles.isAcceptableOrUnknown(
+          data['based_on_cycles']!,
+          _basedOnCyclesMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CyclePrediction map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CyclePrediction(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      predictedStart: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}predicted_start'],
+      )!,
+      predictedEnd: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}predicted_end'],
+      )!,
+      predictedOvulation: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}predicted_ovulation'],
+      ),
+      confidence: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}confidence'],
+      )!,
+      basedOnCycles: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}based_on_cycles'],
+      )!,
+    );
+  }
+
+  @override
+  $CyclePredictionsTable createAlias(String alias) {
+    return $CyclePredictionsTable(attachedDatabase, alias);
+  }
+}
+
+class CyclePrediction extends DataClass implements Insertable<CyclePrediction> {
+  final int id;
+  final DateTime predictedStart;
+  final DateTime predictedEnd;
+  final DateTime? predictedOvulation;
+  final double confidence;
+  final int basedOnCycles;
+  const CyclePrediction({
+    required this.id,
+    required this.predictedStart,
+    required this.predictedEnd,
+    this.predictedOvulation,
+    required this.confidence,
+    required this.basedOnCycles,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['predicted_start'] = Variable<DateTime>(predictedStart);
+    map['predicted_end'] = Variable<DateTime>(predictedEnd);
+    if (!nullToAbsent || predictedOvulation != null) {
+      map['predicted_ovulation'] = Variable<DateTime>(predictedOvulation);
+    }
+    map['confidence'] = Variable<double>(confidence);
+    map['based_on_cycles'] = Variable<int>(basedOnCycles);
+    return map;
+  }
+
+  CyclePredictionsCompanion toCompanion(bool nullToAbsent) {
+    return CyclePredictionsCompanion(
+      id: Value(id),
+      predictedStart: Value(predictedStart),
+      predictedEnd: Value(predictedEnd),
+      predictedOvulation: predictedOvulation == null && nullToAbsent
+          ? const Value.absent()
+          : Value(predictedOvulation),
+      confidence: Value(confidence),
+      basedOnCycles: Value(basedOnCycles),
+    );
+  }
+
+  factory CyclePrediction.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CyclePrediction(
+      id: serializer.fromJson<int>(json['id']),
+      predictedStart: serializer.fromJson<DateTime>(json['predictedStart']),
+      predictedEnd: serializer.fromJson<DateTime>(json['predictedEnd']),
+      predictedOvulation: serializer.fromJson<DateTime?>(
+        json['predictedOvulation'],
+      ),
+      confidence: serializer.fromJson<double>(json['confidence']),
+      basedOnCycles: serializer.fromJson<int>(json['basedOnCycles']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'predictedStart': serializer.toJson<DateTime>(predictedStart),
+      'predictedEnd': serializer.toJson<DateTime>(predictedEnd),
+      'predictedOvulation': serializer.toJson<DateTime?>(predictedOvulation),
+      'confidence': serializer.toJson<double>(confidence),
+      'basedOnCycles': serializer.toJson<int>(basedOnCycles),
+    };
+  }
+
+  CyclePrediction copyWith({
+    int? id,
+    DateTime? predictedStart,
+    DateTime? predictedEnd,
+    Value<DateTime?> predictedOvulation = const Value.absent(),
+    double? confidence,
+    int? basedOnCycles,
+  }) => CyclePrediction(
+    id: id ?? this.id,
+    predictedStart: predictedStart ?? this.predictedStart,
+    predictedEnd: predictedEnd ?? this.predictedEnd,
+    predictedOvulation: predictedOvulation.present
+        ? predictedOvulation.value
+        : this.predictedOvulation,
+    confidence: confidence ?? this.confidence,
+    basedOnCycles: basedOnCycles ?? this.basedOnCycles,
+  );
+  CyclePrediction copyWithCompanion(CyclePredictionsCompanion data) {
+    return CyclePrediction(
+      id: data.id.present ? data.id.value : this.id,
+      predictedStart: data.predictedStart.present
+          ? data.predictedStart.value
+          : this.predictedStart,
+      predictedEnd: data.predictedEnd.present
+          ? data.predictedEnd.value
+          : this.predictedEnd,
+      predictedOvulation: data.predictedOvulation.present
+          ? data.predictedOvulation.value
+          : this.predictedOvulation,
+      confidence: data.confidence.present
+          ? data.confidence.value
+          : this.confidence,
+      basedOnCycles: data.basedOnCycles.present
+          ? data.basedOnCycles.value
+          : this.basedOnCycles,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CyclePrediction(')
+          ..write('id: $id, ')
+          ..write('predictedStart: $predictedStart, ')
+          ..write('predictedEnd: $predictedEnd, ')
+          ..write('predictedOvulation: $predictedOvulation, ')
+          ..write('confidence: $confidence, ')
+          ..write('basedOnCycles: $basedOnCycles')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    predictedStart,
+    predictedEnd,
+    predictedOvulation,
+    confidence,
+    basedOnCycles,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CyclePrediction &&
+          other.id == this.id &&
+          other.predictedStart == this.predictedStart &&
+          other.predictedEnd == this.predictedEnd &&
+          other.predictedOvulation == this.predictedOvulation &&
+          other.confidence == this.confidence &&
+          other.basedOnCycles == this.basedOnCycles);
+}
+
+class CyclePredictionsCompanion extends UpdateCompanion<CyclePrediction> {
+  final Value<int> id;
+  final Value<DateTime> predictedStart;
+  final Value<DateTime> predictedEnd;
+  final Value<DateTime?> predictedOvulation;
+  final Value<double> confidence;
+  final Value<int> basedOnCycles;
+  const CyclePredictionsCompanion({
+    this.id = const Value.absent(),
+    this.predictedStart = const Value.absent(),
+    this.predictedEnd = const Value.absent(),
+    this.predictedOvulation = const Value.absent(),
+    this.confidence = const Value.absent(),
+    this.basedOnCycles = const Value.absent(),
+  });
+  CyclePredictionsCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime predictedStart,
+    required DateTime predictedEnd,
+    this.predictedOvulation = const Value.absent(),
+    this.confidence = const Value.absent(),
+    this.basedOnCycles = const Value.absent(),
+  }) : predictedStart = Value(predictedStart),
+       predictedEnd = Value(predictedEnd);
+  static Insertable<CyclePrediction> custom({
+    Expression<int>? id,
+    Expression<DateTime>? predictedStart,
+    Expression<DateTime>? predictedEnd,
+    Expression<DateTime>? predictedOvulation,
+    Expression<double>? confidence,
+    Expression<int>? basedOnCycles,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (predictedStart != null) 'predicted_start': predictedStart,
+      if (predictedEnd != null) 'predicted_end': predictedEnd,
+      if (predictedOvulation != null) 'predicted_ovulation': predictedOvulation,
+      if (confidence != null) 'confidence': confidence,
+      if (basedOnCycles != null) 'based_on_cycles': basedOnCycles,
+    });
+  }
+
+  CyclePredictionsCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? predictedStart,
+    Value<DateTime>? predictedEnd,
+    Value<DateTime?>? predictedOvulation,
+    Value<double>? confidence,
+    Value<int>? basedOnCycles,
+  }) {
+    return CyclePredictionsCompanion(
+      id: id ?? this.id,
+      predictedStart: predictedStart ?? this.predictedStart,
+      predictedEnd: predictedEnd ?? this.predictedEnd,
+      predictedOvulation: predictedOvulation ?? this.predictedOvulation,
+      confidence: confidence ?? this.confidence,
+      basedOnCycles: basedOnCycles ?? this.basedOnCycles,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (predictedStart.present) {
+      map['predicted_start'] = Variable<DateTime>(predictedStart.value);
+    }
+    if (predictedEnd.present) {
+      map['predicted_end'] = Variable<DateTime>(predictedEnd.value);
+    }
+    if (predictedOvulation.present) {
+      map['predicted_ovulation'] = Variable<DateTime>(predictedOvulation.value);
+    }
+    if (confidence.present) {
+      map['confidence'] = Variable<double>(confidence.value);
+    }
+    if (basedOnCycles.present) {
+      map['based_on_cycles'] = Variable<int>(basedOnCycles.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CyclePredictionsCompanion(')
+          ..write('id: $id, ')
+          ..write('predictedStart: $predictedStart, ')
+          ..write('predictedEnd: $predictedEnd, ')
+          ..write('predictedOvulation: $predictedOvulation, ')
+          ..write('confidence: $confidence, ')
+          ..write('basedOnCycles: $basedOnCycles')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DailyTaskAssignmentsTable extends DailyTaskAssignments
+    with TableInfo<$DailyTaskAssignmentsTable, DailyTaskAssignment> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DailyTaskAssignmentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
+  @override
+  late final GeneratedColumn<String> taskId = GeneratedColumn<String>(
+    'task_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _taskTitleMeta = const VerificationMeta(
+    'taskTitle',
+  );
+  @override
+  late final GeneratedColumn<String> taskTitle = GeneratedColumn<String>(
+    'task_title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _taskDescriptionMeta = const VerificationMeta(
+    'taskDescription',
+  );
+  @override
+  late final GeneratedColumn<String> taskDescription = GeneratedColumn<String>(
+    'task_description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _conditionTypeMeta = const VerificationMeta(
+    'conditionType',
+  );
+  @override
+  late final GeneratedColumn<String> conditionType = GeneratedColumn<String>(
+    'condition_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _durationMinutesMeta = const VerificationMeta(
+    'durationMinutes',
+  );
+  @override
+  late final GeneratedColumn<int> durationMinutes = GeneratedColumn<int>(
+    'duration_minutes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _scheduledTimeMeta = const VerificationMeta(
+    'scheduledTime',
+  );
+  @override
+  late final GeneratedColumn<String> scheduledTime = GeneratedColumn<String>(
+    'scheduled_time',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _completedMeta = const VerificationMeta(
+    'completed',
+  );
+  @override
+  late final GeneratedColumn<bool> completed = GeneratedColumn<bool>(
+    'completed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("completed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _effectivenessRatingMeta =
+      const VerificationMeta('effectivenessRating');
+  @override
+  late final GeneratedColumn<int> effectivenessRating = GeneratedColumn<int>(
+    'effectiveness_rating',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _skippedMeta = const VerificationMeta(
+    'skipped',
+  );
+  @override
+  late final GeneratedColumn<bool> skipped = GeneratedColumn<bool>(
+    'skipped',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("skipped" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    date,
+    taskId,
+    taskTitle,
+    taskDescription,
+    conditionType,
+    category,
+    durationMinutes,
+    scheduledTime,
+    completed,
+    effectivenessRating,
+    skipped,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'daily_task_assignments';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DailyTaskAssignment> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('task_id')) {
+      context.handle(
+        _taskIdMeta,
+        taskId.isAcceptableOrUnknown(data['task_id']!, _taskIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_taskIdMeta);
+    }
+    if (data.containsKey('task_title')) {
+      context.handle(
+        _taskTitleMeta,
+        taskTitle.isAcceptableOrUnknown(data['task_title']!, _taskTitleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_taskTitleMeta);
+    }
+    if (data.containsKey('task_description')) {
+      context.handle(
+        _taskDescriptionMeta,
+        taskDescription.isAcceptableOrUnknown(
+          data['task_description']!,
+          _taskDescriptionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_taskDescriptionMeta);
+    }
+    if (data.containsKey('condition_type')) {
+      context.handle(
+        _conditionTypeMeta,
+        conditionType.isAcceptableOrUnknown(
+          data['condition_type']!,
+          _conditionTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_conditionTypeMeta);
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    if (data.containsKey('duration_minutes')) {
+      context.handle(
+        _durationMinutesMeta,
+        durationMinutes.isAcceptableOrUnknown(
+          data['duration_minutes']!,
+          _durationMinutesMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_durationMinutesMeta);
+    }
+    if (data.containsKey('scheduled_time')) {
+      context.handle(
+        _scheduledTimeMeta,
+        scheduledTime.isAcceptableOrUnknown(
+          data['scheduled_time']!,
+          _scheduledTimeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_scheduledTimeMeta);
+    }
+    if (data.containsKey('completed')) {
+      context.handle(
+        _completedMeta,
+        completed.isAcceptableOrUnknown(data['completed']!, _completedMeta),
+      );
+    }
+    if (data.containsKey('effectiveness_rating')) {
+      context.handle(
+        _effectivenessRatingMeta,
+        effectivenessRating.isAcceptableOrUnknown(
+          data['effectiveness_rating']!,
+          _effectivenessRatingMeta,
+        ),
+      );
+    }
+    if (data.containsKey('skipped')) {
+      context.handle(
+        _skippedMeta,
+        skipped.isAcceptableOrUnknown(data['skipped']!, _skippedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DailyTaskAssignment map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DailyTaskAssignment(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      taskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}task_id'],
+      )!,
+      taskTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}task_title'],
+      )!,
+      taskDescription: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}task_description'],
+      )!,
+      conditionType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}condition_type'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      durationMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_minutes'],
+      )!,
+      scheduledTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}scheduled_time'],
+      )!,
+      completed: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}completed'],
+      )!,
+      effectivenessRating: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}effectiveness_rating'],
+      ),
+      skipped: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}skipped'],
+      )!,
+    );
+  }
+
+  @override
+  $DailyTaskAssignmentsTable createAlias(String alias) {
+    return $DailyTaskAssignmentsTable(attachedDatabase, alias);
+  }
+}
+
+class DailyTaskAssignment extends DataClass
+    implements Insertable<DailyTaskAssignment> {
+  final int id;
+  final DateTime date;
+  final String taskId;
+  final String taskTitle;
+  final String taskDescription;
+  final String conditionType;
+  final String category;
+  final int durationMinutes;
+  final String scheduledTime;
+  final bool completed;
+  final int? effectivenessRating;
+  final bool skipped;
+  const DailyTaskAssignment({
+    required this.id,
+    required this.date,
+    required this.taskId,
+    required this.taskTitle,
+    required this.taskDescription,
+    required this.conditionType,
+    required this.category,
+    required this.durationMinutes,
+    required this.scheduledTime,
+    required this.completed,
+    this.effectivenessRating,
+    required this.skipped,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['date'] = Variable<DateTime>(date);
+    map['task_id'] = Variable<String>(taskId);
+    map['task_title'] = Variable<String>(taskTitle);
+    map['task_description'] = Variable<String>(taskDescription);
+    map['condition_type'] = Variable<String>(conditionType);
+    map['category'] = Variable<String>(category);
+    map['duration_minutes'] = Variable<int>(durationMinutes);
+    map['scheduled_time'] = Variable<String>(scheduledTime);
+    map['completed'] = Variable<bool>(completed);
+    if (!nullToAbsent || effectivenessRating != null) {
+      map['effectiveness_rating'] = Variable<int>(effectivenessRating);
+    }
+    map['skipped'] = Variable<bool>(skipped);
+    return map;
+  }
+
+  DailyTaskAssignmentsCompanion toCompanion(bool nullToAbsent) {
+    return DailyTaskAssignmentsCompanion(
+      id: Value(id),
+      date: Value(date),
+      taskId: Value(taskId),
+      taskTitle: Value(taskTitle),
+      taskDescription: Value(taskDescription),
+      conditionType: Value(conditionType),
+      category: Value(category),
+      durationMinutes: Value(durationMinutes),
+      scheduledTime: Value(scheduledTime),
+      completed: Value(completed),
+      effectivenessRating: effectivenessRating == null && nullToAbsent
+          ? const Value.absent()
+          : Value(effectivenessRating),
+      skipped: Value(skipped),
+    );
+  }
+
+  factory DailyTaskAssignment.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DailyTaskAssignment(
+      id: serializer.fromJson<int>(json['id']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      taskId: serializer.fromJson<String>(json['taskId']),
+      taskTitle: serializer.fromJson<String>(json['taskTitle']),
+      taskDescription: serializer.fromJson<String>(json['taskDescription']),
+      conditionType: serializer.fromJson<String>(json['conditionType']),
+      category: serializer.fromJson<String>(json['category']),
+      durationMinutes: serializer.fromJson<int>(json['durationMinutes']),
+      scheduledTime: serializer.fromJson<String>(json['scheduledTime']),
+      completed: serializer.fromJson<bool>(json['completed']),
+      effectivenessRating: serializer.fromJson<int?>(
+        json['effectivenessRating'],
+      ),
+      skipped: serializer.fromJson<bool>(json['skipped']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'date': serializer.toJson<DateTime>(date),
+      'taskId': serializer.toJson<String>(taskId),
+      'taskTitle': serializer.toJson<String>(taskTitle),
+      'taskDescription': serializer.toJson<String>(taskDescription),
+      'conditionType': serializer.toJson<String>(conditionType),
+      'category': serializer.toJson<String>(category),
+      'durationMinutes': serializer.toJson<int>(durationMinutes),
+      'scheduledTime': serializer.toJson<String>(scheduledTime),
+      'completed': serializer.toJson<bool>(completed),
+      'effectivenessRating': serializer.toJson<int?>(effectivenessRating),
+      'skipped': serializer.toJson<bool>(skipped),
+    };
+  }
+
+  DailyTaskAssignment copyWith({
+    int? id,
+    DateTime? date,
+    String? taskId,
+    String? taskTitle,
+    String? taskDescription,
+    String? conditionType,
+    String? category,
+    int? durationMinutes,
+    String? scheduledTime,
+    bool? completed,
+    Value<int?> effectivenessRating = const Value.absent(),
+    bool? skipped,
+  }) => DailyTaskAssignment(
+    id: id ?? this.id,
+    date: date ?? this.date,
+    taskId: taskId ?? this.taskId,
+    taskTitle: taskTitle ?? this.taskTitle,
+    taskDescription: taskDescription ?? this.taskDescription,
+    conditionType: conditionType ?? this.conditionType,
+    category: category ?? this.category,
+    durationMinutes: durationMinutes ?? this.durationMinutes,
+    scheduledTime: scheduledTime ?? this.scheduledTime,
+    completed: completed ?? this.completed,
+    effectivenessRating: effectivenessRating.present
+        ? effectivenessRating.value
+        : this.effectivenessRating,
+    skipped: skipped ?? this.skipped,
+  );
+  DailyTaskAssignment copyWithCompanion(DailyTaskAssignmentsCompanion data) {
+    return DailyTaskAssignment(
+      id: data.id.present ? data.id.value : this.id,
+      date: data.date.present ? data.date.value : this.date,
+      taskId: data.taskId.present ? data.taskId.value : this.taskId,
+      taskTitle: data.taskTitle.present ? data.taskTitle.value : this.taskTitle,
+      taskDescription: data.taskDescription.present
+          ? data.taskDescription.value
+          : this.taskDescription,
+      conditionType: data.conditionType.present
+          ? data.conditionType.value
+          : this.conditionType,
+      category: data.category.present ? data.category.value : this.category,
+      durationMinutes: data.durationMinutes.present
+          ? data.durationMinutes.value
+          : this.durationMinutes,
+      scheduledTime: data.scheduledTime.present
+          ? data.scheduledTime.value
+          : this.scheduledTime,
+      completed: data.completed.present ? data.completed.value : this.completed,
+      effectivenessRating: data.effectivenessRating.present
+          ? data.effectivenessRating.value
+          : this.effectivenessRating,
+      skipped: data.skipped.present ? data.skipped.value : this.skipped,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DailyTaskAssignment(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('taskId: $taskId, ')
+          ..write('taskTitle: $taskTitle, ')
+          ..write('taskDescription: $taskDescription, ')
+          ..write('conditionType: $conditionType, ')
+          ..write('category: $category, ')
+          ..write('durationMinutes: $durationMinutes, ')
+          ..write('scheduledTime: $scheduledTime, ')
+          ..write('completed: $completed, ')
+          ..write('effectivenessRating: $effectivenessRating, ')
+          ..write('skipped: $skipped')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    date,
+    taskId,
+    taskTitle,
+    taskDescription,
+    conditionType,
+    category,
+    durationMinutes,
+    scheduledTime,
+    completed,
+    effectivenessRating,
+    skipped,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DailyTaskAssignment &&
+          other.id == this.id &&
+          other.date == this.date &&
+          other.taskId == this.taskId &&
+          other.taskTitle == this.taskTitle &&
+          other.taskDescription == this.taskDescription &&
+          other.conditionType == this.conditionType &&
+          other.category == this.category &&
+          other.durationMinutes == this.durationMinutes &&
+          other.scheduledTime == this.scheduledTime &&
+          other.completed == this.completed &&
+          other.effectivenessRating == this.effectivenessRating &&
+          other.skipped == this.skipped);
+}
+
+class DailyTaskAssignmentsCompanion
+    extends UpdateCompanion<DailyTaskAssignment> {
+  final Value<int> id;
+  final Value<DateTime> date;
+  final Value<String> taskId;
+  final Value<String> taskTitle;
+  final Value<String> taskDescription;
+  final Value<String> conditionType;
+  final Value<String> category;
+  final Value<int> durationMinutes;
+  final Value<String> scheduledTime;
+  final Value<bool> completed;
+  final Value<int?> effectivenessRating;
+  final Value<bool> skipped;
+  const DailyTaskAssignmentsCompanion({
+    this.id = const Value.absent(),
+    this.date = const Value.absent(),
+    this.taskId = const Value.absent(),
+    this.taskTitle = const Value.absent(),
+    this.taskDescription = const Value.absent(),
+    this.conditionType = const Value.absent(),
+    this.category = const Value.absent(),
+    this.durationMinutes = const Value.absent(),
+    this.scheduledTime = const Value.absent(),
+    this.completed = const Value.absent(),
+    this.effectivenessRating = const Value.absent(),
+    this.skipped = const Value.absent(),
+  });
+  DailyTaskAssignmentsCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime date,
+    required String taskId,
+    required String taskTitle,
+    required String taskDescription,
+    required String conditionType,
+    required String category,
+    required int durationMinutes,
+    required String scheduledTime,
+    this.completed = const Value.absent(),
+    this.effectivenessRating = const Value.absent(),
+    this.skipped = const Value.absent(),
+  }) : date = Value(date),
+       taskId = Value(taskId),
+       taskTitle = Value(taskTitle),
+       taskDescription = Value(taskDescription),
+       conditionType = Value(conditionType),
+       category = Value(category),
+       durationMinutes = Value(durationMinutes),
+       scheduledTime = Value(scheduledTime);
+  static Insertable<DailyTaskAssignment> custom({
+    Expression<int>? id,
+    Expression<DateTime>? date,
+    Expression<String>? taskId,
+    Expression<String>? taskTitle,
+    Expression<String>? taskDescription,
+    Expression<String>? conditionType,
+    Expression<String>? category,
+    Expression<int>? durationMinutes,
+    Expression<String>? scheduledTime,
+    Expression<bool>? completed,
+    Expression<int>? effectivenessRating,
+    Expression<bool>? skipped,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (date != null) 'date': date,
+      if (taskId != null) 'task_id': taskId,
+      if (taskTitle != null) 'task_title': taskTitle,
+      if (taskDescription != null) 'task_description': taskDescription,
+      if (conditionType != null) 'condition_type': conditionType,
+      if (category != null) 'category': category,
+      if (durationMinutes != null) 'duration_minutes': durationMinutes,
+      if (scheduledTime != null) 'scheduled_time': scheduledTime,
+      if (completed != null) 'completed': completed,
+      if (effectivenessRating != null)
+        'effectiveness_rating': effectivenessRating,
+      if (skipped != null) 'skipped': skipped,
+    });
+  }
+
+  DailyTaskAssignmentsCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? date,
+    Value<String>? taskId,
+    Value<String>? taskTitle,
+    Value<String>? taskDescription,
+    Value<String>? conditionType,
+    Value<String>? category,
+    Value<int>? durationMinutes,
+    Value<String>? scheduledTime,
+    Value<bool>? completed,
+    Value<int?>? effectivenessRating,
+    Value<bool>? skipped,
+  }) {
+    return DailyTaskAssignmentsCompanion(
+      id: id ?? this.id,
+      date: date ?? this.date,
+      taskId: taskId ?? this.taskId,
+      taskTitle: taskTitle ?? this.taskTitle,
+      taskDescription: taskDescription ?? this.taskDescription,
+      conditionType: conditionType ?? this.conditionType,
+      category: category ?? this.category,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
+      scheduledTime: scheduledTime ?? this.scheduledTime,
+      completed: completed ?? this.completed,
+      effectivenessRating: effectivenessRating ?? this.effectivenessRating,
+      skipped: skipped ?? this.skipped,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (taskId.present) {
+      map['task_id'] = Variable<String>(taskId.value);
+    }
+    if (taskTitle.present) {
+      map['task_title'] = Variable<String>(taskTitle.value);
+    }
+    if (taskDescription.present) {
+      map['task_description'] = Variable<String>(taskDescription.value);
+    }
+    if (conditionType.present) {
+      map['condition_type'] = Variable<String>(conditionType.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (durationMinutes.present) {
+      map['duration_minutes'] = Variable<int>(durationMinutes.value);
+    }
+    if (scheduledTime.present) {
+      map['scheduled_time'] = Variable<String>(scheduledTime.value);
+    }
+    if (completed.present) {
+      map['completed'] = Variable<bool>(completed.value);
+    }
+    if (effectivenessRating.present) {
+      map['effectiveness_rating'] = Variable<int>(effectivenessRating.value);
+    }
+    if (skipped.present) {
+      map['skipped'] = Variable<bool>(skipped.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DailyTaskAssignmentsCompanion(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('taskId: $taskId, ')
+          ..write('taskTitle: $taskTitle, ')
+          ..write('taskDescription: $taskDescription, ')
+          ..write('conditionType: $conditionType, ')
+          ..write('category: $category, ')
+          ..write('durationMinutes: $durationMinutes, ')
+          ..write('scheduledTime: $scheduledTime, ')
+          ..write('completed: $completed, ')
+          ..write('effectivenessRating: $effectivenessRating, ')
+          ..write('skipped: $skipped')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WeeklyAssessmentsTable extends WeeklyAssessments
+    with TableInfo<$WeeklyAssessmentsTable, WeeklyAssessment> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WeeklyAssessmentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _assessmentTypeMeta = const VerificationMeta(
+    'assessmentType',
+  );
+  @override
+  late final GeneratedColumn<String> assessmentType = GeneratedColumn<String>(
+    'assessment_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _totalScoreMeta = const VerificationMeta(
+    'totalScore',
+  );
+  @override
+  late final GeneratedColumn<int> totalScore = GeneratedColumn<int>(
+    'total_score',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _answersMeta = const VerificationMeta(
+    'answers',
+  );
+  @override
+  late final GeneratedColumn<String> answers = GeneratedColumn<String>(
+    'answers',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _trendMeta = const VerificationMeta('trend');
+  @override
+  late final GeneratedColumn<String> trend = GeneratedColumn<String>(
+    'trend',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    date,
+    assessmentType,
+    totalScore,
+    answers,
+    trend,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'weekly_assessments';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WeeklyAssessment> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('assessment_type')) {
+      context.handle(
+        _assessmentTypeMeta,
+        assessmentType.isAcceptableOrUnknown(
+          data['assessment_type']!,
+          _assessmentTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_assessmentTypeMeta);
+    }
+    if (data.containsKey('total_score')) {
+      context.handle(
+        _totalScoreMeta,
+        totalScore.isAcceptableOrUnknown(data['total_score']!, _totalScoreMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_totalScoreMeta);
+    }
+    if (data.containsKey('answers')) {
+      context.handle(
+        _answersMeta,
+        answers.isAcceptableOrUnknown(data['answers']!, _answersMeta),
+      );
+    }
+    if (data.containsKey('trend')) {
+      context.handle(
+        _trendMeta,
+        trend.isAcceptableOrUnknown(data['trend']!, _trendMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WeeklyAssessment map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WeeklyAssessment(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      assessmentType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}assessment_type'],
+      )!,
+      totalScore: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}total_score'],
+      )!,
+      answers: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}answers'],
+      )!,
+      trend: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}trend'],
+      ),
+    );
+  }
+
+  @override
+  $WeeklyAssessmentsTable createAlias(String alias) {
+    return $WeeklyAssessmentsTable(attachedDatabase, alias);
+  }
+}
+
+class WeeklyAssessment extends DataClass
+    implements Insertable<WeeklyAssessment> {
+  final int id;
+  final DateTime date;
+  final String assessmentType;
+  final int totalScore;
+  final String answers;
+  final String? trend;
+  const WeeklyAssessment({
+    required this.id,
+    required this.date,
+    required this.assessmentType,
+    required this.totalScore,
+    required this.answers,
+    this.trend,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['date'] = Variable<DateTime>(date);
+    map['assessment_type'] = Variable<String>(assessmentType);
+    map['total_score'] = Variable<int>(totalScore);
+    map['answers'] = Variable<String>(answers);
+    if (!nullToAbsent || trend != null) {
+      map['trend'] = Variable<String>(trend);
+    }
+    return map;
+  }
+
+  WeeklyAssessmentsCompanion toCompanion(bool nullToAbsent) {
+    return WeeklyAssessmentsCompanion(
+      id: Value(id),
+      date: Value(date),
+      assessmentType: Value(assessmentType),
+      totalScore: Value(totalScore),
+      answers: Value(answers),
+      trend: trend == null && nullToAbsent
+          ? const Value.absent()
+          : Value(trend),
+    );
+  }
+
+  factory WeeklyAssessment.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WeeklyAssessment(
+      id: serializer.fromJson<int>(json['id']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      assessmentType: serializer.fromJson<String>(json['assessmentType']),
+      totalScore: serializer.fromJson<int>(json['totalScore']),
+      answers: serializer.fromJson<String>(json['answers']),
+      trend: serializer.fromJson<String?>(json['trend']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'date': serializer.toJson<DateTime>(date),
+      'assessmentType': serializer.toJson<String>(assessmentType),
+      'totalScore': serializer.toJson<int>(totalScore),
+      'answers': serializer.toJson<String>(answers),
+      'trend': serializer.toJson<String?>(trend),
+    };
+  }
+
+  WeeklyAssessment copyWith({
+    int? id,
+    DateTime? date,
+    String? assessmentType,
+    int? totalScore,
+    String? answers,
+    Value<String?> trend = const Value.absent(),
+  }) => WeeklyAssessment(
+    id: id ?? this.id,
+    date: date ?? this.date,
+    assessmentType: assessmentType ?? this.assessmentType,
+    totalScore: totalScore ?? this.totalScore,
+    answers: answers ?? this.answers,
+    trend: trend.present ? trend.value : this.trend,
+  );
+  WeeklyAssessment copyWithCompanion(WeeklyAssessmentsCompanion data) {
+    return WeeklyAssessment(
+      id: data.id.present ? data.id.value : this.id,
+      date: data.date.present ? data.date.value : this.date,
+      assessmentType: data.assessmentType.present
+          ? data.assessmentType.value
+          : this.assessmentType,
+      totalScore: data.totalScore.present
+          ? data.totalScore.value
+          : this.totalScore,
+      answers: data.answers.present ? data.answers.value : this.answers,
+      trend: data.trend.present ? data.trend.value : this.trend,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeeklyAssessment(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('assessmentType: $assessmentType, ')
+          ..write('totalScore: $totalScore, ')
+          ..write('answers: $answers, ')
+          ..write('trend: $trend')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, date, assessmentType, totalScore, answers, trend);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WeeklyAssessment &&
+          other.id == this.id &&
+          other.date == this.date &&
+          other.assessmentType == this.assessmentType &&
+          other.totalScore == this.totalScore &&
+          other.answers == this.answers &&
+          other.trend == this.trend);
+}
+
+class WeeklyAssessmentsCompanion extends UpdateCompanion<WeeklyAssessment> {
+  final Value<int> id;
+  final Value<DateTime> date;
+  final Value<String> assessmentType;
+  final Value<int> totalScore;
+  final Value<String> answers;
+  final Value<String?> trend;
+  const WeeklyAssessmentsCompanion({
+    this.id = const Value.absent(),
+    this.date = const Value.absent(),
+    this.assessmentType = const Value.absent(),
+    this.totalScore = const Value.absent(),
+    this.answers = const Value.absent(),
+    this.trend = const Value.absent(),
+  });
+  WeeklyAssessmentsCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime date,
+    required String assessmentType,
+    required int totalScore,
+    this.answers = const Value.absent(),
+    this.trend = const Value.absent(),
+  }) : date = Value(date),
+       assessmentType = Value(assessmentType),
+       totalScore = Value(totalScore);
+  static Insertable<WeeklyAssessment> custom({
+    Expression<int>? id,
+    Expression<DateTime>? date,
+    Expression<String>? assessmentType,
+    Expression<int>? totalScore,
+    Expression<String>? answers,
+    Expression<String>? trend,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (date != null) 'date': date,
+      if (assessmentType != null) 'assessment_type': assessmentType,
+      if (totalScore != null) 'total_score': totalScore,
+      if (answers != null) 'answers': answers,
+      if (trend != null) 'trend': trend,
+    });
+  }
+
+  WeeklyAssessmentsCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? date,
+    Value<String>? assessmentType,
+    Value<int>? totalScore,
+    Value<String>? answers,
+    Value<String?>? trend,
+  }) {
+    return WeeklyAssessmentsCompanion(
+      id: id ?? this.id,
+      date: date ?? this.date,
+      assessmentType: assessmentType ?? this.assessmentType,
+      totalScore: totalScore ?? this.totalScore,
+      answers: answers ?? this.answers,
+      trend: trend ?? this.trend,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (assessmentType.present) {
+      map['assessment_type'] = Variable<String>(assessmentType.value);
+    }
+    if (totalScore.present) {
+      map['total_score'] = Variable<int>(totalScore.value);
+    }
+    if (answers.present) {
+      map['answers'] = Variable<String>(answers.value);
+    }
+    if (trend.present) {
+      map['trend'] = Variable<String>(trend.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeeklyAssessmentsCompanion(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('assessmentType: $assessmentType, ')
+          ..write('totalScore: $totalScore, ')
+          ..write('answers: $answers, ')
+          ..write('trend: $trend')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -12922,6 +19115,24 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $MaintenanceStatesTable(this);
   late final $ModelStatesTable modelStates = $ModelStatesTable(this);
   late final $PassiveUsagesTable passiveUsages = $PassiveUsagesTable(this);
+  late final $MoodEntriesTable moodEntries = $MoodEntriesTable(this);
+  late final $AnxietyEventsTable anxietyEvents = $AnxietyEventsTable(this);
+  late final $BreathingLogsTable breathingLogs = $BreathingLogsTable(this);
+  late final $ExposureHierarchyItemsTable exposureHierarchyItems =
+      $ExposureHierarchyItemsTable(this);
+  late final $BehavioralActivitiesTable behavioralActivities =
+      $BehavioralActivitiesTable(this);
+  late final $ThoughtRecordsTable thoughtRecords = $ThoughtRecordsTable(this);
+  late final $FocusSessionsTable focusSessions = $FocusSessionsTable(this);
+  late final $AdhdDailyPlansTable adhdDailyPlans = $AdhdDailyPlansTable(this);
+  late final $CycleEntriesTable cycleEntries = $CycleEntriesTable(this);
+  late final $CyclePredictionsTable cyclePredictions = $CyclePredictionsTable(
+    this,
+  );
+  late final $DailyTaskAssignmentsTable dailyTaskAssignments =
+      $DailyTaskAssignmentsTable(this);
+  late final $WeeklyAssessmentsTable weeklyAssessments =
+      $WeeklyAssessmentsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -12946,6 +19157,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     maintenanceStates,
     modelStates,
     passiveUsages,
+    moodEntries,
+    anxietyEvents,
+    breathingLogs,
+    exposureHierarchyItems,
+    behavioralActivities,
+    thoughtRecords,
+    focusSessions,
+    adhdDailyPlans,
+    cycleEntries,
+    cyclePredictions,
+    dailyTaskAssignments,
+    weeklyAssessments,
   ];
 }
 
@@ -12957,6 +19180,7 @@ typedef $$UsersTableCreateCompanionBuilder =
       Value<String> phone,
       Value<String> country,
       Value<bool> checkedInToday,
+      Value<String> conditions,
       required String roleType,
       Value<String> workDays,
       Value<String?> workStart,
@@ -12984,6 +19208,7 @@ typedef $$UsersTableUpdateCompanionBuilder =
       Value<String> phone,
       Value<String> country,
       Value<bool> checkedInToday,
+      Value<String> conditions,
       Value<String> roleType,
       Value<String> workDays,
       Value<String?> workStart,
@@ -13039,6 +19264,11 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
 
   ColumnFilters<bool> get checkedInToday => $composableBuilder(
     column: $table.checkedInToday,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get conditions => $composableBuilder(
+    column: $table.conditions,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -13172,6 +19402,11 @@ class $$UsersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get conditions => $composableBuilder(
+    column: $table.conditions,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get roleType => $composableBuilder(
     column: $table.roleType,
     builder: (column) => ColumnOrderings(column),
@@ -13292,6 +19527,11 @@ class $$UsersTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get conditions => $composableBuilder(
+    column: $table.conditions,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get roleType =>
       $composableBuilder(column: $table.roleType, builder: (column) => column);
 
@@ -13399,6 +19639,7 @@ class $$UsersTableTableManager
                 Value<String> phone = const Value.absent(),
                 Value<String> country = const Value.absent(),
                 Value<bool> checkedInToday = const Value.absent(),
+                Value<String> conditions = const Value.absent(),
                 Value<String> roleType = const Value.absent(),
                 Value<String> workDays = const Value.absent(),
                 Value<String?> workStart = const Value.absent(),
@@ -13424,6 +19665,7 @@ class $$UsersTableTableManager
                 phone: phone,
                 country: country,
                 checkedInToday: checkedInToday,
+                conditions: conditions,
                 roleType: roleType,
                 workDays: workDays,
                 workStart: workStart,
@@ -13451,6 +19693,7 @@ class $$UsersTableTableManager
                 Value<String> phone = const Value.absent(),
                 Value<String> country = const Value.absent(),
                 Value<bool> checkedInToday = const Value.absent(),
+                Value<String> conditions = const Value.absent(),
                 required String roleType,
                 Value<String> workDays = const Value.absent(),
                 Value<String?> workStart = const Value.absent(),
@@ -13476,6 +19719,7 @@ class $$UsersTableTableManager
                 phone: phone,
                 country: country,
                 checkedInToday: checkedInToday,
+                conditions: conditions,
                 roleType: roleType,
                 workDays: workDays,
                 workStart: workStart,
@@ -19145,6 +25389,3141 @@ typedef $$PassiveUsagesTableProcessedTableManager =
       PassiveUsage,
       PrefetchHooks Function()
     >;
+typedef $$MoodEntriesTableCreateCompanionBuilder =
+    MoodEntriesCompanion Function({
+      Value<int> id,
+      required DateTime timestamp,
+      required int moodLevel,
+      required int energy,
+      Value<String> emotions,
+      Value<String> activities,
+      Value<String?> socialContext,
+      Value<String?> note,
+    });
+typedef $$MoodEntriesTableUpdateCompanionBuilder =
+    MoodEntriesCompanion Function({
+      Value<int> id,
+      Value<DateTime> timestamp,
+      Value<int> moodLevel,
+      Value<int> energy,
+      Value<String> emotions,
+      Value<String> activities,
+      Value<String?> socialContext,
+      Value<String?> note,
+    });
+
+class $$MoodEntriesTableFilterComposer
+    extends Composer<_$AppDatabase, $MoodEntriesTable> {
+  $$MoodEntriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get moodLevel => $composableBuilder(
+    column: $table.moodLevel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get energy => $composableBuilder(
+    column: $table.energy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get emotions => $composableBuilder(
+    column: $table.emotions,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get activities => $composableBuilder(
+    column: $table.activities,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get socialContext => $composableBuilder(
+    column: $table.socialContext,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MoodEntriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MoodEntriesTable> {
+  $$MoodEntriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get moodLevel => $composableBuilder(
+    column: $table.moodLevel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get energy => $composableBuilder(
+    column: $table.energy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get emotions => $composableBuilder(
+    column: $table.emotions,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get activities => $composableBuilder(
+    column: $table.activities,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get socialContext => $composableBuilder(
+    column: $table.socialContext,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MoodEntriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MoodEntriesTable> {
+  $$MoodEntriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  GeneratedColumn<int> get moodLevel =>
+      $composableBuilder(column: $table.moodLevel, builder: (column) => column);
+
+  GeneratedColumn<int> get energy =>
+      $composableBuilder(column: $table.energy, builder: (column) => column);
+
+  GeneratedColumn<String> get emotions =>
+      $composableBuilder(column: $table.emotions, builder: (column) => column);
+
+  GeneratedColumn<String> get activities => $composableBuilder(
+    column: $table.activities,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get socialContext => $composableBuilder(
+    column: $table.socialContext,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+}
+
+class $$MoodEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MoodEntriesTable,
+          MoodEntry,
+          $$MoodEntriesTableFilterComposer,
+          $$MoodEntriesTableOrderingComposer,
+          $$MoodEntriesTableAnnotationComposer,
+          $$MoodEntriesTableCreateCompanionBuilder,
+          $$MoodEntriesTableUpdateCompanionBuilder,
+          (
+            MoodEntry,
+            BaseReferences<_$AppDatabase, $MoodEntriesTable, MoodEntry>,
+          ),
+          MoodEntry,
+          PrefetchHooks Function()
+        > {
+  $$MoodEntriesTableTableManager(_$AppDatabase db, $MoodEntriesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MoodEntriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MoodEntriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MoodEntriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> timestamp = const Value.absent(),
+                Value<int> moodLevel = const Value.absent(),
+                Value<int> energy = const Value.absent(),
+                Value<String> emotions = const Value.absent(),
+                Value<String> activities = const Value.absent(),
+                Value<String?> socialContext = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+              }) => MoodEntriesCompanion(
+                id: id,
+                timestamp: timestamp,
+                moodLevel: moodLevel,
+                energy: energy,
+                emotions: emotions,
+                activities: activities,
+                socialContext: socialContext,
+                note: note,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime timestamp,
+                required int moodLevel,
+                required int energy,
+                Value<String> emotions = const Value.absent(),
+                Value<String> activities = const Value.absent(),
+                Value<String?> socialContext = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+              }) => MoodEntriesCompanion.insert(
+                id: id,
+                timestamp: timestamp,
+                moodLevel: moodLevel,
+                energy: energy,
+                emotions: emotions,
+                activities: activities,
+                socialContext: socialContext,
+                note: note,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MoodEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MoodEntriesTable,
+      MoodEntry,
+      $$MoodEntriesTableFilterComposer,
+      $$MoodEntriesTableOrderingComposer,
+      $$MoodEntriesTableAnnotationComposer,
+      $$MoodEntriesTableCreateCompanionBuilder,
+      $$MoodEntriesTableUpdateCompanionBuilder,
+      (MoodEntry, BaseReferences<_$AppDatabase, $MoodEntriesTable, MoodEntry>),
+      MoodEntry,
+      PrefetchHooks Function()
+    >;
+typedef $$AnxietyEventsTableCreateCompanionBuilder =
+    AnxietyEventsCompanion Function({
+      Value<int> id,
+      required DateTime timestamp,
+      Value<String?> triggerSituation,
+      required int anxietyLevel,
+      Value<String> physicalSymptoms,
+      Value<String?> copingUsed,
+      Value<int?> anxietyAfter,
+      Value<bool> avoidanceBehavior,
+    });
+typedef $$AnxietyEventsTableUpdateCompanionBuilder =
+    AnxietyEventsCompanion Function({
+      Value<int> id,
+      Value<DateTime> timestamp,
+      Value<String?> triggerSituation,
+      Value<int> anxietyLevel,
+      Value<String> physicalSymptoms,
+      Value<String?> copingUsed,
+      Value<int?> anxietyAfter,
+      Value<bool> avoidanceBehavior,
+    });
+
+class $$AnxietyEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $AnxietyEventsTable> {
+  $$AnxietyEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get triggerSituation => $composableBuilder(
+    column: $table.triggerSituation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get anxietyLevel => $composableBuilder(
+    column: $table.anxietyLevel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get physicalSymptoms => $composableBuilder(
+    column: $table.physicalSymptoms,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get copingUsed => $composableBuilder(
+    column: $table.copingUsed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get anxietyAfter => $composableBuilder(
+    column: $table.anxietyAfter,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get avoidanceBehavior => $composableBuilder(
+    column: $table.avoidanceBehavior,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AnxietyEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AnxietyEventsTable> {
+  $$AnxietyEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get triggerSituation => $composableBuilder(
+    column: $table.triggerSituation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get anxietyLevel => $composableBuilder(
+    column: $table.anxietyLevel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get physicalSymptoms => $composableBuilder(
+    column: $table.physicalSymptoms,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get copingUsed => $composableBuilder(
+    column: $table.copingUsed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get anxietyAfter => $composableBuilder(
+    column: $table.anxietyAfter,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get avoidanceBehavior => $composableBuilder(
+    column: $table.avoidanceBehavior,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AnxietyEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AnxietyEventsTable> {
+  $$AnxietyEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  GeneratedColumn<String> get triggerSituation => $composableBuilder(
+    column: $table.triggerSituation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get anxietyLevel => $composableBuilder(
+    column: $table.anxietyLevel,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get physicalSymptoms => $composableBuilder(
+    column: $table.physicalSymptoms,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get copingUsed => $composableBuilder(
+    column: $table.copingUsed,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get anxietyAfter => $composableBuilder(
+    column: $table.anxietyAfter,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get avoidanceBehavior => $composableBuilder(
+    column: $table.avoidanceBehavior,
+    builder: (column) => column,
+  );
+}
+
+class $$AnxietyEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AnxietyEventsTable,
+          AnxietyEvent,
+          $$AnxietyEventsTableFilterComposer,
+          $$AnxietyEventsTableOrderingComposer,
+          $$AnxietyEventsTableAnnotationComposer,
+          $$AnxietyEventsTableCreateCompanionBuilder,
+          $$AnxietyEventsTableUpdateCompanionBuilder,
+          (
+            AnxietyEvent,
+            BaseReferences<_$AppDatabase, $AnxietyEventsTable, AnxietyEvent>,
+          ),
+          AnxietyEvent,
+          PrefetchHooks Function()
+        > {
+  $$AnxietyEventsTableTableManager(_$AppDatabase db, $AnxietyEventsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AnxietyEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AnxietyEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AnxietyEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> timestamp = const Value.absent(),
+                Value<String?> triggerSituation = const Value.absent(),
+                Value<int> anxietyLevel = const Value.absent(),
+                Value<String> physicalSymptoms = const Value.absent(),
+                Value<String?> copingUsed = const Value.absent(),
+                Value<int?> anxietyAfter = const Value.absent(),
+                Value<bool> avoidanceBehavior = const Value.absent(),
+              }) => AnxietyEventsCompanion(
+                id: id,
+                timestamp: timestamp,
+                triggerSituation: triggerSituation,
+                anxietyLevel: anxietyLevel,
+                physicalSymptoms: physicalSymptoms,
+                copingUsed: copingUsed,
+                anxietyAfter: anxietyAfter,
+                avoidanceBehavior: avoidanceBehavior,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime timestamp,
+                Value<String?> triggerSituation = const Value.absent(),
+                required int anxietyLevel,
+                Value<String> physicalSymptoms = const Value.absent(),
+                Value<String?> copingUsed = const Value.absent(),
+                Value<int?> anxietyAfter = const Value.absent(),
+                Value<bool> avoidanceBehavior = const Value.absent(),
+              }) => AnxietyEventsCompanion.insert(
+                id: id,
+                timestamp: timestamp,
+                triggerSituation: triggerSituation,
+                anxietyLevel: anxietyLevel,
+                physicalSymptoms: physicalSymptoms,
+                copingUsed: copingUsed,
+                anxietyAfter: anxietyAfter,
+                avoidanceBehavior: avoidanceBehavior,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AnxietyEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AnxietyEventsTable,
+      AnxietyEvent,
+      $$AnxietyEventsTableFilterComposer,
+      $$AnxietyEventsTableOrderingComposer,
+      $$AnxietyEventsTableAnnotationComposer,
+      $$AnxietyEventsTableCreateCompanionBuilder,
+      $$AnxietyEventsTableUpdateCompanionBuilder,
+      (
+        AnxietyEvent,
+        BaseReferences<_$AppDatabase, $AnxietyEventsTable, AnxietyEvent>,
+      ),
+      AnxietyEvent,
+      PrefetchHooks Function()
+    >;
+typedef $$BreathingLogsTableCreateCompanionBuilder =
+    BreathingLogsCompanion Function({
+      Value<int> id,
+      required DateTime timestamp,
+      required String technique,
+      required int durationSeconds,
+      Value<int?> anxietyBefore,
+      Value<int?> anxietyAfter,
+    });
+typedef $$BreathingLogsTableUpdateCompanionBuilder =
+    BreathingLogsCompanion Function({
+      Value<int> id,
+      Value<DateTime> timestamp,
+      Value<String> technique,
+      Value<int> durationSeconds,
+      Value<int?> anxietyBefore,
+      Value<int?> anxietyAfter,
+    });
+
+class $$BreathingLogsTableFilterComposer
+    extends Composer<_$AppDatabase, $BreathingLogsTable> {
+  $$BreathingLogsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get technique => $composableBuilder(
+    column: $table.technique,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationSeconds => $composableBuilder(
+    column: $table.durationSeconds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get anxietyBefore => $composableBuilder(
+    column: $table.anxietyBefore,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get anxietyAfter => $composableBuilder(
+    column: $table.anxietyAfter,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$BreathingLogsTableOrderingComposer
+    extends Composer<_$AppDatabase, $BreathingLogsTable> {
+  $$BreathingLogsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get technique => $composableBuilder(
+    column: $table.technique,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationSeconds => $composableBuilder(
+    column: $table.durationSeconds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get anxietyBefore => $composableBuilder(
+    column: $table.anxietyBefore,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get anxietyAfter => $composableBuilder(
+    column: $table.anxietyAfter,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$BreathingLogsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $BreathingLogsTable> {
+  $$BreathingLogsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  GeneratedColumn<String> get technique =>
+      $composableBuilder(column: $table.technique, builder: (column) => column);
+
+  GeneratedColumn<int> get durationSeconds => $composableBuilder(
+    column: $table.durationSeconds,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get anxietyBefore => $composableBuilder(
+    column: $table.anxietyBefore,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get anxietyAfter => $composableBuilder(
+    column: $table.anxietyAfter,
+    builder: (column) => column,
+  );
+}
+
+class $$BreathingLogsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $BreathingLogsTable,
+          BreathingLog,
+          $$BreathingLogsTableFilterComposer,
+          $$BreathingLogsTableOrderingComposer,
+          $$BreathingLogsTableAnnotationComposer,
+          $$BreathingLogsTableCreateCompanionBuilder,
+          $$BreathingLogsTableUpdateCompanionBuilder,
+          (
+            BreathingLog,
+            BaseReferences<_$AppDatabase, $BreathingLogsTable, BreathingLog>,
+          ),
+          BreathingLog,
+          PrefetchHooks Function()
+        > {
+  $$BreathingLogsTableTableManager(_$AppDatabase db, $BreathingLogsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$BreathingLogsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$BreathingLogsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$BreathingLogsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> timestamp = const Value.absent(),
+                Value<String> technique = const Value.absent(),
+                Value<int> durationSeconds = const Value.absent(),
+                Value<int?> anxietyBefore = const Value.absent(),
+                Value<int?> anxietyAfter = const Value.absent(),
+              }) => BreathingLogsCompanion(
+                id: id,
+                timestamp: timestamp,
+                technique: technique,
+                durationSeconds: durationSeconds,
+                anxietyBefore: anxietyBefore,
+                anxietyAfter: anxietyAfter,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime timestamp,
+                required String technique,
+                required int durationSeconds,
+                Value<int?> anxietyBefore = const Value.absent(),
+                Value<int?> anxietyAfter = const Value.absent(),
+              }) => BreathingLogsCompanion.insert(
+                id: id,
+                timestamp: timestamp,
+                technique: technique,
+                durationSeconds: durationSeconds,
+                anxietyBefore: anxietyBefore,
+                anxietyAfter: anxietyAfter,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$BreathingLogsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $BreathingLogsTable,
+      BreathingLog,
+      $$BreathingLogsTableFilterComposer,
+      $$BreathingLogsTableOrderingComposer,
+      $$BreathingLogsTableAnnotationComposer,
+      $$BreathingLogsTableCreateCompanionBuilder,
+      $$BreathingLogsTableUpdateCompanionBuilder,
+      (
+        BreathingLog,
+        BaseReferences<_$AppDatabase, $BreathingLogsTable, BreathingLog>,
+      ),
+      BreathingLog,
+      PrefetchHooks Function()
+    >;
+typedef $$ExposureHierarchyItemsTableCreateCompanionBuilder =
+    ExposureHierarchyItemsCompanion Function({
+      Value<int> id,
+      required String situation,
+      required int fearRating,
+      Value<int> timesExposed,
+      Value<int?> currentFearRating,
+      Value<bool> mastered,
+      Value<DateTime> createdAt,
+    });
+typedef $$ExposureHierarchyItemsTableUpdateCompanionBuilder =
+    ExposureHierarchyItemsCompanion Function({
+      Value<int> id,
+      Value<String> situation,
+      Value<int> fearRating,
+      Value<int> timesExposed,
+      Value<int?> currentFearRating,
+      Value<bool> mastered,
+      Value<DateTime> createdAt,
+    });
+
+class $$ExposureHierarchyItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $ExposureHierarchyItemsTable> {
+  $$ExposureHierarchyItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get situation => $composableBuilder(
+    column: $table.situation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get fearRating => $composableBuilder(
+    column: $table.fearRating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get timesExposed => $composableBuilder(
+    column: $table.timesExposed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get currentFearRating => $composableBuilder(
+    column: $table.currentFearRating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get mastered => $composableBuilder(
+    column: $table.mastered,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ExposureHierarchyItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExposureHierarchyItemsTable> {
+  $$ExposureHierarchyItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get situation => $composableBuilder(
+    column: $table.situation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fearRating => $composableBuilder(
+    column: $table.fearRating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get timesExposed => $composableBuilder(
+    column: $table.timesExposed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get currentFearRating => $composableBuilder(
+    column: $table.currentFearRating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get mastered => $composableBuilder(
+    column: $table.mastered,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ExposureHierarchyItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExposureHierarchyItemsTable> {
+  $$ExposureHierarchyItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get situation =>
+      $composableBuilder(column: $table.situation, builder: (column) => column);
+
+  GeneratedColumn<int> get fearRating => $composableBuilder(
+    column: $table.fearRating,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get timesExposed => $composableBuilder(
+    column: $table.timesExposed,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get currentFearRating => $composableBuilder(
+    column: $table.currentFearRating,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get mastered =>
+      $composableBuilder(column: $table.mastered, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$ExposureHierarchyItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ExposureHierarchyItemsTable,
+          ExposureHierarchyItem,
+          $$ExposureHierarchyItemsTableFilterComposer,
+          $$ExposureHierarchyItemsTableOrderingComposer,
+          $$ExposureHierarchyItemsTableAnnotationComposer,
+          $$ExposureHierarchyItemsTableCreateCompanionBuilder,
+          $$ExposureHierarchyItemsTableUpdateCompanionBuilder,
+          (
+            ExposureHierarchyItem,
+            BaseReferences<
+              _$AppDatabase,
+              $ExposureHierarchyItemsTable,
+              ExposureHierarchyItem
+            >,
+          ),
+          ExposureHierarchyItem,
+          PrefetchHooks Function()
+        > {
+  $$ExposureHierarchyItemsTableTableManager(
+    _$AppDatabase db,
+    $ExposureHierarchyItemsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExposureHierarchyItemsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$ExposureHierarchyItemsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$ExposureHierarchyItemsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> situation = const Value.absent(),
+                Value<int> fearRating = const Value.absent(),
+                Value<int> timesExposed = const Value.absent(),
+                Value<int?> currentFearRating = const Value.absent(),
+                Value<bool> mastered = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => ExposureHierarchyItemsCompanion(
+                id: id,
+                situation: situation,
+                fearRating: fearRating,
+                timesExposed: timesExposed,
+                currentFearRating: currentFearRating,
+                mastered: mastered,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String situation,
+                required int fearRating,
+                Value<int> timesExposed = const Value.absent(),
+                Value<int?> currentFearRating = const Value.absent(),
+                Value<bool> mastered = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => ExposureHierarchyItemsCompanion.insert(
+                id: id,
+                situation: situation,
+                fearRating: fearRating,
+                timesExposed: timesExposed,
+                currentFearRating: currentFearRating,
+                mastered: mastered,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ExposureHierarchyItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ExposureHierarchyItemsTable,
+      ExposureHierarchyItem,
+      $$ExposureHierarchyItemsTableFilterComposer,
+      $$ExposureHierarchyItemsTableOrderingComposer,
+      $$ExposureHierarchyItemsTableAnnotationComposer,
+      $$ExposureHierarchyItemsTableCreateCompanionBuilder,
+      $$ExposureHierarchyItemsTableUpdateCompanionBuilder,
+      (
+        ExposureHierarchyItem,
+        BaseReferences<
+          _$AppDatabase,
+          $ExposureHierarchyItemsTable,
+          ExposureHierarchyItem
+        >,
+      ),
+      ExposureHierarchyItem,
+      PrefetchHooks Function()
+    >;
+typedef $$BehavioralActivitiesTableCreateCompanionBuilder =
+    BehavioralActivitiesCompanion Function({
+      Value<int> id,
+      required DateTime date,
+      required String activityType,
+      required String category,
+      required int pleasureRating,
+      required int masteryRating,
+      required int durationMinutes,
+      Value<bool> wasScheduled,
+    });
+typedef $$BehavioralActivitiesTableUpdateCompanionBuilder =
+    BehavioralActivitiesCompanion Function({
+      Value<int> id,
+      Value<DateTime> date,
+      Value<String> activityType,
+      Value<String> category,
+      Value<int> pleasureRating,
+      Value<int> masteryRating,
+      Value<int> durationMinutes,
+      Value<bool> wasScheduled,
+    });
+
+class $$BehavioralActivitiesTableFilterComposer
+    extends Composer<_$AppDatabase, $BehavioralActivitiesTable> {
+  $$BehavioralActivitiesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get activityType => $composableBuilder(
+    column: $table.activityType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get pleasureRating => $composableBuilder(
+    column: $table.pleasureRating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get masteryRating => $composableBuilder(
+    column: $table.masteryRating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationMinutes => $composableBuilder(
+    column: $table.durationMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get wasScheduled => $composableBuilder(
+    column: $table.wasScheduled,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$BehavioralActivitiesTableOrderingComposer
+    extends Composer<_$AppDatabase, $BehavioralActivitiesTable> {
+  $$BehavioralActivitiesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get activityType => $composableBuilder(
+    column: $table.activityType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get pleasureRating => $composableBuilder(
+    column: $table.pleasureRating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get masteryRating => $composableBuilder(
+    column: $table.masteryRating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationMinutes => $composableBuilder(
+    column: $table.durationMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get wasScheduled => $composableBuilder(
+    column: $table.wasScheduled,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$BehavioralActivitiesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $BehavioralActivitiesTable> {
+  $$BehavioralActivitiesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get activityType => $composableBuilder(
+    column: $table.activityType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<int> get pleasureRating => $composableBuilder(
+    column: $table.pleasureRating,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get masteryRating => $composableBuilder(
+    column: $table.masteryRating,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get durationMinutes => $composableBuilder(
+    column: $table.durationMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get wasScheduled => $composableBuilder(
+    column: $table.wasScheduled,
+    builder: (column) => column,
+  );
+}
+
+class $$BehavioralActivitiesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $BehavioralActivitiesTable,
+          BehavioralActivity,
+          $$BehavioralActivitiesTableFilterComposer,
+          $$BehavioralActivitiesTableOrderingComposer,
+          $$BehavioralActivitiesTableAnnotationComposer,
+          $$BehavioralActivitiesTableCreateCompanionBuilder,
+          $$BehavioralActivitiesTableUpdateCompanionBuilder,
+          (
+            BehavioralActivity,
+            BaseReferences<
+              _$AppDatabase,
+              $BehavioralActivitiesTable,
+              BehavioralActivity
+            >,
+          ),
+          BehavioralActivity,
+          PrefetchHooks Function()
+        > {
+  $$BehavioralActivitiesTableTableManager(
+    _$AppDatabase db,
+    $BehavioralActivitiesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$BehavioralActivitiesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$BehavioralActivitiesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$BehavioralActivitiesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<String> activityType = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<int> pleasureRating = const Value.absent(),
+                Value<int> masteryRating = const Value.absent(),
+                Value<int> durationMinutes = const Value.absent(),
+                Value<bool> wasScheduled = const Value.absent(),
+              }) => BehavioralActivitiesCompanion(
+                id: id,
+                date: date,
+                activityType: activityType,
+                category: category,
+                pleasureRating: pleasureRating,
+                masteryRating: masteryRating,
+                durationMinutes: durationMinutes,
+                wasScheduled: wasScheduled,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime date,
+                required String activityType,
+                required String category,
+                required int pleasureRating,
+                required int masteryRating,
+                required int durationMinutes,
+                Value<bool> wasScheduled = const Value.absent(),
+              }) => BehavioralActivitiesCompanion.insert(
+                id: id,
+                date: date,
+                activityType: activityType,
+                category: category,
+                pleasureRating: pleasureRating,
+                masteryRating: masteryRating,
+                durationMinutes: durationMinutes,
+                wasScheduled: wasScheduled,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$BehavioralActivitiesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $BehavioralActivitiesTable,
+      BehavioralActivity,
+      $$BehavioralActivitiesTableFilterComposer,
+      $$BehavioralActivitiesTableOrderingComposer,
+      $$BehavioralActivitiesTableAnnotationComposer,
+      $$BehavioralActivitiesTableCreateCompanionBuilder,
+      $$BehavioralActivitiesTableUpdateCompanionBuilder,
+      (
+        BehavioralActivity,
+        BaseReferences<
+          _$AppDatabase,
+          $BehavioralActivitiesTable,
+          BehavioralActivity
+        >,
+      ),
+      BehavioralActivity,
+      PrefetchHooks Function()
+    >;
+typedef $$ThoughtRecordsTableCreateCompanionBuilder =
+    ThoughtRecordsCompanion Function({
+      Value<int> id,
+      required DateTime date,
+      required String situation,
+      required String automaticThought,
+      required String emotion,
+      required int emotionIntensity,
+      Value<String?> evidenceFor,
+      Value<String?> evidenceAgainst,
+      Value<String?> balancedThought,
+      Value<int?> newIntensity,
+      Value<String?> distortionType,
+    });
+typedef $$ThoughtRecordsTableUpdateCompanionBuilder =
+    ThoughtRecordsCompanion Function({
+      Value<int> id,
+      Value<DateTime> date,
+      Value<String> situation,
+      Value<String> automaticThought,
+      Value<String> emotion,
+      Value<int> emotionIntensity,
+      Value<String?> evidenceFor,
+      Value<String?> evidenceAgainst,
+      Value<String?> balancedThought,
+      Value<int?> newIntensity,
+      Value<String?> distortionType,
+    });
+
+class $$ThoughtRecordsTableFilterComposer
+    extends Composer<_$AppDatabase, $ThoughtRecordsTable> {
+  $$ThoughtRecordsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get situation => $composableBuilder(
+    column: $table.situation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get automaticThought => $composableBuilder(
+    column: $table.automaticThought,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get emotion => $composableBuilder(
+    column: $table.emotion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get emotionIntensity => $composableBuilder(
+    column: $table.emotionIntensity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get evidenceFor => $composableBuilder(
+    column: $table.evidenceFor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get evidenceAgainst => $composableBuilder(
+    column: $table.evidenceAgainst,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get balancedThought => $composableBuilder(
+    column: $table.balancedThought,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get newIntensity => $composableBuilder(
+    column: $table.newIntensity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get distortionType => $composableBuilder(
+    column: $table.distortionType,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ThoughtRecordsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ThoughtRecordsTable> {
+  $$ThoughtRecordsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get situation => $composableBuilder(
+    column: $table.situation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get automaticThought => $composableBuilder(
+    column: $table.automaticThought,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get emotion => $composableBuilder(
+    column: $table.emotion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get emotionIntensity => $composableBuilder(
+    column: $table.emotionIntensity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get evidenceFor => $composableBuilder(
+    column: $table.evidenceFor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get evidenceAgainst => $composableBuilder(
+    column: $table.evidenceAgainst,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get balancedThought => $composableBuilder(
+    column: $table.balancedThought,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get newIntensity => $composableBuilder(
+    column: $table.newIntensity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get distortionType => $composableBuilder(
+    column: $table.distortionType,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ThoughtRecordsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ThoughtRecordsTable> {
+  $$ThoughtRecordsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get situation =>
+      $composableBuilder(column: $table.situation, builder: (column) => column);
+
+  GeneratedColumn<String> get automaticThought => $composableBuilder(
+    column: $table.automaticThought,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get emotion =>
+      $composableBuilder(column: $table.emotion, builder: (column) => column);
+
+  GeneratedColumn<int> get emotionIntensity => $composableBuilder(
+    column: $table.emotionIntensity,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get evidenceFor => $composableBuilder(
+    column: $table.evidenceFor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get evidenceAgainst => $composableBuilder(
+    column: $table.evidenceAgainst,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get balancedThought => $composableBuilder(
+    column: $table.balancedThought,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get newIntensity => $composableBuilder(
+    column: $table.newIntensity,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get distortionType => $composableBuilder(
+    column: $table.distortionType,
+    builder: (column) => column,
+  );
+}
+
+class $$ThoughtRecordsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ThoughtRecordsTable,
+          ThoughtRecord,
+          $$ThoughtRecordsTableFilterComposer,
+          $$ThoughtRecordsTableOrderingComposer,
+          $$ThoughtRecordsTableAnnotationComposer,
+          $$ThoughtRecordsTableCreateCompanionBuilder,
+          $$ThoughtRecordsTableUpdateCompanionBuilder,
+          (
+            ThoughtRecord,
+            BaseReferences<_$AppDatabase, $ThoughtRecordsTable, ThoughtRecord>,
+          ),
+          ThoughtRecord,
+          PrefetchHooks Function()
+        > {
+  $$ThoughtRecordsTableTableManager(
+    _$AppDatabase db,
+    $ThoughtRecordsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ThoughtRecordsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ThoughtRecordsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ThoughtRecordsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<String> situation = const Value.absent(),
+                Value<String> automaticThought = const Value.absent(),
+                Value<String> emotion = const Value.absent(),
+                Value<int> emotionIntensity = const Value.absent(),
+                Value<String?> evidenceFor = const Value.absent(),
+                Value<String?> evidenceAgainst = const Value.absent(),
+                Value<String?> balancedThought = const Value.absent(),
+                Value<int?> newIntensity = const Value.absent(),
+                Value<String?> distortionType = const Value.absent(),
+              }) => ThoughtRecordsCompanion(
+                id: id,
+                date: date,
+                situation: situation,
+                automaticThought: automaticThought,
+                emotion: emotion,
+                emotionIntensity: emotionIntensity,
+                evidenceFor: evidenceFor,
+                evidenceAgainst: evidenceAgainst,
+                balancedThought: balancedThought,
+                newIntensity: newIntensity,
+                distortionType: distortionType,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime date,
+                required String situation,
+                required String automaticThought,
+                required String emotion,
+                required int emotionIntensity,
+                Value<String?> evidenceFor = const Value.absent(),
+                Value<String?> evidenceAgainst = const Value.absent(),
+                Value<String?> balancedThought = const Value.absent(),
+                Value<int?> newIntensity = const Value.absent(),
+                Value<String?> distortionType = const Value.absent(),
+              }) => ThoughtRecordsCompanion.insert(
+                id: id,
+                date: date,
+                situation: situation,
+                automaticThought: automaticThought,
+                emotion: emotion,
+                emotionIntensity: emotionIntensity,
+                evidenceFor: evidenceFor,
+                evidenceAgainst: evidenceAgainst,
+                balancedThought: balancedThought,
+                newIntensity: newIntensity,
+                distortionType: distortionType,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ThoughtRecordsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ThoughtRecordsTable,
+      ThoughtRecord,
+      $$ThoughtRecordsTableFilterComposer,
+      $$ThoughtRecordsTableOrderingComposer,
+      $$ThoughtRecordsTableAnnotationComposer,
+      $$ThoughtRecordsTableCreateCompanionBuilder,
+      $$ThoughtRecordsTableUpdateCompanionBuilder,
+      (
+        ThoughtRecord,
+        BaseReferences<_$AppDatabase, $ThoughtRecordsTable, ThoughtRecord>,
+      ),
+      ThoughtRecord,
+      PrefetchHooks Function()
+    >;
+typedef $$FocusSessionsTableCreateCompanionBuilder =
+    FocusSessionsCompanion Function({
+      Value<int> id,
+      required DateTime startTime,
+      Value<DateTime?> endTime,
+      required String taskDescription,
+      Value<int?> focusRating,
+      Value<int> distractions,
+      required String technique,
+    });
+typedef $$FocusSessionsTableUpdateCompanionBuilder =
+    FocusSessionsCompanion Function({
+      Value<int> id,
+      Value<DateTime> startTime,
+      Value<DateTime?> endTime,
+      Value<String> taskDescription,
+      Value<int?> focusRating,
+      Value<int> distractions,
+      Value<String> technique,
+    });
+
+class $$FocusSessionsTableFilterComposer
+    extends Composer<_$AppDatabase, $FocusSessionsTable> {
+  $$FocusSessionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startTime => $composableBuilder(
+    column: $table.startTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get endTime => $composableBuilder(
+    column: $table.endTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get taskDescription => $composableBuilder(
+    column: $table.taskDescription,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get focusRating => $composableBuilder(
+    column: $table.focusRating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get distractions => $composableBuilder(
+    column: $table.distractions,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get technique => $composableBuilder(
+    column: $table.technique,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FocusSessionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $FocusSessionsTable> {
+  $$FocusSessionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startTime => $composableBuilder(
+    column: $table.startTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get endTime => $composableBuilder(
+    column: $table.endTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get taskDescription => $composableBuilder(
+    column: $table.taskDescription,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get focusRating => $composableBuilder(
+    column: $table.focusRating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get distractions => $composableBuilder(
+    column: $table.distractions,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get technique => $composableBuilder(
+    column: $table.technique,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FocusSessionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FocusSessionsTable> {
+  $$FocusSessionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startTime =>
+      $composableBuilder(column: $table.startTime, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get endTime =>
+      $composableBuilder(column: $table.endTime, builder: (column) => column);
+
+  GeneratedColumn<String> get taskDescription => $composableBuilder(
+    column: $table.taskDescription,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get focusRating => $composableBuilder(
+    column: $table.focusRating,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get distractions => $composableBuilder(
+    column: $table.distractions,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get technique =>
+      $composableBuilder(column: $table.technique, builder: (column) => column);
+}
+
+class $$FocusSessionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FocusSessionsTable,
+          FocusSession,
+          $$FocusSessionsTableFilterComposer,
+          $$FocusSessionsTableOrderingComposer,
+          $$FocusSessionsTableAnnotationComposer,
+          $$FocusSessionsTableCreateCompanionBuilder,
+          $$FocusSessionsTableUpdateCompanionBuilder,
+          (
+            FocusSession,
+            BaseReferences<_$AppDatabase, $FocusSessionsTable, FocusSession>,
+          ),
+          FocusSession,
+          PrefetchHooks Function()
+        > {
+  $$FocusSessionsTableTableManager(_$AppDatabase db, $FocusSessionsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FocusSessionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FocusSessionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FocusSessionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> startTime = const Value.absent(),
+                Value<DateTime?> endTime = const Value.absent(),
+                Value<String> taskDescription = const Value.absent(),
+                Value<int?> focusRating = const Value.absent(),
+                Value<int> distractions = const Value.absent(),
+                Value<String> technique = const Value.absent(),
+              }) => FocusSessionsCompanion(
+                id: id,
+                startTime: startTime,
+                endTime: endTime,
+                taskDescription: taskDescription,
+                focusRating: focusRating,
+                distractions: distractions,
+                technique: technique,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime startTime,
+                Value<DateTime?> endTime = const Value.absent(),
+                required String taskDescription,
+                Value<int?> focusRating = const Value.absent(),
+                Value<int> distractions = const Value.absent(),
+                required String technique,
+              }) => FocusSessionsCompanion.insert(
+                id: id,
+                startTime: startTime,
+                endTime: endTime,
+                taskDescription: taskDescription,
+                focusRating: focusRating,
+                distractions: distractions,
+                technique: technique,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FocusSessionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FocusSessionsTable,
+      FocusSession,
+      $$FocusSessionsTableFilterComposer,
+      $$FocusSessionsTableOrderingComposer,
+      $$FocusSessionsTableAnnotationComposer,
+      $$FocusSessionsTableCreateCompanionBuilder,
+      $$FocusSessionsTableUpdateCompanionBuilder,
+      (
+        FocusSession,
+        BaseReferences<_$AppDatabase, $FocusSessionsTable, FocusSession>,
+      ),
+      FocusSession,
+      PrefetchHooks Function()
+    >;
+typedef $$AdhdDailyPlansTableCreateCompanionBuilder =
+    AdhdDailyPlansCompanion Function({
+      Value<int> id,
+      required DateTime date,
+      Value<String> top3Tasks,
+      Value<String> completedTasks,
+      Value<String?> energyPattern,
+      Value<String?> bestFocusTime,
+    });
+typedef $$AdhdDailyPlansTableUpdateCompanionBuilder =
+    AdhdDailyPlansCompanion Function({
+      Value<int> id,
+      Value<DateTime> date,
+      Value<String> top3Tasks,
+      Value<String> completedTasks,
+      Value<String?> energyPattern,
+      Value<String?> bestFocusTime,
+    });
+
+class $$AdhdDailyPlansTableFilterComposer
+    extends Composer<_$AppDatabase, $AdhdDailyPlansTable> {
+  $$AdhdDailyPlansTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get top3Tasks => $composableBuilder(
+    column: $table.top3Tasks,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get completedTasks => $composableBuilder(
+    column: $table.completedTasks,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get energyPattern => $composableBuilder(
+    column: $table.energyPattern,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bestFocusTime => $composableBuilder(
+    column: $table.bestFocusTime,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AdhdDailyPlansTableOrderingComposer
+    extends Composer<_$AppDatabase, $AdhdDailyPlansTable> {
+  $$AdhdDailyPlansTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get top3Tasks => $composableBuilder(
+    column: $table.top3Tasks,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get completedTasks => $composableBuilder(
+    column: $table.completedTasks,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get energyPattern => $composableBuilder(
+    column: $table.energyPattern,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bestFocusTime => $composableBuilder(
+    column: $table.bestFocusTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AdhdDailyPlansTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AdhdDailyPlansTable> {
+  $$AdhdDailyPlansTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get top3Tasks =>
+      $composableBuilder(column: $table.top3Tasks, builder: (column) => column);
+
+  GeneratedColumn<String> get completedTasks => $composableBuilder(
+    column: $table.completedTasks,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get energyPattern => $composableBuilder(
+    column: $table.energyPattern,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get bestFocusTime => $composableBuilder(
+    column: $table.bestFocusTime,
+    builder: (column) => column,
+  );
+}
+
+class $$AdhdDailyPlansTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AdhdDailyPlansTable,
+          AdhdDailyPlan,
+          $$AdhdDailyPlansTableFilterComposer,
+          $$AdhdDailyPlansTableOrderingComposer,
+          $$AdhdDailyPlansTableAnnotationComposer,
+          $$AdhdDailyPlansTableCreateCompanionBuilder,
+          $$AdhdDailyPlansTableUpdateCompanionBuilder,
+          (
+            AdhdDailyPlan,
+            BaseReferences<_$AppDatabase, $AdhdDailyPlansTable, AdhdDailyPlan>,
+          ),
+          AdhdDailyPlan,
+          PrefetchHooks Function()
+        > {
+  $$AdhdDailyPlansTableTableManager(
+    _$AppDatabase db,
+    $AdhdDailyPlansTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AdhdDailyPlansTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AdhdDailyPlansTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AdhdDailyPlansTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<String> top3Tasks = const Value.absent(),
+                Value<String> completedTasks = const Value.absent(),
+                Value<String?> energyPattern = const Value.absent(),
+                Value<String?> bestFocusTime = const Value.absent(),
+              }) => AdhdDailyPlansCompanion(
+                id: id,
+                date: date,
+                top3Tasks: top3Tasks,
+                completedTasks: completedTasks,
+                energyPattern: energyPattern,
+                bestFocusTime: bestFocusTime,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime date,
+                Value<String> top3Tasks = const Value.absent(),
+                Value<String> completedTasks = const Value.absent(),
+                Value<String?> energyPattern = const Value.absent(),
+                Value<String?> bestFocusTime = const Value.absent(),
+              }) => AdhdDailyPlansCompanion.insert(
+                id: id,
+                date: date,
+                top3Tasks: top3Tasks,
+                completedTasks: completedTasks,
+                energyPattern: energyPattern,
+                bestFocusTime: bestFocusTime,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AdhdDailyPlansTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AdhdDailyPlansTable,
+      AdhdDailyPlan,
+      $$AdhdDailyPlansTableFilterComposer,
+      $$AdhdDailyPlansTableOrderingComposer,
+      $$AdhdDailyPlansTableAnnotationComposer,
+      $$AdhdDailyPlansTableCreateCompanionBuilder,
+      $$AdhdDailyPlansTableUpdateCompanionBuilder,
+      (
+        AdhdDailyPlan,
+        BaseReferences<_$AppDatabase, $AdhdDailyPlansTable, AdhdDailyPlan>,
+      ),
+      AdhdDailyPlan,
+      PrefetchHooks Function()
+    >;
+typedef $$CycleEntriesTableCreateCompanionBuilder =
+    CycleEntriesCompanion Function({
+      Value<int> id,
+      required DateTime date,
+      Value<int?> flowIntensity,
+      Value<String> symptoms,
+      Value<int?> mood,
+      Value<int?> energy,
+      Value<int?> cycleDay,
+      Value<String?> phase,
+      Value<String?> notes,
+    });
+typedef $$CycleEntriesTableUpdateCompanionBuilder =
+    CycleEntriesCompanion Function({
+      Value<int> id,
+      Value<DateTime> date,
+      Value<int?> flowIntensity,
+      Value<String> symptoms,
+      Value<int?> mood,
+      Value<int?> energy,
+      Value<int?> cycleDay,
+      Value<String?> phase,
+      Value<String?> notes,
+    });
+
+class $$CycleEntriesTableFilterComposer
+    extends Composer<_$AppDatabase, $CycleEntriesTable> {
+  $$CycleEntriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get flowIntensity => $composableBuilder(
+    column: $table.flowIntensity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get symptoms => $composableBuilder(
+    column: $table.symptoms,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get mood => $composableBuilder(
+    column: $table.mood,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get energy => $composableBuilder(
+    column: $table.energy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get cycleDay => $composableBuilder(
+    column: $table.cycleDay,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get phase => $composableBuilder(
+    column: $table.phase,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CycleEntriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $CycleEntriesTable> {
+  $$CycleEntriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get flowIntensity => $composableBuilder(
+    column: $table.flowIntensity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get symptoms => $composableBuilder(
+    column: $table.symptoms,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get mood => $composableBuilder(
+    column: $table.mood,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get energy => $composableBuilder(
+    column: $table.energy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get cycleDay => $composableBuilder(
+    column: $table.cycleDay,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get phase => $composableBuilder(
+    column: $table.phase,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CycleEntriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CycleEntriesTable> {
+  $$CycleEntriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<int> get flowIntensity => $composableBuilder(
+    column: $table.flowIntensity,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get symptoms =>
+      $composableBuilder(column: $table.symptoms, builder: (column) => column);
+
+  GeneratedColumn<int> get mood =>
+      $composableBuilder(column: $table.mood, builder: (column) => column);
+
+  GeneratedColumn<int> get energy =>
+      $composableBuilder(column: $table.energy, builder: (column) => column);
+
+  GeneratedColumn<int> get cycleDay =>
+      $composableBuilder(column: $table.cycleDay, builder: (column) => column);
+
+  GeneratedColumn<String> get phase =>
+      $composableBuilder(column: $table.phase, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+}
+
+class $$CycleEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CycleEntriesTable,
+          CycleEntry,
+          $$CycleEntriesTableFilterComposer,
+          $$CycleEntriesTableOrderingComposer,
+          $$CycleEntriesTableAnnotationComposer,
+          $$CycleEntriesTableCreateCompanionBuilder,
+          $$CycleEntriesTableUpdateCompanionBuilder,
+          (
+            CycleEntry,
+            BaseReferences<_$AppDatabase, $CycleEntriesTable, CycleEntry>,
+          ),
+          CycleEntry,
+          PrefetchHooks Function()
+        > {
+  $$CycleEntriesTableTableManager(_$AppDatabase db, $CycleEntriesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CycleEntriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CycleEntriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CycleEntriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<int?> flowIntensity = const Value.absent(),
+                Value<String> symptoms = const Value.absent(),
+                Value<int?> mood = const Value.absent(),
+                Value<int?> energy = const Value.absent(),
+                Value<int?> cycleDay = const Value.absent(),
+                Value<String?> phase = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+              }) => CycleEntriesCompanion(
+                id: id,
+                date: date,
+                flowIntensity: flowIntensity,
+                symptoms: symptoms,
+                mood: mood,
+                energy: energy,
+                cycleDay: cycleDay,
+                phase: phase,
+                notes: notes,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime date,
+                Value<int?> flowIntensity = const Value.absent(),
+                Value<String> symptoms = const Value.absent(),
+                Value<int?> mood = const Value.absent(),
+                Value<int?> energy = const Value.absent(),
+                Value<int?> cycleDay = const Value.absent(),
+                Value<String?> phase = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+              }) => CycleEntriesCompanion.insert(
+                id: id,
+                date: date,
+                flowIntensity: flowIntensity,
+                symptoms: symptoms,
+                mood: mood,
+                energy: energy,
+                cycleDay: cycleDay,
+                phase: phase,
+                notes: notes,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CycleEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CycleEntriesTable,
+      CycleEntry,
+      $$CycleEntriesTableFilterComposer,
+      $$CycleEntriesTableOrderingComposer,
+      $$CycleEntriesTableAnnotationComposer,
+      $$CycleEntriesTableCreateCompanionBuilder,
+      $$CycleEntriesTableUpdateCompanionBuilder,
+      (
+        CycleEntry,
+        BaseReferences<_$AppDatabase, $CycleEntriesTable, CycleEntry>,
+      ),
+      CycleEntry,
+      PrefetchHooks Function()
+    >;
+typedef $$CyclePredictionsTableCreateCompanionBuilder =
+    CyclePredictionsCompanion Function({
+      Value<int> id,
+      required DateTime predictedStart,
+      required DateTime predictedEnd,
+      Value<DateTime?> predictedOvulation,
+      Value<double> confidence,
+      Value<int> basedOnCycles,
+    });
+typedef $$CyclePredictionsTableUpdateCompanionBuilder =
+    CyclePredictionsCompanion Function({
+      Value<int> id,
+      Value<DateTime> predictedStart,
+      Value<DateTime> predictedEnd,
+      Value<DateTime?> predictedOvulation,
+      Value<double> confidence,
+      Value<int> basedOnCycles,
+    });
+
+class $$CyclePredictionsTableFilterComposer
+    extends Composer<_$AppDatabase, $CyclePredictionsTable> {
+  $$CyclePredictionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get predictedStart => $composableBuilder(
+    column: $table.predictedStart,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get predictedEnd => $composableBuilder(
+    column: $table.predictedEnd,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get predictedOvulation => $composableBuilder(
+    column: $table.predictedOvulation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get confidence => $composableBuilder(
+    column: $table.confidence,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get basedOnCycles => $composableBuilder(
+    column: $table.basedOnCycles,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CyclePredictionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CyclePredictionsTable> {
+  $$CyclePredictionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get predictedStart => $composableBuilder(
+    column: $table.predictedStart,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get predictedEnd => $composableBuilder(
+    column: $table.predictedEnd,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get predictedOvulation => $composableBuilder(
+    column: $table.predictedOvulation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get confidence => $composableBuilder(
+    column: $table.confidence,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get basedOnCycles => $composableBuilder(
+    column: $table.basedOnCycles,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CyclePredictionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CyclePredictionsTable> {
+  $$CyclePredictionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get predictedStart => $composableBuilder(
+    column: $table.predictedStart,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get predictedEnd => $composableBuilder(
+    column: $table.predictedEnd,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get predictedOvulation => $composableBuilder(
+    column: $table.predictedOvulation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get confidence => $composableBuilder(
+    column: $table.confidence,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get basedOnCycles => $composableBuilder(
+    column: $table.basedOnCycles,
+    builder: (column) => column,
+  );
+}
+
+class $$CyclePredictionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CyclePredictionsTable,
+          CyclePrediction,
+          $$CyclePredictionsTableFilterComposer,
+          $$CyclePredictionsTableOrderingComposer,
+          $$CyclePredictionsTableAnnotationComposer,
+          $$CyclePredictionsTableCreateCompanionBuilder,
+          $$CyclePredictionsTableUpdateCompanionBuilder,
+          (
+            CyclePrediction,
+            BaseReferences<
+              _$AppDatabase,
+              $CyclePredictionsTable,
+              CyclePrediction
+            >,
+          ),
+          CyclePrediction,
+          PrefetchHooks Function()
+        > {
+  $$CyclePredictionsTableTableManager(
+    _$AppDatabase db,
+    $CyclePredictionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CyclePredictionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CyclePredictionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CyclePredictionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> predictedStart = const Value.absent(),
+                Value<DateTime> predictedEnd = const Value.absent(),
+                Value<DateTime?> predictedOvulation = const Value.absent(),
+                Value<double> confidence = const Value.absent(),
+                Value<int> basedOnCycles = const Value.absent(),
+              }) => CyclePredictionsCompanion(
+                id: id,
+                predictedStart: predictedStart,
+                predictedEnd: predictedEnd,
+                predictedOvulation: predictedOvulation,
+                confidence: confidence,
+                basedOnCycles: basedOnCycles,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime predictedStart,
+                required DateTime predictedEnd,
+                Value<DateTime?> predictedOvulation = const Value.absent(),
+                Value<double> confidence = const Value.absent(),
+                Value<int> basedOnCycles = const Value.absent(),
+              }) => CyclePredictionsCompanion.insert(
+                id: id,
+                predictedStart: predictedStart,
+                predictedEnd: predictedEnd,
+                predictedOvulation: predictedOvulation,
+                confidence: confidence,
+                basedOnCycles: basedOnCycles,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CyclePredictionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CyclePredictionsTable,
+      CyclePrediction,
+      $$CyclePredictionsTableFilterComposer,
+      $$CyclePredictionsTableOrderingComposer,
+      $$CyclePredictionsTableAnnotationComposer,
+      $$CyclePredictionsTableCreateCompanionBuilder,
+      $$CyclePredictionsTableUpdateCompanionBuilder,
+      (
+        CyclePrediction,
+        BaseReferences<_$AppDatabase, $CyclePredictionsTable, CyclePrediction>,
+      ),
+      CyclePrediction,
+      PrefetchHooks Function()
+    >;
+typedef $$DailyTaskAssignmentsTableCreateCompanionBuilder =
+    DailyTaskAssignmentsCompanion Function({
+      Value<int> id,
+      required DateTime date,
+      required String taskId,
+      required String taskTitle,
+      required String taskDescription,
+      required String conditionType,
+      required String category,
+      required int durationMinutes,
+      required String scheduledTime,
+      Value<bool> completed,
+      Value<int?> effectivenessRating,
+      Value<bool> skipped,
+    });
+typedef $$DailyTaskAssignmentsTableUpdateCompanionBuilder =
+    DailyTaskAssignmentsCompanion Function({
+      Value<int> id,
+      Value<DateTime> date,
+      Value<String> taskId,
+      Value<String> taskTitle,
+      Value<String> taskDescription,
+      Value<String> conditionType,
+      Value<String> category,
+      Value<int> durationMinutes,
+      Value<String> scheduledTime,
+      Value<bool> completed,
+      Value<int?> effectivenessRating,
+      Value<bool> skipped,
+    });
+
+class $$DailyTaskAssignmentsTableFilterComposer
+    extends Composer<_$AppDatabase, $DailyTaskAssignmentsTable> {
+  $$DailyTaskAssignmentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get taskId => $composableBuilder(
+    column: $table.taskId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get taskTitle => $composableBuilder(
+    column: $table.taskTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get taskDescription => $composableBuilder(
+    column: $table.taskDescription,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get conditionType => $composableBuilder(
+    column: $table.conditionType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationMinutes => $composableBuilder(
+    column: $table.durationMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get scheduledTime => $composableBuilder(
+    column: $table.scheduledTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get completed => $composableBuilder(
+    column: $table.completed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get effectivenessRating => $composableBuilder(
+    column: $table.effectivenessRating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get skipped => $composableBuilder(
+    column: $table.skipped,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DailyTaskAssignmentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $DailyTaskAssignmentsTable> {
+  $$DailyTaskAssignmentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get taskId => $composableBuilder(
+    column: $table.taskId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get taskTitle => $composableBuilder(
+    column: $table.taskTitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get taskDescription => $composableBuilder(
+    column: $table.taskDescription,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get conditionType => $composableBuilder(
+    column: $table.conditionType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationMinutes => $composableBuilder(
+    column: $table.durationMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get scheduledTime => $composableBuilder(
+    column: $table.scheduledTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get completed => $composableBuilder(
+    column: $table.completed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get effectivenessRating => $composableBuilder(
+    column: $table.effectivenessRating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get skipped => $composableBuilder(
+    column: $table.skipped,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DailyTaskAssignmentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DailyTaskAssignmentsTable> {
+  $$DailyTaskAssignmentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get taskId =>
+      $composableBuilder(column: $table.taskId, builder: (column) => column);
+
+  GeneratedColumn<String> get taskTitle =>
+      $composableBuilder(column: $table.taskTitle, builder: (column) => column);
+
+  GeneratedColumn<String> get taskDescription => $composableBuilder(
+    column: $table.taskDescription,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get conditionType => $composableBuilder(
+    column: $table.conditionType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<int> get durationMinutes => $composableBuilder(
+    column: $table.durationMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get scheduledTime => $composableBuilder(
+    column: $table.scheduledTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get completed =>
+      $composableBuilder(column: $table.completed, builder: (column) => column);
+
+  GeneratedColumn<int> get effectivenessRating => $composableBuilder(
+    column: $table.effectivenessRating,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get skipped =>
+      $composableBuilder(column: $table.skipped, builder: (column) => column);
+}
+
+class $$DailyTaskAssignmentsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DailyTaskAssignmentsTable,
+          DailyTaskAssignment,
+          $$DailyTaskAssignmentsTableFilterComposer,
+          $$DailyTaskAssignmentsTableOrderingComposer,
+          $$DailyTaskAssignmentsTableAnnotationComposer,
+          $$DailyTaskAssignmentsTableCreateCompanionBuilder,
+          $$DailyTaskAssignmentsTableUpdateCompanionBuilder,
+          (
+            DailyTaskAssignment,
+            BaseReferences<
+              _$AppDatabase,
+              $DailyTaskAssignmentsTable,
+              DailyTaskAssignment
+            >,
+          ),
+          DailyTaskAssignment,
+          PrefetchHooks Function()
+        > {
+  $$DailyTaskAssignmentsTableTableManager(
+    _$AppDatabase db,
+    $DailyTaskAssignmentsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DailyTaskAssignmentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DailyTaskAssignmentsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$DailyTaskAssignmentsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<String> taskId = const Value.absent(),
+                Value<String> taskTitle = const Value.absent(),
+                Value<String> taskDescription = const Value.absent(),
+                Value<String> conditionType = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<int> durationMinutes = const Value.absent(),
+                Value<String> scheduledTime = const Value.absent(),
+                Value<bool> completed = const Value.absent(),
+                Value<int?> effectivenessRating = const Value.absent(),
+                Value<bool> skipped = const Value.absent(),
+              }) => DailyTaskAssignmentsCompanion(
+                id: id,
+                date: date,
+                taskId: taskId,
+                taskTitle: taskTitle,
+                taskDescription: taskDescription,
+                conditionType: conditionType,
+                category: category,
+                durationMinutes: durationMinutes,
+                scheduledTime: scheduledTime,
+                completed: completed,
+                effectivenessRating: effectivenessRating,
+                skipped: skipped,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime date,
+                required String taskId,
+                required String taskTitle,
+                required String taskDescription,
+                required String conditionType,
+                required String category,
+                required int durationMinutes,
+                required String scheduledTime,
+                Value<bool> completed = const Value.absent(),
+                Value<int?> effectivenessRating = const Value.absent(),
+                Value<bool> skipped = const Value.absent(),
+              }) => DailyTaskAssignmentsCompanion.insert(
+                id: id,
+                date: date,
+                taskId: taskId,
+                taskTitle: taskTitle,
+                taskDescription: taskDescription,
+                conditionType: conditionType,
+                category: category,
+                durationMinutes: durationMinutes,
+                scheduledTime: scheduledTime,
+                completed: completed,
+                effectivenessRating: effectivenessRating,
+                skipped: skipped,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DailyTaskAssignmentsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DailyTaskAssignmentsTable,
+      DailyTaskAssignment,
+      $$DailyTaskAssignmentsTableFilterComposer,
+      $$DailyTaskAssignmentsTableOrderingComposer,
+      $$DailyTaskAssignmentsTableAnnotationComposer,
+      $$DailyTaskAssignmentsTableCreateCompanionBuilder,
+      $$DailyTaskAssignmentsTableUpdateCompanionBuilder,
+      (
+        DailyTaskAssignment,
+        BaseReferences<
+          _$AppDatabase,
+          $DailyTaskAssignmentsTable,
+          DailyTaskAssignment
+        >,
+      ),
+      DailyTaskAssignment,
+      PrefetchHooks Function()
+    >;
+typedef $$WeeklyAssessmentsTableCreateCompanionBuilder =
+    WeeklyAssessmentsCompanion Function({
+      Value<int> id,
+      required DateTime date,
+      required String assessmentType,
+      required int totalScore,
+      Value<String> answers,
+      Value<String?> trend,
+    });
+typedef $$WeeklyAssessmentsTableUpdateCompanionBuilder =
+    WeeklyAssessmentsCompanion Function({
+      Value<int> id,
+      Value<DateTime> date,
+      Value<String> assessmentType,
+      Value<int> totalScore,
+      Value<String> answers,
+      Value<String?> trend,
+    });
+
+class $$WeeklyAssessmentsTableFilterComposer
+    extends Composer<_$AppDatabase, $WeeklyAssessmentsTable> {
+  $$WeeklyAssessmentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get assessmentType => $composableBuilder(
+    column: $table.assessmentType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get totalScore => $composableBuilder(
+    column: $table.totalScore,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get answers => $composableBuilder(
+    column: $table.answers,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get trend => $composableBuilder(
+    column: $table.trend,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$WeeklyAssessmentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $WeeklyAssessmentsTable> {
+  $$WeeklyAssessmentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get assessmentType => $composableBuilder(
+    column: $table.assessmentType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get totalScore => $composableBuilder(
+    column: $table.totalScore,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get answers => $composableBuilder(
+    column: $table.answers,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get trend => $composableBuilder(
+    column: $table.trend,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WeeklyAssessmentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WeeklyAssessmentsTable> {
+  $$WeeklyAssessmentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get assessmentType => $composableBuilder(
+    column: $table.assessmentType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get totalScore => $composableBuilder(
+    column: $table.totalScore,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get answers =>
+      $composableBuilder(column: $table.answers, builder: (column) => column);
+
+  GeneratedColumn<String> get trend =>
+      $composableBuilder(column: $table.trend, builder: (column) => column);
+}
+
+class $$WeeklyAssessmentsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WeeklyAssessmentsTable,
+          WeeklyAssessment,
+          $$WeeklyAssessmentsTableFilterComposer,
+          $$WeeklyAssessmentsTableOrderingComposer,
+          $$WeeklyAssessmentsTableAnnotationComposer,
+          $$WeeklyAssessmentsTableCreateCompanionBuilder,
+          $$WeeklyAssessmentsTableUpdateCompanionBuilder,
+          (
+            WeeklyAssessment,
+            BaseReferences<
+              _$AppDatabase,
+              $WeeklyAssessmentsTable,
+              WeeklyAssessment
+            >,
+          ),
+          WeeklyAssessment,
+          PrefetchHooks Function()
+        > {
+  $$WeeklyAssessmentsTableTableManager(
+    _$AppDatabase db,
+    $WeeklyAssessmentsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WeeklyAssessmentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WeeklyAssessmentsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WeeklyAssessmentsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<String> assessmentType = const Value.absent(),
+                Value<int> totalScore = const Value.absent(),
+                Value<String> answers = const Value.absent(),
+                Value<String?> trend = const Value.absent(),
+              }) => WeeklyAssessmentsCompanion(
+                id: id,
+                date: date,
+                assessmentType: assessmentType,
+                totalScore: totalScore,
+                answers: answers,
+                trend: trend,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime date,
+                required String assessmentType,
+                required int totalScore,
+                Value<String> answers = const Value.absent(),
+                Value<String?> trend = const Value.absent(),
+              }) => WeeklyAssessmentsCompanion.insert(
+                id: id,
+                date: date,
+                assessmentType: assessmentType,
+                totalScore: totalScore,
+                answers: answers,
+                trend: trend,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$WeeklyAssessmentsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WeeklyAssessmentsTable,
+      WeeklyAssessment,
+      $$WeeklyAssessmentsTableFilterComposer,
+      $$WeeklyAssessmentsTableOrderingComposer,
+      $$WeeklyAssessmentsTableAnnotationComposer,
+      $$WeeklyAssessmentsTableCreateCompanionBuilder,
+      $$WeeklyAssessmentsTableUpdateCompanionBuilder,
+      (
+        WeeklyAssessment,
+        BaseReferences<
+          _$AppDatabase,
+          $WeeklyAssessmentsTable,
+          WeeklyAssessment
+        >,
+      ),
+      WeeklyAssessment,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -19187,4 +28566,31 @@ class $AppDatabaseManager {
       $$ModelStatesTableTableManager(_db, _db.modelStates);
   $$PassiveUsagesTableTableManager get passiveUsages =>
       $$PassiveUsagesTableTableManager(_db, _db.passiveUsages);
+  $$MoodEntriesTableTableManager get moodEntries =>
+      $$MoodEntriesTableTableManager(_db, _db.moodEntries);
+  $$AnxietyEventsTableTableManager get anxietyEvents =>
+      $$AnxietyEventsTableTableManager(_db, _db.anxietyEvents);
+  $$BreathingLogsTableTableManager get breathingLogs =>
+      $$BreathingLogsTableTableManager(_db, _db.breathingLogs);
+  $$ExposureHierarchyItemsTableTableManager get exposureHierarchyItems =>
+      $$ExposureHierarchyItemsTableTableManager(
+        _db,
+        _db.exposureHierarchyItems,
+      );
+  $$BehavioralActivitiesTableTableManager get behavioralActivities =>
+      $$BehavioralActivitiesTableTableManager(_db, _db.behavioralActivities);
+  $$ThoughtRecordsTableTableManager get thoughtRecords =>
+      $$ThoughtRecordsTableTableManager(_db, _db.thoughtRecords);
+  $$FocusSessionsTableTableManager get focusSessions =>
+      $$FocusSessionsTableTableManager(_db, _db.focusSessions);
+  $$AdhdDailyPlansTableTableManager get adhdDailyPlans =>
+      $$AdhdDailyPlansTableTableManager(_db, _db.adhdDailyPlans);
+  $$CycleEntriesTableTableManager get cycleEntries =>
+      $$CycleEntriesTableTableManager(_db, _db.cycleEntries);
+  $$CyclePredictionsTableTableManager get cyclePredictions =>
+      $$CyclePredictionsTableTableManager(_db, _db.cyclePredictions);
+  $$DailyTaskAssignmentsTableTableManager get dailyTaskAssignments =>
+      $$DailyTaskAssignmentsTableTableManager(_db, _db.dailyTaskAssignments);
+  $$WeeklyAssessmentsTableTableManager get weeklyAssessments =>
+      $$WeeklyAssessmentsTableTableManager(_db, _db.weeklyAssessments);
 }

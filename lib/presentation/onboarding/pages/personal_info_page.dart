@@ -1,32 +1,60 @@
 import 'package:detoxia/presentation/onboarding/onboarding_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const List<String> _countries = [
-  'India',
-  'United States',
-  'United Kingdom',
-  'Canada',
-  'Australia',
-  'Germany',
-  'France',
-  'Brazil',
-  'Indonesia',
-  'Nigeria',
-  'South Africa',
-  'UAE',
-  'Saudi Arabia',
-  'Pakistan',
-  'Bangladesh',
-  'Philippines',
-  'Mexico',
-  'Japan',
-  'South Korea',
-  'Turkey',
-  'Egypt',
-  'Kenya',
-  'Other',
+class _CountryInfo {
+  final String name;
+  final String code;
+  final String dialCode;
+  const _CountryInfo(this.name, this.code, this.dialCode);
+}
+
+const List<_CountryInfo> _countries = [
+  _CountryInfo('India', 'IN', '+91'),
+  _CountryInfo('United States', 'US', '+1'),
+  _CountryInfo('United Kingdom', 'GB', '+44'),
+  _CountryInfo('Canada', 'CA', '+1'),
+  _CountryInfo('Australia', 'AU', '+61'),
+  _CountryInfo('Germany', 'DE', '+49'),
+  _CountryInfo('France', 'FR', '+33'),
+  _CountryInfo('Brazil', 'BR', '+55'),
+  _CountryInfo('Indonesia', 'ID', '+62'),
+  _CountryInfo('Nigeria', 'NG', '+234'),
+  _CountryInfo('South Africa', 'ZA', '+27'),
+  _CountryInfo('UAE', 'AE', '+971'),
+  _CountryInfo('Saudi Arabia', 'SA', '+966'),
+  _CountryInfo('Pakistan', 'PK', '+92'),
+  _CountryInfo('Bangladesh', 'BD', '+880'),
+  _CountryInfo('Philippines', 'PH', '+63'),
+  _CountryInfo('Mexico', 'MX', '+52'),
+  _CountryInfo('Japan', 'JP', '+81'),
+  _CountryInfo('South Korea', 'KR', '+82'),
+  _CountryInfo('Turkey', 'TR', '+90'),
+  _CountryInfo('Egypt', 'EG', '+20'),
+  _CountryInfo('Kenya', 'KE', '+254'),
+  _CountryInfo('Malaysia', 'MY', '+60'),
+  _CountryInfo('Singapore', 'SG', '+65'),
+  _CountryInfo('Thailand', 'TH', '+66'),
+  _CountryInfo('Vietnam', 'VN', '+84'),
+  _CountryInfo('Colombia', 'CO', '+57'),
+  _CountryInfo('Argentina', 'AR', '+54'),
+  _CountryInfo('Italy', 'IT', '+39'),
+  _CountryInfo('Spain', 'ES', '+34'),
+  _CountryInfo('Netherlands', 'NL', '+31'),
+  _CountryInfo('Sweden', 'SE', '+46'),
+  _CountryInfo('Norway', 'NO', '+47'),
+  _CountryInfo('Denmark', 'DK', '+45'),
+  _CountryInfo('New Zealand', 'NZ', '+64'),
+  _CountryInfo('Ireland', 'IE', '+353'),
+  _CountryInfo('Sri Lanka', 'LK', '+94'),
+  _CountryInfo('Nepal', 'NP', '+977'),
+  _CountryInfo('Other', 'XX', '+'),
 ];
+
+final _emailRegex = RegExp(
+  r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+);
 
 class PersonalInfoPage extends ConsumerStatefulWidget {
   final VoidCallback onNext;
@@ -41,7 +69,8 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
-  String? _selectedCountry;
+  _CountryInfo? _selectedCountry;
+  String? _emailError;
 
   @override
   void dispose() {
@@ -53,15 +82,37 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
 
   bool get _isValid =>
       _nameCtrl.text.trim().isNotEmpty &&
-      _emailCtrl.text.contains('@') &&
+      _emailRegex.hasMatch(_emailCtrl.text.trim()) &&
       _selectedCountry != null;
 
+  void _validateEmail() {
+    final email = _emailCtrl.text.trim();
+    if (email.isEmpty) {
+      _emailError = null;
+    } else if (!_emailRegex.hasMatch(email)) {
+      _emailError = 'Please enter a valid email address';
+    } else {
+      _emailError = null;
+    }
+  }
+
   void _onContinue() {
+    _validateEmail();
+    if (!_isValid) {
+      setState(() {});
+      return;
+    }
+
+    final phone = _phoneCtrl.text.trim();
+    final fullPhone = phone.isNotEmpty
+        ? '${_selectedCountry?.dialCode ?? ''} $phone'
+        : '';
+
     ref.read(onboardingStateProvider.notifier).update((s) {
       s.name = _nameCtrl.text.trim();
       s.email = _emailCtrl.text.trim();
-      s.phone = _phoneCtrl.text.trim();
-      s.country = _selectedCountry ?? '';
+      s.phone = fullPhone;
+      s.country = _selectedCountry?.name ?? '';
     });
     widget.onNext();
   }
@@ -74,7 +125,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Welcome to\nDetoxia',
+            'Welcome',
             style: Theme.of(context).textTheme.headlineLarge,
           ),
           const SizedBox(height: 8),
@@ -84,56 +135,110 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
           ),
           const SizedBox(height: 28),
 
-          _buildField(
+          // Name
+          _buildLabel('Your name'),
+          const SizedBox(height: 8),
+          TextField(
             controller: _nameCtrl,
-            label: 'Your name',
-            hint: 'What should we call you?',
-            icon: Icons.person_outline,
+            style: const TextStyle(color: Colors.white),
+            textCapitalization: TextCapitalization.words,
+            onChanged: (_) => setState(() {}),
+            decoration: _inputDeco(
+              hint: 'What should we call you?',
+              icon: Icons.person_outline,
+            ),
           ),
           const SizedBox(height: 16),
 
-          _buildField(
+          // Email
+          _buildLabel('Email'),
+          const SizedBox(height: 8),
+          TextField(
             controller: _emailCtrl,
-            label: 'Email',
-            hint: 'your@email.com',
-            icon: Icons.email_outlined,
             keyboardType: TextInputType.emailAddress,
+            style: const TextStyle(color: Colors.white),
+            onChanged: (_) {
+              _validateEmail();
+              setState(() {});
+            },
+            decoration: _inputDeco(
+              hint: 'your@email.com',
+              icon: Icons.email_outlined,
+              errorText: _emailError,
+            ),
           ),
           const SizedBox(height: 16),
 
-          _buildField(
-            controller: _phoneCtrl,
-            label: 'Phone (optional)',
-            hint: '+1 234 567 8901',
-            icon: Icons.phone_outlined,
-            keyboardType: TextInputType.phone,
-          ),
-          const SizedBox(height: 16),
-
-          const Text('Country',
-              style: TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.w600)),
+          // Country
+          _buildLabel('Country'),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            initialValue: _selectedCountry,
+            initialValue: _selectedCountry?.name,
             dropdownColor: const Color(0xFF1E1E2E),
             style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              prefixIcon:
-                  const Icon(Icons.public, color: Colors.white38),
-              hintText: 'Select your country',
-              hintStyle: const TextStyle(color: Colors.white38),
-              filled: true,
-              fillColor: Colors.white.withValues(alpha: 0.06),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
+            isExpanded: true,
+            decoration: _inputDeco(
+              hint: 'Select your country',
+              icon: Icons.public,
             ),
             items: _countries
-                .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                .map((c) => DropdownMenuItem(
+                      value: c.name,
+                      child: Text(c.name),
+                    ))
                 .toList(),
-            onChanged: (v) => setState(() => _selectedCountry = v),
+            onChanged: (v) {
+              setState(() {
+                _selectedCountry =
+                    _countries.firstWhere((c) => c.name == v);
+              });
+            },
+          ),
+          const SizedBox(height: 16),
+
+          // Phone with country code
+          _buildLabel('Phone (optional)'),
+          const SizedBox(height: 8),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 90,
+                height: 56,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  _selectedCountry?.dialCode ?? '+--',
+                  style: TextStyle(
+                    color: _selectedCountry != null
+                        ? Colors.white
+                        : Colors.white38,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TextField(
+                  controller: _phoneCtrl,
+                  keyboardType: TextInputType.phone,
+                  style: const TextStyle(color: Colors.white),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'[0-9 \-]')),
+                  ],
+                  onChanged: (_) => setState(() {}),
+                  decoration: _inputDeco(
+                    hint: 'Phone number',
+                    icon: Icons.phone_outlined,
+                  ),
+                ),
+              ),
+            ],
           ),
 
           const SizedBox(height: 24),
@@ -154,9 +259,8 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                   child: Text(
                     'We collect your name, email, and country to '
                     'personalize your experience and send important '
-                    'updates about your recovery journey. Your '
-                    'behavioral data never leaves your device. '
-                    'Contact info may be used for product updates.',
+                    'updates. Your wellness data never leaves your '
+                    'device. Contact info may be used for product updates.',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.5),
                       fontSize: 12,
@@ -185,38 +289,35 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
     );
   }
 
-  Widget _buildField({
-    required TextEditingController controller,
-    required String label,
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+          color: Colors.white, fontWeight: FontWeight.w600),
+    );
+  }
+
+  InputDecoration _inputDeco({
     required String hint,
     required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
+    String? errorText,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 8),
-        TextField(
-          controller: controller,
-          keyboardType: keyboardType,
-          style: const TextStyle(color: Colors.white),
-          onChanged: (_) => setState(() {}),
-          decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: Colors.white38),
-            hintText: hint,
-            hintStyle: const TextStyle(color: Colors.white38),
-            filled: true,
-            fillColor: Colors.white.withValues(alpha: 0.06),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-          ),
-        ),
-      ],
+    return InputDecoration(
+      prefixIcon: Icon(icon, color: Colors.white38),
+      hintText: hint,
+      hintStyle: const TextStyle(color: Colors.white38),
+      errorText: errorText,
+      errorStyle: const TextStyle(color: Color(0xFFEF5350), fontSize: 12),
+      filled: true,
+      fillColor: Colors.white.withValues(alpha: 0.06),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFFEF5350)),
+      ),
     );
   }
 }

@@ -4,7 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+import 'package:detoxia/core/platform/safe_app_directories.dart';
 
 part 'app_database.g.dart';
 
@@ -17,6 +17,8 @@ class Users extends Table {
   TextColumn get country => text().withDefault(const Constant(''))();
   BoolColumn get checkedInToday =>
       boolean().withDefault(const Constant(false))();
+  TextColumn get conditions =>
+      text().withDefault(const Constant('["detoxRecovery"]'))();
   TextColumn get roleType => text()();
   TextColumn get workDays => text().withDefault(const Constant('[]'))();
   TextColumn get workStart => text().nullable()();
@@ -390,6 +392,153 @@ class PassiveUsages extends Table {
       real().withDefault(const Constant(0.0))();
 }
 
+// ─── Mood Entries ───
+class MoodEntries extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get timestamp => dateTime()();
+  IntColumn get moodLevel => integer()();
+  IntColumn get energy => integer()();
+  TextColumn get emotions => text().withDefault(const Constant('[]'))();
+  TextColumn get activities => text().withDefault(const Constant('[]'))();
+  TextColumn get socialContext => text().nullable()();
+  TextColumn get note => text().nullable()();
+}
+
+// ─── Anxiety Events ───
+class AnxietyEvents extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get timestamp => dateTime()();
+  TextColumn get triggerSituation => text().nullable()();
+  IntColumn get anxietyLevel => integer()();
+  TextColumn get physicalSymptoms => text().withDefault(const Constant('[]'))();
+  TextColumn get copingUsed => text().nullable()();
+  IntColumn get anxietyAfter => integer().nullable()();
+  BoolColumn get avoidanceBehavior =>
+      boolean().withDefault(const Constant(false))();
+}
+
+// ─── Breathing Logs ───
+class BreathingLogs extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get timestamp => dateTime()();
+  TextColumn get technique => text()();
+  IntColumn get durationSeconds => integer()();
+  IntColumn get anxietyBefore => integer().nullable()();
+  IntColumn get anxietyAfter => integer().nullable()();
+}
+
+// ─── Exposure Hierarchy ───
+class ExposureHierarchyItems extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get situation => text()();
+  IntColumn get fearRating => integer()();
+  IntColumn get timesExposed => integer().withDefault(const Constant(0))();
+  IntColumn get currentFearRating => integer().nullable()();
+  BoolColumn get mastered => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt =>
+      dateTime().withDefault(currentDateAndTime)();
+}
+
+// ─── Behavioral Activities (Depression) ───
+class BehavioralActivities extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get date => dateTime()();
+  TextColumn get activityType => text()();
+  TextColumn get category => text()();
+  IntColumn get pleasureRating => integer()();
+  IntColumn get masteryRating => integer()();
+  IntColumn get durationMinutes => integer()();
+  BoolColumn get wasScheduled =>
+      boolean().withDefault(const Constant(false))();
+}
+
+// ─── Thought Records (Depression CBT) ───
+class ThoughtRecords extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get date => dateTime()();
+  TextColumn get situation => text()();
+  TextColumn get automaticThought => text()();
+  TextColumn get emotion => text()();
+  IntColumn get emotionIntensity => integer()();
+  TextColumn get evidenceFor => text().nullable()();
+  TextColumn get evidenceAgainst => text().nullable()();
+  TextColumn get balancedThought => text().nullable()();
+  IntColumn get newIntensity => integer().nullable()();
+  TextColumn get distortionType => text().nullable()();
+}
+
+// ─── Focus Sessions (ADHD) ───
+class FocusSessions extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get startTime => dateTime()();
+  DateTimeColumn get endTime => dateTime().nullable()();
+  TextColumn get taskDescription => text()();
+  IntColumn get focusRating => integer().nullable()();
+  IntColumn get distractions => integer().withDefault(const Constant(0))();
+  TextColumn get technique => text()();
+}
+
+// ─── ADHD Daily Plans ───
+class AdhdDailyPlans extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get date => dateTime()();
+  TextColumn get top3Tasks => text().withDefault(const Constant('[]'))();
+  TextColumn get completedTasks => text().withDefault(const Constant('[]'))();
+  TextColumn get energyPattern => text().nullable()();
+  TextColumn get bestFocusTime => text().nullable()();
+}
+
+// ─── Cycle Entries (Period Tracker) ───
+class CycleEntries extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get date => dateTime()();
+  IntColumn get flowIntensity => integer().nullable()();
+  TextColumn get symptoms => text().withDefault(const Constant('[]'))();
+  IntColumn get mood => integer().nullable()();
+  IntColumn get energy => integer().nullable()();
+  IntColumn get cycleDay => integer().nullable()();
+  TextColumn get phase => text().nullable()();
+  TextColumn get notes => text().nullable()();
+}
+
+// ─── Cycle Predictions ───
+class CyclePredictions extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get predictedStart => dateTime()();
+  DateTimeColumn get predictedEnd => dateTime()();
+  DateTimeColumn get predictedOvulation => dateTime().nullable()();
+  RealColumn get confidence => real().withDefault(const Constant(0.5))();
+  IntColumn get basedOnCycles => integer().withDefault(const Constant(1))();
+}
+
+// ─── Daily Task Assignments ───
+class DailyTaskAssignments extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get date => dateTime()();
+  TextColumn get taskId => text()();
+  TextColumn get taskTitle => text()();
+  TextColumn get taskDescription => text()();
+  TextColumn get conditionType => text()();
+  TextColumn get category => text()();
+  IntColumn get durationMinutes => integer()();
+  TextColumn get scheduledTime => text()();
+  BoolColumn get completed =>
+      boolean().withDefault(const Constant(false))();
+  IntColumn get effectivenessRating => integer().nullable()();
+  BoolColumn get skipped =>
+      boolean().withDefault(const Constant(false))();
+}
+
+// ─── Weekly Assessments (Depression PHQ-style) ───
+class WeeklyAssessments extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get date => dateTime()();
+  TextColumn get assessmentType => text()();
+  IntColumn get totalScore => integer()();
+  TextColumn get answers => text().withDefault(const Constant('[]'))();
+  TextColumn get trend => text().nullable()();
+}
+
 @DriftDatabase(tables: [
   Users,
   PeakNodes,
@@ -410,12 +559,24 @@ class PassiveUsages extends Table {
   MaintenanceStates,
   ModelStates,
   PassiveUsages,
+  MoodEntries,
+  AnxietyEvents,
+  BreathingLogs,
+  ExposureHierarchyItems,
+  BehavioralActivities,
+  ThoughtRecords,
+  FocusSessions,
+  AdhdDailyPlans,
+  CycleEntries,
+  CyclePredictions,
+  DailyTaskAssignments,
+  WeeklyAssessments,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -427,12 +588,27 @@ class AppDatabase extends _$AppDatabase {
             await migrator.addColumn(users, users.country);
             await migrator.addColumn(users, users.checkedInToday);
           }
+          if (from < 3) {
+            await migrator.addColumn(users, users.conditions);
+            await migrator.createTable(moodEntries);
+            await migrator.createTable(anxietyEvents);
+            await migrator.createTable(breathingLogs);
+            await migrator.createTable(exposureHierarchyItems);
+            await migrator.createTable(behavioralActivities);
+            await migrator.createTable(thoughtRecords);
+            await migrator.createTable(focusSessions);
+            await migrator.createTable(adhdDailyPlans);
+            await migrator.createTable(cycleEntries);
+            await migrator.createTable(cyclePredictions);
+            await migrator.createTable(dailyTaskAssignments);
+            await migrator.createTable(weeklyAssessments);
+          }
         },
       );
 
   static LazyDatabase _openConnection() {
     return LazyDatabase(() async {
-      final dir = await getApplicationDocumentsDirectory();
+      final dir = await safeAppDocumentsDirectory();
       final file = File(p.join(dir.path, 'detoxia.db'));
       return NativeDatabase.createInBackground(file);
     });
