@@ -1,4 +1,6 @@
 import 'package:detoxia/core/constants/enums.dart';
+import 'package:detoxia/domain/learning/models/intervention_feedback.dart';
+import 'package:detoxia/domain/learning/models/outcome.dart';
 
 sealed class AppEvent {
   final DateTime timestamp;
@@ -75,15 +77,39 @@ class CheckInCompletedEvent extends AppEvent {
   });
 }
 
-class StreakBrokenEvent extends AppEvent {
+class StreakInterruptedEvent extends AppEvent {
   final StreakType streakType;
   final int? peakId;
   final int lengthBeforeBreak;
 
-  StreakBrokenEvent({
+  StreakInterruptedEvent({
     required this.streakType,
     this.peakId,
     required this.lengthBeforeBreak,
+    super.timestamp,
+  });
+}
+
+class RiskWindowOutcomeEvent extends AppEvent {
+  final Outcome outcome;
+  final bool predicted;
+  final Map<String, Outcome> triggerOutcomes;
+
+  RiskWindowOutcomeEvent({
+    required this.outcome,
+    required this.predicted,
+    this.triggerOutcomes = const {},
+    super.timestamp,
+  });
+}
+
+class InterventionFeedbackEvent extends AppEvent {
+  final String interventionId;
+  final InterventionFeedback feedback;
+
+  InterventionFeedbackEvent({
+    required this.interventionId,
+    required this.feedback,
     super.timestamp,
   });
 }

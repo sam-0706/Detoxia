@@ -26,7 +26,7 @@ class ChallengesScreen extends ConsumerWidget {
           ),
           _ChallengeCard(
             title: 'Weekend Warrior Month',
-            description: '4 consecutive clean weekends.',
+            description: '4 consecutive steady weekends.',
             progress: 0.0,
             target: 4,
             icon: Icons.calendar_today,
@@ -80,29 +80,29 @@ class _ChallengeCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(icon, color: AppTheme.accent, size: 24),
+                  Icon(icon, color: AppTheme.palette(context).accent, size: 24),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(title,
-                        style: const TextStyle(
-                            color: Colors.white,
+                        style: TextStyle(
+                            color: AppTheme.palette(context).textPrimary,
                             fontWeight: FontWeight.w600)),
                   ),
                   Text(
                     '${(progress * target).round()}/$target',
-                    style: const TextStyle(
-                        color: Colors.white54, fontSize: 13),
+                    style: TextStyle(
+                        color: AppTheme.palette(context).textSecondary, fontSize: 13),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
               Text(description,
-                  style: const TextStyle(
-                      color: Colors.white54, fontSize: 13)),
+                  style: TextStyle(
+                      color: AppTheme.palette(context).textSecondary, fontSize: 13)),
               const SizedBox(height: 12),
               LinearProgressIndicator(
                 value: progress,
-                backgroundColor: Colors.white12,
+                backgroundColor: AppTheme.palette(context).borderSubtle,
                 borderRadius: BorderRadius.circular(4),
               ),
             ],

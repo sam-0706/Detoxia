@@ -1,5 +1,6 @@
 import 'package:detoxia/core/constants/enums.dart';
 import 'package:detoxia/presentation/onboarding/onboarding_screen.dart';
+import 'package:detoxia/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -92,83 +93,110 @@ class ConditionSelectPage extends ConsumerWidget {
             final selected = state.conditions.contains(opt.type);
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: Material(
-                color: selected
-                    ? opt.color.withValues(alpha: 0.15)
-                    : Colors.white.withValues(alpha: 0.04),
-                borderRadius: BorderRadius.circular(14),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(14),
-                  onTap: () {
-                    ref
-                        .read(onboardingStateProvider.notifier)
-                        .update((s) {
-                      final next = Set<ConditionType>.from(s.conditions);
-                      if (next.contains(opt.type)) {
-                        next.remove(opt.type);
-                      } else {
-                        next.add(opt.type);
-                      }
-                      s.conditions = next;
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.elasticOut,
+                builder: (context, value, _) {
+                  return Transform.scale(
+                    scale: selected ? 0.96 + value * 0.04 : 1.0,
+                    child: Material(
+                      color: selected
+                          ? opt.color.withValues(alpha: 0.15)
+                          : AppTheme.palette(context).textPrimary.withValues(alpha: 0.04),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: selected
-                            ? opt.color.withValues(alpha: 0.5)
-                            : Colors.white12,
-                        width: selected ? 2 : 1,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(14),
+                        onTap: () {
+                          ref
+                              .read(onboardingStateProvider.notifier)
+                              .update((s) {
+                            final next =
+                                Set<ConditionType>.from(s.conditions);
+                            if (next.contains(opt.type)) {
+                              next.remove(opt.type);
+                            } else {
+                              next.add(opt.type);
+                            }
+                            s.conditions = next;
+                          });
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeOutCubic,
+                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: opt.color.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: selected
+                                  ? opt.color.withValues(alpha: 0.5)
+                                  : AppTheme.palette(context).borderSubtle,
+                              width: selected ? 2 : 1,
+                            ),
                           ),
-                          child: Icon(opt.icon,
-                              color: opt.color, size: 24),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Row(
                             children: [
-                              Text(
-                                opt.label,
-                                style: TextStyle(
-                                  color: selected
-                                      ? Colors.white
-                                      : Colors.white70,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 15,
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 250),
+                                curve: Curves.easeOutCubic,
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: opt.color.withValues(
+                                      alpha: selected ? 0.3 : 0.2),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Icon(opt.icon,
+                                    color: opt.color, size: 24),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      opt.label,
+                                      style: TextStyle(
+                                        color: selected
+                                            ? AppTheme.palette(context).textPrimary
+                                            : AppTheme.palette(context).textSecondary,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      opt.subtitle,
+                                      style: TextStyle(
+                                          color: AppTheme.palette(context).textTertiary,
+                                          fontSize: 12),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                opt.subtitle,
-                                style: const TextStyle(
-                                    color: Colors.white38, fontSize: 12),
+                              AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 200),
+                                transitionBuilder: (child, anim) =>
+                                    ScaleTransition(
+                                        scale: anim, child: child),
+                                child: selected
+                                    ? Icon(Icons.check_circle,
+                                        key: const ValueKey('check'),
+                                        color: opt.color,
+                                        size: 24)
+                                    : Icon(Icons.circle_outlined,
+                                        key: ValueKey('circle'),
+                                        color: AppTheme.palette(context).borderStrong,
+                                        size: 24),
                               ),
                             ],
                           ),
                         ),
-                        if (selected)
-                          Icon(Icons.check_circle,
-                              color: opt.color, size: 24)
-                        else
-                          const Icon(Icons.circle_outlined,
-                              color: Colors.white24, size: 24),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             );
           }),

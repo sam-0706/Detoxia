@@ -158,15 +158,15 @@ class _BreathingScreenState extends ConsumerState<BreathingScreen>
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
-            color: AppTheme.card,
+            color: AppTheme.palette(context).surfaceRaised,
             borderRadius: BorderRadius.circular(12),
           ),
           child: DropdownButton<BreathingTechnique>(
             value: _selected.id,
             isExpanded: true,
-            dropdownColor: AppTheme.card,
+            dropdownColor: AppTheme.palette(context).surfaceRaised,
             underline: const SizedBox.shrink(),
-            style: const TextStyle(color: Colors.white, fontSize: 15),
+            style:  TextStyle(color: AppTheme.palette(context).textPrimary, fontSize: 15),
             items: breathingTechniques.map((t) {
               return DropdownMenuItem(
                 value: t.id,
@@ -191,14 +191,14 @@ class _BreathingScreenState extends ConsumerState<BreathingScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(_selected.name,
-                    style: const TextStyle(
-                        color: Colors.white,
+                    style: TextStyle(
+                        color: AppTheme.palette(context).textPrimary,
                         fontWeight: FontWeight.w600,
                         fontSize: 16)),
                 const SizedBox(height: 6),
                 Text(_selected.description,
-                    style: const TextStyle(
-                        color: Colors.white60, fontSize: 14, height: 1.4)),
+                    style: TextStyle(
+                        color: AppTheme.palette(context).textSecondary, fontSize: 14, height: 1.4)),
                 const SizedBox(height: 10),
                 Row(
                   children: [
@@ -226,18 +226,18 @@ class _BreathingScreenState extends ConsumerState<BreathingScreen>
           ),
         ),
         const SizedBox(height: 24),
-        const Text('How anxious are you right now?',
-            style: TextStyle(color: Colors.white70)),
+        Text('How anxious are you right now?',
+            style: TextStyle(color: AppTheme.palette(context).textSecondary)),
         const SizedBox(height: 4),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Calm', style: TextStyle(color: Colors.white38, fontSize: 12)),
+             Text('Calm', style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 12)),
             Text('$_anxietyBefore / 10',
                 style: TextStyle(
                     color: _anxietyColor(_anxietyBefore),
                     fontWeight: FontWeight.w600)),
-            const Text('Severe', style: TextStyle(color: Colors.white38, fontSize: 12)),
+             Text('Severe', style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 12)),
           ],
         ),
         Slider(
@@ -270,10 +270,10 @@ class _BreathingScreenState extends ConsumerState<BreathingScreen>
       _ => '',
     };
     final phaseColor = switch (step.action) {
-      'inhale' => AppTheme.accent,
-      'hold' => AppTheme.warning,
-      'exhale' => AppTheme.success,
-      _ => Colors.white,
+      'inhale' => AppTheme.palette(context).accent,
+      'hold' => AppTheme.palette(context).warning,
+      'exhale' => AppTheme.palette(context).success,
+      _ => AppTheme.palette(context).textPrimary,
     };
 
     final minutes = _totalSecondsRemaining ~/ 60;
@@ -283,13 +283,13 @@ class _BreathingScreenState extends ConsumerState<BreathingScreen>
       children: [
         Text(
           '$minutes:${seconds.toString().padLeft(2, '0')}',
-          style: const TextStyle(
-              color: Colors.white38, fontSize: 16, fontFamily: 'monospace'),
+          style: TextStyle(
+              color: AppTheme.palette(context).textTertiary, fontSize: 16, fontFamily: 'monospace'),
         ),
         const SizedBox(height: 8),
         Text(
           'Cycle ${_cyclesCompleted + 1}',
-          style: const TextStyle(color: Colors.white54, fontSize: 13),
+          style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13),
         ),
         const Spacer(),
         AnimatedBuilder(
@@ -352,8 +352,8 @@ class _BreathingScreenState extends ConsumerState<BreathingScreen>
             _breathController.stop();
             setState(() => _phase = _SessionPhase.complete);
           },
-          child: const Text('End early',
-              style: TextStyle(color: Colors.white38)),
+          child: Text('End early',
+              style: TextStyle(color: AppTheme.palette(context).textTertiary)),
         ),
       ],
     );
@@ -366,7 +366,7 @@ class _BreathingScreenState extends ConsumerState<BreathingScreen>
       children: [
         const Spacer(),
         Icon(Icons.check_circle,
-            color: AppTheme.success, size: 64),
+            color: AppTheme.palette(context).success, size: 64),
         const SizedBox(height: 16),
         Text(
           'Session complete',
@@ -375,21 +375,21 @@ class _BreathingScreenState extends ConsumerState<BreathingScreen>
         const SizedBox(height: 8),
         Text(
           '${_cyclesCompleted + 1} cycles of ${_selected.name}',
-          style: const TextStyle(color: Colors.white54),
+          style:  TextStyle(color: AppTheme.palette(context).textSecondary),
         ),
         const SizedBox(height: 32),
-        const Text('How anxious do you feel now?',
-            style: TextStyle(color: Colors.white70)),
+        Text('How anxious do you feel now?',
+            style: TextStyle(color: AppTheme.palette(context).textSecondary)),
         const SizedBox(height: 4),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Calm', style: TextStyle(color: Colors.white38, fontSize: 12)),
+             Text('Calm', style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 12)),
             Text('$_anxietyAfter / 10',
                 style: TextStyle(
                     color: _anxietyColor(_anxietyAfter),
                     fontWeight: FontWeight.w600)),
-            const Text('Severe', style: TextStyle(color: Colors.white38, fontSize: 12)),
+             Text('Severe', style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 12)),
           ],
         ),
         Slider(
@@ -407,13 +407,13 @@ class _BreathingScreenState extends ConsumerState<BreathingScreen>
               padding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: AppTheme.success.withValues(alpha: 0.12),
+                color: AppTheme.palette(context).success.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 'Anxiety reduced by $drop ${drop == 1 ? 'point' : 'points'}',
                 style: TextStyle(
-                    color: AppTheme.success, fontWeight: FontWeight.w600),
+                    color: AppTheme.palette(context).success, fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -428,17 +428,17 @@ class _BreathingScreenState extends ConsumerState<BreathingScreen>
         const SizedBox(height: 8),
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Discard',
-              style: TextStyle(color: Colors.white38)),
+          child: Text('Discard',
+              style: TextStyle(color: AppTheme.palette(context).textTertiary)),
         ),
       ],
     );
   }
 
   Color _anxietyColor(int level) {
-    if (level <= 3) return AppTheme.success;
-    if (level <= 6) return AppTheme.warning;
-    return AppTheme.danger;
+    if (level <= 3) return AppTheme.palette(context).success;
+    if (level <= 6) return AppTheme.palette(context).warning;
+    return AppTheme.palette(context).danger;
   }
 }
 
@@ -453,16 +453,16 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.06),
+        color: AppTheme.palette(context).textPrimary.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Colors.white38, size: 14),
+          Icon(icon, color: AppTheme.palette(context).textTertiary, size: 14),
           const SizedBox(width: 4),
           Text(label,
-              style: const TextStyle(color: Colors.white54, fontSize: 12)),
+              style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 12)),
         ],
       ),
     );

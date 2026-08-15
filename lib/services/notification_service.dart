@@ -1,6 +1,8 @@
 import 'package:detoxia/core/constants/enums.dart';
 import 'package:detoxia/domain/prediction/risk_calculator.dart';
+import 'package:detoxia/domain/scoring/models/support_profile.dart';
 import 'package:detoxia/domain/tasks/daily_task_scheduler.dart';
+import 'package:detoxia/services/unified_notification_scheduler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -11,14 +13,18 @@ class NotificationService {
   NotificationMode _mode = NotificationMode.balanced;
   int _scheduledToday = 0;
   bool _initialized = false;
+  bool _quietHoursEnabled = false;
+  int _quietStartMinutes = 22 * 60;
+  int _quietEndMinutes = 7 * 60;
 
   NotificationService() : _plugin = FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
     tzdata.initializeTimeZones();
 
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: false,
@@ -37,6 +43,23 @@ class NotificationService {
   }
 
   void setMode(NotificationMode mode) => _mode = mode;
+
+  NotificationMode get mode => _mode;
+  bool get quietHoursEnabled => _quietHoursEnabled;
+  int get quietStartMinutes => _quietStartMinutes;
+  int get quietEndMinutes => _quietEndMinutes;
+
+  void setQuietHours({
+    required bool enabled,
+    required int startMinutes,
+    required int endMinutes,
+  }) {
+    _quietHoursEnabled = enabled;
+    _quietStartMinutes = startMinutes.clamp(0, 1439);
+    _quietEndMinutes = endMinutes.clamp(0, 1439);
+  }
+
+  int get maxNotificationsPerDay => _maxNotifications;
 
   int get _maxNotifications {
     switch (_mode) {
@@ -59,9 +82,7 @@ class NotificationService {
     await cancelAllScheduled();
     _scheduledToday = 0;
 
-    final highRiskBlocks = blocks
-        .where((b) => b.score >= 0.7)
-        .toList()
+    final highRiskBlocks = blocks.where((b) => b.score >= 0.7).toList()
       ..sort((a, b) => b.score.compareTo(a.score));
 
     for (final block in highRiskBlocks) {
@@ -185,7 +206,8 @@ class NotificationService {
       await _scheduleNotification(
         id: 702,
         title: 'Afternoon activity',
-        body: '${afternoonTask['title']} (${afternoonTask['durationMinutes']}min)',
+        body:
+            '${afternoonTask['title']} (${afternoonTask['durationMinutes']}min)',
         scheduledTime: afternoonTime,
         channelId: 'detoxia_wellness',
         channelName: 'Wellness Tasks',
@@ -193,8 +215,7 @@ class NotificationService {
     }
 
     // Evening wind-down (2 hours before sleep)
-    final eveningTime =
-        sleepTime.subtract(const Duration(hours: 2));
+    final eveningTime = sleepTime.subtract(const Duration(hours: 2));
     if (eveningTime.isAfter(now)) {
       final eveningTask = tasks.firstWhere(
         (t) => t['timeOfDay'] == 'evening',
@@ -221,7 +242,8 @@ class NotificationService {
       await _scheduleNotification(
         id: 704,
         title: 'Quick task',
-        body: '${microTask['title']} — just ${microTask['durationMinutes']} minutes',
+        body:
+            '${microTask['title']} — just ${microTask['durationMinutes']} minutes',
         scheduledTime: microTime,
         channelId: 'detoxia_wellness',
         channelName: 'Wellness Tasks',
@@ -255,8 +277,9 @@ class NotificationService {
     final messages = _conditionMessages(conditionType);
     if (messages.isEmpty) return;
 
-    final dayOfYear =
-        DateTime.now().difference(DateTime(DateTime.now().year, 1, 1)).inDays;
+    final dayOfYear = DateTime.now()
+        .difference(DateTime(DateTime.now().year, 1, 1))
+        .inDays;
     final message = messages[dayOfYear % messages.length];
 
     await _scheduleNotification(
@@ -345,6 +368,35 @@ class NotificationService {
 
   // ─── Immediate & Scheduled Core ───
 
+  Future<void> scheduleUnifiedDailyPlan(
+    SupportProfile profile, {
+    DateTime? now,
+  }) async {
+    if (!_initialized) return;
+    await cancelAllScheduled();
+    await UnifiedNotificationScheduler(
+      this,
+    ).scheduleDailyForProfile(profile, now ?? DateTime.now());
+  }
+
+  Future<void> scheduleUnifiedNotification({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime scheduledTime,
+  }) async {
+    if (!_initialized || _scheduledToday >= _maxNotifications) return;
+    await _scheduleNotification(
+      id: id,
+      title: title,
+      body: body,
+      scheduledTime: scheduledTime,
+      channelId: 'detoxia_unified',
+      channelName: 'Support Map Guidance',
+    );
+    _scheduledToday++;
+  }
+
   Future<void> showImmediate({
     required String title,
     required String body,
@@ -381,6 +433,8 @@ class NotificationService {
     String channelId = 'detoxia_scheduled',
     String channelName = 'Scheduled',
   }) async {
+    if (_isInQuietHours(scheduledTime)) return;
+
     final details = NotificationDetails(
       android: AndroidNotificationDetails(
         channelId,
@@ -402,9 +456,21 @@ class NotificationService {
     );
   }
 
+  bool _isInQuietHours(DateTime time) {
+    if (!_quietHoursEnabled) return false;
+    final minuteOfDay = time.hour * 60 + time.minute;
+    if (_quietStartMinutes == _quietEndMinutes) return true;
+    if (_quietStartMinutes < _quietEndMinutes) {
+      return minuteOfDay >= _quietStartMinutes &&
+          minuteOfDay < _quietEndMinutes;
+    }
+    return minuteOfDay >= _quietStartMinutes ||
+        minuteOfDay < _quietEndMinutes;
+  }
+
   String _bodyForScore(double score) {
     if (score >= 0.85) {
-      return 'High-risk window ahead. What is your plan?';
+      return 'Support window ahead. What is your plan?';
     }
     if (score >= 0.7) {
       return 'Difficult window approaching. Stay prepared.';

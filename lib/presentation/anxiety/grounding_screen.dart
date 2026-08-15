@@ -96,7 +96,7 @@ class _GroundingScreenState extends ConsumerState<GroundingScreen> {
               final isSelected = ex.id == _selected.id;
               return Card(
                 color: isSelected
-                    ? AppTheme.accent.withValues(alpha: 0.15)
+                    ? AppTheme.palette(context).accent.withValues(alpha: 0.15)
                     : null,
                 child: ListTile(
                   leading: Container(
@@ -105,23 +105,23 @@ class _GroundingScreenState extends ConsumerState<GroundingScreen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isSelected
-                          ? AppTheme.accent.withValues(alpha: 0.2)
-                          : Colors.white.withValues(alpha: 0.06),
+                          ? AppTheme.palette(context).accent.withValues(alpha: 0.2)
+                          : AppTheme.palette(context).textPrimary.withValues(alpha: 0.06),
                     ),
                     child: Icon(
                       Icons.self_improvement,
-                      color: isSelected ? AppTheme.accent : Colors.white38,
+                      color: isSelected ? AppTheme.palette(context).accent : AppTheme.palette(context).textTertiary,
                       size: 20,
                     ),
                   ),
                   title: Text(ex.name,
-                      style: const TextStyle(color: Colors.white)),
+                      style:  TextStyle(color: AppTheme.palette(context).textPrimary)),
                   subtitle: Text(
                     '${ex.durationMinutes} min · ${ex.steps.length} steps',
-                    style: const TextStyle(color: Colors.white38, fontSize: 12),
+                    style:  TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 12),
                   ),
                   trailing: isSelected
-                      ? Icon(Icons.check_circle, color: AppTheme.accent)
+                      ? Icon(Icons.check_circle, color: AppTheme.palette(context).accent)
                       : null,
                   onTap: () => setState(() => _selected = ex),
                 ),
@@ -135,8 +135,8 @@ class _GroundingScreenState extends ConsumerState<GroundingScreen> {
             padding: const EdgeInsets.all(14),
             child: Text(
               _selected.description,
-              style: const TextStyle(
-                  color: Colors.white60, fontSize: 14, height: 1.4),
+              style: TextStyle(
+                  color: AppTheme.palette(context).textSecondary, fontSize: 14, height: 1.4),
             ),
           ),
         ),
@@ -163,12 +163,12 @@ class _GroundingScreenState extends ConsumerState<GroundingScreen> {
           children: [
             Text(
               'Step ${_currentStep + 1} of ${_selected.steps.length}',
-              style: const TextStyle(color: Colors.white54, fontSize: 14),
+              style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 14),
             ),
             const Spacer(),
             Text(
               _selected.name,
-              style: const TextStyle(color: Colors.white38, fontSize: 13),
+              style:  TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 13),
             ),
           ],
         ),
@@ -177,8 +177,8 @@ class _GroundingScreenState extends ConsumerState<GroundingScreen> {
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
             value: progress,
-            backgroundColor: Colors.white12,
-            valueColor: AlwaysStoppedAnimation(AppTheme.accent),
+            backgroundColor: AppTheme.palette(context).borderSubtle,
+            valueColor: AlwaysStoppedAnimation(AppTheme.palette(context).accent),
             minHeight: 6,
           ),
         ),
@@ -202,8 +202,8 @@ class _GroundingScreenState extends ConsumerState<GroundingScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
               step,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: AppTheme.palette(context).textPrimary,
                 fontSize: 20,
                 fontWeight: FontWeight.w500,
                 height: 1.5,
@@ -220,11 +220,11 @@ class _GroundingScreenState extends ConsumerState<GroundingScreen> {
                 child: OutlinedButton(
                   onPressed: _prevStep,
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.white24),
+                    side:  BorderSide(color: AppTheme.palette(context).borderStrong),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: const Text('Back',
-                      style: TextStyle(color: Colors.white70)),
+                  child: Text('Back',
+                      style: TextStyle(color: AppTheme.palette(context).textSecondary)),
                 ),
               ),
             if (_currentStep > 0) const SizedBox(width: 12),
@@ -248,7 +248,7 @@ class _GroundingScreenState extends ConsumerState<GroundingScreen> {
         TextButton(
           onPressed: () => Navigator.pop(context),
           child:
-              const Text('Exit', style: TextStyle(color: Colors.white38)),
+               Text('Exit', style: TextStyle(color: AppTheme.palette(context).textTertiary)),
         ),
       ],
     );
@@ -263,9 +263,9 @@ class _GroundingScreenState extends ConsumerState<GroundingScreen> {
           height: 100,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: AppTheme.success.withValues(alpha: 0.15),
+            color: AppTheme.palette(context).success.withValues(alpha: 0.15),
           ),
-          child: Icon(Icons.check, color: AppTheme.success, size: 48),
+          child: Icon(Icons.check, color: AppTheme.palette(context).success, size: 48),
         ),
         const SizedBox(height: 24),
         Text(
@@ -275,19 +275,19 @@ class _GroundingScreenState extends ConsumerState<GroundingScreen> {
         const SizedBox(height: 8),
         Text(
           'You completed ${_selected.name}',
-          style: const TextStyle(color: Colors.white54, fontSize: 15),
+          style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 15),
         ),
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppTheme.success.withValues(alpha: 0.08),
+            color: AppTheme.palette(context).success.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(14),
           ),
-          child: const Text(
+          child: Text(
             'Grounding exercises work best when practised regularly. '
             'Your nervous system learns to calm down faster each time.',
-            style: TextStyle(color: Colors.white60, fontSize: 14, height: 1.5),
+            style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 14, height: 1.5),
             textAlign: TextAlign.center,
           ),
         ),
@@ -302,8 +302,8 @@ class _GroundingScreenState extends ConsumerState<GroundingScreen> {
         const SizedBox(height: 8),
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Discard',
-              style: TextStyle(color: Colors.white38)),
+          child: Text('Discard',
+              style: TextStyle(color: AppTheme.palette(context).textTertiary)),
         ),
       ],
     );

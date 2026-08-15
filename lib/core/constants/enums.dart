@@ -86,6 +86,14 @@ enum ConditionType {
   moodTracking,
 }
 
+// ─── Unified Registration / Questionnaire Gate ───
+
+enum RegistrationAgeBand { teen13To15, teen16To17, adult18Plus }
+
+enum RegistrationGender { male, female, preferNotToSay }
+
+enum WebhookSyncStatus { notAttempted, success, failed, disabled }
+
 // ─── Mood Module ───
 
 enum MoodLevel { terrible, bad, meh, okay, good, great, amazing }

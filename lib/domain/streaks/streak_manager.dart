@@ -139,7 +139,7 @@ class StreakManager {
     final lifetime = lifetimeCleanDays;
     return 'You held for $currentCleanStreak days. '
         'Your personal best is $best. '
-        'Lifetime clean days: $lifetime. '
+        'Lifetime steady days: $lifetime. '
         'That progress is real.';
   }
 }

@@ -23,7 +23,7 @@ class TimePickerRow extends StatelessWidget {
           builder: (ctx, child) => Theme(
             data: Theme.of(ctx).copyWith(
               timePickerTheme: TimePickerThemeData(
-                backgroundColor: AppTheme.surface,
+                backgroundColor: AppTheme.palette(context).surface,
               ),
             ),
             child: child!,
@@ -36,17 +36,17 @@ class TimePickerRow extends StatelessWidget {
         padding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: AppTheme.card,
+          color: AppTheme.palette(context).surfaceRaised,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: const TextStyle(color: Colors.white70)),
+            Text(label, style:  TextStyle(color: AppTheme.palette(context).textSecondary)),
             Text(
               value.format(context),
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: AppTheme.palette(context).textPrimary,
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
               ),

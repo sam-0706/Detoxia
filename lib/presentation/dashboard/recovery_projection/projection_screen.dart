@@ -1,163 +1,186 @@
 import 'package:detoxia/core/theme/app_theme.dart';
-import 'package:detoxia/domain/prediction/projection_engine.dart';
+import 'package:detoxia/data/database/app_database.dart';
+import 'package:detoxia/data/repositories/event_repository.dart';
+import 'package:detoxia/data/repositories/registration_repository.dart';
+import 'package:detoxia/data/repositories/support_profile_repository.dart';
+import 'package:detoxia/domain/journey/recovery_journey_projection_resolver.dart';
+import 'package:detoxia/presentation/home/home_screen.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ProjectionScreen extends ConsumerWidget {
-  const ProjectionScreen({super.key});
+class ProjectionScreen extends ConsumerStatefulWidget {
+  final RecoveryJourneyProjection? projectionOverride;
+
+  const ProjectionScreen({super.key, this.projectionOverride});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final engine = ProjectionEngine(
-      baselineSlipsPerWeek: 5.0,
-      habitStrength: 0.7,
-      regulationCapacity: 0.4,
+  ConsumerState<ProjectionScreen> createState() => _ProjectionScreenState();
+}
+
+class _ProjectionScreenState extends ConsumerState<ProjectionScreen> {
+  final RecoveryJourneyProjectionResolver _resolver =
+      const RecoveryJourneyProjectionResolver();
+  RecoveryJourneyProjection? _projection;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProjection();
+  }
+
+  Future<void> _loadProjection() async {
+    final override = widget.projectionOverride;
+    if (override != null) {
+      if (!mounted) return;
+      setState(() => _projection = override);
+      return;
+    }
+
+    final registration = await ref.read(registrationRepositoryProvider).getProfile();
+    final supportProfile = registration == null
+        ? null
+        : await ref
+              .read(supportProfileRepositoryProvider)
+              .getLatestProfile(registration.id);
+    final checkins = await ref.read(eventRepositoryProvider).getCheckinsLastDays(28);
+    final slips = await ref.read(eventRepositoryProvider).getSlipsLastDays(28);
+    final completedTasks = await _completedTasksLast14Days();
+
+    final projection = _resolver.resolve(
+      supportProfile: supportProfile,
+      checkins: checkins
+          .map(
+            (row) => <String, dynamic>{
+              'date': row.date,
+              'slipped': row.slipped,
+              'stress': row.stress,
+              'mood': row.mood,
+              'sleepQuality': row.sleepQuality,
+            },
+          )
+          .toList(growable: false),
+      slipsLast28Days: slips.length,
+      completedTasksLast14Days: completedTasks,
     );
 
-    final curve = engine.projectionCurve();
+    if (!mounted) return;
+    setState(() => _projection = projection);
+  }
+
+  Future<int> _completedTasksLast14Days() async {
+    final db = ref.read(databaseProvider);
+    final since = DateTime.now().subtract(const Duration(days: 14));
+    final rows = await (db.select(db.dailyTaskAssignments)
+          ..where((t) => t.date.isBiggerOrEqualValue(since))
+          ..where((t) => t.completed.equals(true)))
+        .get();
+    return rows.length;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final projection = _projection;
+    if (projection == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Your Recovery Journey')),
+      appBar: AppBar(title: Text(projection.title)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Your life is\ngetting better',
+              projection.title,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Here\'s what your recovery looks like based on your '
-              'actual data. These numbers recalibrate every week.',
-              style: TextStyle(color: Colors.white54, fontSize: 14),
+            Text(
+              projection.summary,
+              style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 14),
             ),
             const SizedBox(height: 24),
-
-            Row(
-              children: [
-                Expanded(
-                  child: _Panel(
-                    title: 'Where you are now',
-                    color: AppTheme.warning,
-                    items: const [
-                      'Avg urges per day: ~3',
-                      'Setbacks per week: ~5',
-                      'Sleep quality: Low',
-                      'Confidence: 35%',
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _Panel(
-                    title: 'After 12 weeks',
-                    color: AppTheme.success,
-                    items: [
-                      engine.weekProjectionText(4),
-                      engine.weekProjectionText(8),
-                      engine.weekProjectionText(12),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Card(
-              color: AppTheme.success.withValues(alpha: 0.1),
-              child: const Padding(
-                padding: EdgeInsets.all(14),
-                child: Row(
-                  children: [
-                    Icon(Icons.lightbulb, color: Color(0xFF4ECDC4), size: 22),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'People who follow the plan see 70-80% '
-                        'fewer setbacks by week 8. You\'re building '
-                        'that momentum right now.',
-                        style: TextStyle(
-                            color: Colors.white70, fontSize: 13),
-                      ),
-                    ),
-                  ],
-                ),
+            if (projection.isLocked)
+              _buildLockedState(projection)
+            else ...[
+              // Direction card — replaces old "Where you are now / After 12 weeks"
+              _buildDirectionCard(projection),
+              const SizedBox(height: 24),
+              // Momentum trend chart (reframed)
+              Text('Momentum trend',
+                  style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 4),
+              Text(
+                projection.caption,
+                style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 12),
               ),
-            ),
-            const SizedBox(height: 24),
-
-            Text('Weekly improvement curve',
-                style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 4),
-            const Text(
-              'This shows how setbacks decrease week over week as your '
-              'brain rewires. The curve gets steeper with consistency.',
-              style: TextStyle(color: Colors.white54, fontSize: 12),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 220,
-              child: LineChart(
-                LineChartData(
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: curve.entries
-                          .map((e) =>
-                              FlSpot(e.key.toDouble(), e.value))
-                          .toList(),
-                      isCurved: true,
-                      color: AppTheme.accent,
-                      barWidth: 3,
-                      dotData: const FlDotData(show: false),
-                      belowBarData: BarAreaData(
-                        show: true,
-                        color: AppTheme.accent.withValues(alpha: 0.1),
-                      ),
-                    ),
-                  ],
-                  titlesData: FlTitlesData(
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        interval: 2,
-                        getTitlesWidget: (value, _) => Text(
-                          'W${value.toInt()}',
-                          style: const TextStyle(
-                              color: Colors.white38, fontSize: 10),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 220,
+                child: LineChart(
+                  LineChartData(
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: projection.points
+                            .map((point) => FlSpot(
+                                point.week.toDouble(),
+                                point.projectedEventsPerWeek))
+                            .toList(growable: false),
+                        isCurved: true,
+                        color: AppTheme.palette(context).accent,
+                        barWidth: 3,
+                        dotData: const FlDotData(show: false),
+                        belowBarData: BarAreaData(
+                          show: true,
+                          color: AppTheme.palette(context).accent.withValues(alpha: 0.1),
                         ),
                       ),
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, _) => Text(
-                          value.toStringAsFixed(1),
-                          style: const TextStyle(
-                              color: Colors.white38, fontSize: 10),
+                    ],
+                    titlesData: FlTitlesData(
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          interval: 2,
+                          getTitlesWidget: (value, _) => Text(
+                            'W${value.toInt()}',
+                            style: TextStyle(
+                                color: AppTheme.palette(context).textTertiary, fontSize: 10),
+                          ),
                         ),
                       ),
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          getTitlesWidget: (value, _) => Text(
+                            value.toStringAsFixed(1),
+                            style: TextStyle(
+                                color: AppTheme.palette(context).textTertiary, fontSize: 10),
+                          ),
+                        ),
+                      ),
+                      topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
+                      rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false)),
                     ),
-                    topTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false)),
-                  ),
-                  borderData: FlBorderData(show: false),
-                  gridData: FlGridData(
-                    show: true,
-                    drawVerticalLine: false,
-                    getDrawingHorizontalLine: (_) => FlLine(
-                      color: Colors.white12,
-                      strokeWidth: 1,
+                    borderData: FlBorderData(show: false),
+                    gridData: FlGridData(
+                      show: true,
+                      drawVerticalLine: false,
+                      getDrawingHorizontalLine: (_) => FlLine(
+                        color: AppTheme.palette(context).borderSubtle,
+                        strokeWidth: 1,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-
+              const SizedBox(height: 24),
+            ],
+            // Info card
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -167,24 +190,40 @@ class ProjectionScreen extends ConsumerWidget {
                     Row(
                       children: [
                         Icon(Icons.info_outline,
-                            color: AppTheme.accent, size: 20),
+                            color: AppTheme.palette(context).accent, size: 20),
                         const SizedBox(width: 8),
-                        const Text('How this works',
+                        Text('How this works',
                             style: TextStyle(
-                                color: Colors.white,
+                                color: AppTheme.palette(context).textPrimary,
                                 fontWeight: FontWeight.w600)),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Projections are based on your actual data '
-                      'and recalibrate weekly. The curve adjusts '
-                      'to your adherence rate.',
+                    Text(
+                      projection.isLocked
+                          ? (projection.lockedReason ??
+                              'Your path will become clearer after a few more check-ins.')
+                          : 'Uses only your local check-ins, completed resets, and recovery momentum.\n'
+                              'No cure prediction. No timeline. Just your pattern becoming clearer.',
                       style: TextStyle(
-                          color: Colors.white54, fontSize: 13),
+                          color: AppTheme.palette(context).textSecondary, fontSize: 13),
                     ),
                   ],
                 ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (_) => const HomeScreen(),
+                    ),
+                  );
+                },
+                child: const Text('Go to Today'),
               ),
             ),
           ],
@@ -192,37 +231,71 @@ class ProjectionScreen extends ConsumerWidget {
       ),
     );
   }
-}
 
-class _Panel extends StatelessWidget {
-  final String title;
-  final Color color;
-  final List<String> items;
-
-  const _Panel({
-    required this.title,
-    required this.color,
-    required this.items,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildLockedState(RecoveryJourneyProjection projection) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                style: TextStyle(
-                    color: color, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 12),
-            ...items.map((item) => Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
-                  child: Text(item,
-                      style: const TextStyle(
-                          color: Colors.white70, fontSize: 12)),
-                )),
+            Text(
+              'Your path is still forming',
+              style: TextStyle(
+                color: AppTheme.palette(context).textPrimary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              projection.lockedReason ??
+                  'Your path will become clearer after a few more check-ins.',
+              style:  TextStyle(color: AppTheme.palette(context).textSecondary),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDirectionCard(RecoveryJourneyProjection projection) {
+    if (projection.directionItems.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Your current direction',
+              style: TextStyle(
+                color: AppTheme.palette(context).textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 10),
+            ...projection.directionItems.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.arrow_forward,
+                        color: AppTheme.palette(context).success, size: 16),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        item,
+                        style: TextStyle(
+                            color: AppTheme.palette(context).textSecondary, fontSize: 14, height: 1.4),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

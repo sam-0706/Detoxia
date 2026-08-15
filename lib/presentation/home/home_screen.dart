@@ -1,16 +1,24 @@
-import 'package:detoxia/core/constants/daily_insights.dart';
+import 'dart:async';
+
 import 'package:detoxia/core/constants/enums.dart';
+import 'package:detoxia/core/motion/app_motion.dart';
 import 'package:detoxia/core/theme/app_theme.dart';
 import 'package:detoxia/core/utils/time_utils.dart';
 import 'package:detoxia/data/database/app_database.dart';
 import 'package:detoxia/data/repositories/event_repository.dart';
 import 'package:detoxia/data/repositories/peak_repository.dart';
+import 'package:detoxia/data/repositories/questionnaire_repository.dart';
+import 'package:detoxia/data/repositories/registration_repository.dart';
+import 'package:detoxia/data/repositories/support_profile_repository.dart';
 import 'package:detoxia/data/repositories/user_repository.dart';
 import 'package:detoxia/domain/entities/peak_node.dart';
 import 'package:detoxia/domain/entities/user_profile.dart';
+import 'package:detoxia/domain/home/home_insight_view_model.dart';
 import 'package:detoxia/domain/prediction/risk_calculator.dart';
+import 'package:detoxia/domain/scoring/models/support_profile.dart';
 import 'package:detoxia/domain/tasks/daily_task_scheduler.dart';
-import 'package:detoxia/presentation/adhoc_report/adhoc_sheet.dart';
+import 'package:detoxia/domain/tasks/task_utility_score.dart';
+import 'package:detoxia/domain/tasks/unified_task_engine.dart';
 import 'package:detoxia/presentation/daily_checkin/checkin_screen.dart';
 import 'package:detoxia/presentation/dashboard/weekly_review/weekly_review_screen.dart';
 import 'package:detoxia/presentation/dashboard/recovery_projection/projection_screen.dart';
@@ -19,11 +27,15 @@ import 'package:detoxia/presentation/dashboard/achievements/achievements_screen.
 import 'package:detoxia/presentation/program/program_screen.dart';
 import 'package:detoxia/presentation/settings/settings_screen.dart';
 import 'package:detoxia/presentation/urge_rescue/rescue_screen.dart';
-import 'package:detoxia/presentation/mood/mood_home.dart';
-import 'package:detoxia/presentation/anxiety/anxiety_home.dart';
-import 'package:detoxia/presentation/depression/depression_home.dart';
-import 'package:detoxia/presentation/adhd/adhd_home.dart';
-import 'package:detoxia/presentation/period/period_home.dart';
+import 'package:detoxia/domain/questionnaire/detoxia_question_bank.dart';
+import 'package:detoxia/domain/questionnaire/question_visibility_resolver.dart';
+import 'package:detoxia/domain/questionnaire/resolver_context.dart';
+import 'package:detoxia/presentation/home/widgets/finish_setup_card.dart';
+import 'package:detoxia/presentation/home/widgets/cycle_context_note.dart';
+import 'package:detoxia/presentation/home/widgets/recovery_momentum_card.dart';
+import 'package:detoxia/presentation/home/widgets/right_now_card.dart';
+import 'package:detoxia/presentation/questionnaire/questionnaire_screen.dart';
+import 'package:detoxia/presentation/questionnaire/support_map_screen.dart';
 import 'package:detoxia/services/notification_service.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
@@ -38,22 +50,54 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   UserProfile? _profile;
-  List<PeakNodeEntity> _peaks = [];
+  SupportProfile? _supportProfile;
   List<RiskBlock> _todayBlocks = [];
   int _slipsToday = 0;
   int _urgesToday = 0;
   List<Map<String, dynamic>> _todayTasks = [];
   Set<String> _completedTaskIds = {};
+  Map<String, String> _taskFeedbackById = {};
+  bool _checkedInToday = false;
+  HomeInsightViewModel? _homeInsights;
+
+  /// Progress through the questions onboarding deferred.
+  int _setupAnswered = 0;
+  int _setupTotal = 0;
+  int? _questionnaireSessionId;
+
+  /// Drives the live parts of the dashboard — the "right now" level, the
+  /// position of the now-marker on the timeline, and the countdown to the
+  /// next hard window. Half-minute cadence is enough for minute-resolution
+  /// copy and costs nothing.
+  Timer? _ticker;
+  DateTime _now = DateTime.now();
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    _ticker = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) setState(() => _now = DateTime.now());
+    });
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
     final profile = await ref.read(userRepositoryProvider).getUser();
     if (profile == null) return;
+    final registrationProfile = await ref
+        .read(registrationRepositoryProvider)
+        .getProfile();
+    final supportProfile = registrationProfile == null
+        ? null
+        : await ref
+              .read(supportProfileRepositoryProvider)
+              .getLatestProfile(registrationProfile.id);
 
     List<PeakNodeEntity> peaks = [];
     int slipCount = 0;
@@ -63,10 +107,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     if (profile.hasDetox) {
       peaks = await ref.read(peakRepositoryProvider).getAllPeaks();
-      final slips =
-          await ref.read(eventRepositoryProvider).getSlipsForDate(now);
-      final urges =
-          await ref.read(eventRepositoryProvider).getUrgesForDate(now);
+      final slips = await ref
+          .read(eventRepositoryProvider)
+          .getSlipsForDate(now);
+      final urges = await ref
+          .read(eventRepositoryProvider)
+          .getUrgesForDate(now);
       slipCount = slips.length;
       urgeCount = urges.length;
 
@@ -78,35 +124,85 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       blocks = calculator.calculateDay(now.weekday, state);
     }
 
-    // Load daily tasks
+    final checkins = await ref.read(eventRepositoryProvider).getCheckinsLastDays(7);
+    final checkinMaps = checkins
+        .map(
+          (row) => <String, dynamic>{
+            'date': row.date,
+            'slipped': row.slipped,
+            'stress': row.stress,
+            'mood': row.mood,
+          },
+        )
+        .toList(growable: false);
+
     List<Map<String, dynamic>> tasks = [];
+    List<TaskUtility> rankedTaskUtilities = const [];
     Set<String> completedIds = {};
     final conditions = profile.conditions.map((c) => c.name).toList();
     final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays;
-    tasks = DailyTaskScheduler.selectTasks(
-      activeConditions: conditions,
-      dayOfYear: dayOfYear,
-    );
+    if (supportProfile != null) {
+      rankedTaskUtilities = const UnifiedTaskEngine().selectTasks(
+        profile: supportProfile,
+        now: now,
+        count: 5,
+      );
+      tasks = rankedTaskUtilities.map((utility) => utility.task).toList();
+    } else {
+      tasks = DailyTaskScheduler.selectTasks(
+        activeConditions: conditions,
+        dayOfYear: dayOfYear,
+      );
+    }
 
     final db = ref.read(databaseProvider);
     final today = DateTime(now.year, now.month, now.day);
-    final completedRows = await (db.select(db.dailyTaskAssignments)
-          ..where((t) => t.date.isBetweenValues(
-              today, today.add(const Duration(days: 1))))
-          ..where((t) => t.completed.equals(true)))
-        .get();
+    final completedRows =
+        await (db.select(db.dailyTaskAssignments)
+              ..where(
+                (t) => t.date.isBetweenValues(
+                  today,
+                  today.add(const Duration(days: 1)),
+                ),
+              )
+              ..where((t) => t.completed.equals(true)))
+            .get();
     completedIds = completedRows.map((r) => r.taskId).toSet();
+
+    final checkedIn = await ref
+        .read(userRepositoryProvider)
+        .hasCheckedInToday();
+    final insights = const HomeInsightViewModelBuilder().build(
+      now: now,
+      displayName: profile.name,
+      checkedInToday: checkedIn,
+      supportProfile: supportProfile,
+      dailyCheckins: checkinMaps,
+      rankedTasks: rankedTaskUtilities,
+    );
 
     if (mounted) {
       setState(() {
         _profile = profile;
-        _peaks = peaks;
+        _supportProfile = supportProfile;
         _todayBlocks = blocks;
         _slipsToday = slipCount;
         _urgesToday = urgeCount;
         _todayTasks = tasks;
         _completedTaskIds = completedIds;
+        _checkedInToday = checkedIn;
+        _homeInsights = insights;
       });
+    }
+
+    await _loadSetupProgress(registrationProfile);
+
+    if (supportProfile != null) {
+      try {
+        await ref
+            .read(notificationServiceProvider)
+            .scheduleUnifiedDailyPlan(supportProfile);
+      } catch (_) {}
     }
 
     if (profile.hasDetox) {
@@ -116,11 +212,137 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
+  /// Counts how much of the *full* questionnaire this user still has ahead,
+  /// resolved through the same visibility rules as the questionnaire itself —
+  /// so the total only ever counts questions they'd actually be asked.
+  Future<void> _loadSetupProgress(RegistrationProfile? registration) async {
+    if (registration == null) return;
+    try {
+      final repo = ref.read(questionnaireRepositoryProvider);
+      // Deliberately NOT ensureSession: that starts a fresh, empty session
+      // once onboarding has been marked complete, which would read back zero
+      // answers and re-ask everything the user already finished.
+      final session = await repo.getActiveSession();
+      if (session == null) return;
+      final answers = await repo.getAnswersMap(session.id);
+      final bank = await DetoxiaQuestionBank.loadFromAssets();
+
+      final ctx = ResolverContext(
+        ageBand: _ageBandFromString(registration.ageBand),
+        gender: _genderFromString(registration.gender),
+        selectedGoals: _goalsFromAnswers(answers),
+        answers: answers,
+      );
+      final visible = QuestionVisibilityResolver(bank)
+          .resolveVisibleSections(ctx)
+          .expand((section) => section.questions)
+          .toList(growable: false);
+
+      if (!mounted) return;
+      setState(() {
+        _questionnaireSessionId = session.id;
+        _setupTotal = visible.length;
+        _setupAnswered = visible
+            .where((q) => answers.containsKey(q.questionId))
+            .length;
+      });
+    } catch (_) {
+      // Progress is a nicety — never let it break the dashboard.
+    }
+  }
+
+  List<String> _goalsFromAnswers(Map<String, dynamic> answers) {
+    final goal = answers['goal_q1'];
+    if (goal is Map) {
+      final ids = goal['selectedOptionIds'];
+      if (ids is List) return ids.map((e) => '$e').toList(growable: false);
+      final one = goal['selectedOptionId'];
+      if (one is String) return [one];
+    }
+    return const [];
+  }
+
+  RegistrationAgeBand _ageBandFromString(String value) => switch (value) {
+    'teen13To15' => RegistrationAgeBand.teen13To15,
+    'teen16To17' => RegistrationAgeBand.teen16To17,
+    _ => RegistrationAgeBand.adult18Plus,
+  };
+
+  RegistrationGender _genderFromString(String value) => switch (value) {
+    'male' => RegistrationGender.male,
+    'female' => RegistrationGender.female,
+    _ => RegistrationGender.preferNotToSay,
+  };
+
+  Future<void> _openDeferredQuestions() async {
+    final sessionId = _questionnaireSessionId;
+    final profileId = _profile == null ? null : await _registrationId();
+    if (sessionId == null || profileId == null) return;
+    if (!mounted) return;
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => QuestionnaireScreen(
+          profileId: profileId,
+          sessionId: sessionId,
+          // No tier: pick up everything that was deferred.
+        ),
+      ),
+    );
+    await _loadData();
+  }
+
+  Future<int?> _registrationId() async {
+    final registration =
+        await ref.read(registrationRepositoryProvider).getProfile();
+    return registration?.id;
+  }
+
+  Future<void> _openCheckIn() async {
+    if (_checkedInToday) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Check-in already done for today.')),
+      );
+      return;
+    }
+    final completed = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => const CheckinScreen()),
+    );
+    if (completed == true) {
+      setState(() => _checkedInToday = true);
+    }
+  }
+
+  Future<void> _openFullSupportMap() async {
+    final registration = await ref.read(registrationRepositoryProvider).getProfile();
+    final session = await ref.read(questionnaireRepositoryProvider).getActiveSession();
+    if (!mounted) return;
+
+    if (registration == null || session == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Support Map is not ready yet.')),
+      );
+      return;
+    }
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SupportMapScreen(
+          profileId: registration.id,
+          sessionId: session.id,
+        ),
+      ),
+    );
+  }
+
   void _scheduleCheckinReminders(UserProfile profile) {
     final now = DateTime.now();
     final isOffDay = profile.isOffDay(now.weekday);
-    final sleepTime =
-        isOffDay ? profile.offdaySleepTime : profile.weekdaySleepTime;
+    final sleepTime = isOffDay
+        ? profile.offdaySleepTime
+        : profile.weekdaySleepTime;
     var sleepDT = DateTime(
       now.year,
       now.month,
@@ -139,7 +361,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
-    await db.into(db.dailyTaskAssignments).insert(
+    await db
+        .into(db.dailyTaskAssignments)
+        .insert(
           DailyTaskAssignmentsCompanion(
             date: Value(today),
             taskId: Value(task['id'] as String),
@@ -158,21 +382,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
+  void _recordTaskFeedback(String taskId, String feedback) {
+    setState(() {
+      _taskFeedbackById = {..._taskFeedbackById, taskId: feedback};
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Saved locally. Tomorrow\'s plan will adapt.'),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    final currentBlock = (now.hour * 60 + now.minute) ~/ 30;
+    // The "next hard window" search moved into RightNowCard, which owns both
+    // the current level and what's ahead.
     final hasDetox = _profile?.hasDetox ?? false;
-
-    RiskBlock? nextHighRisk;
-    if (hasDetox) {
-      for (final block in _todayBlocks) {
-        if (block.blockIndex > currentBlock && block.score >= 0.7) {
-          nextHighRisk = block;
-          break;
-        }
-      }
-    }
 
     return Scaffold(
       body: SafeArea(
@@ -181,72 +406,51 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             : RefreshIndicator(
                 onRefresh: _loadData,
                 child: ListView(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
                   children: [
-                    _buildHeader(),
-                    const SizedBox(height: 16),
-                    _buildDailyInsight(),
-                    const SizedBox(height: 16),
-                    if (_todayTasks.isNotEmpty) ...[
-                      _buildDailyTasks(),
-                      const SizedBox(height: 16),
-                    ],
-                    _buildActiveModuleCards(),
-                    const SizedBox(height: 16),
-                    if (hasDetox) ...[
-                      _buildQuickStats(),
-                      const SizedBox(height: 16),
-                      _buildDailyProgress(),
-                      const SizedBox(height: 16),
-                      if (nextHighRisk != null)
-                        _buildNextRiskCard(nextHighRisk),
-                      if (nextHighRisk != null) const SizedBox(height: 16),
-                      _buildPeakCards(now),
-                      const SizedBox(height: 20),
-                      _buildTimeline(currentBlock),
-                      const SizedBox(height: 20),
-                    ],
-                    _buildNavigationGrid(),
-                    const SizedBox(height: 80),
+                    for (final (i, block) in _dashboardBlocks(hasDetox).indexed)
+                      FadeSlideIn(index: i, child: block),
                   ],
                 ),
               ),
       ),
       floatingActionButton: hasDetox
           ? FloatingActionButton.extended(
-              onPressed: () => _showAdHocSheet(context),
-              icon: const Icon(Icons.add),
-              label: const Text('Report'),
+              onPressed: () => _openResetFlow(context),
+              icon: const Icon(Icons.restart_alt),
+              label: Text(_homeInsights?.primaryResetCta.label ?? 'Help me reset'),
             )
           : null,
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Colors.white38,
+        unselectedItemColor: AppTheme.palette(context).textTertiary,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.wb_sunny), label: 'Today'),
+          BottomNavigationBarItem(icon: Icon(Icons.shield), label: 'Rescue'),
+          BottomNavigationBarItem(icon: Icon(Icons.radar), label: 'Map'),
+          BottomNavigationBarItem(icon: Icon(Icons.auto_graph), label: 'Review'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart), label: 'Review'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.school), label: 'Program'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings), label: 'Settings'),
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
         ],
         onTap: (index) {
           switch (index) {
             case 1:
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (_) => const WeeklyReviewScreen()),
+                MaterialPageRoute(builder: (_) => const RescueScreen()),
               );
             case 2:
+              _openFullSupportMap();
+            case 3:
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const ProgramScreen()),
+                MaterialPageRoute(builder: (_) => const WeeklyReviewScreen()),
               );
-            case 3:
+            case 4:
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const SettingsScreen()),
@@ -257,93 +461,124 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildHeader() {
-    final greeting = _getGreeting();
-    final name = _profile?.name ?? '';
-    final displayName = name.isNotEmpty ? ', $name' : '';
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '$greeting$displayName',
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              Text(
-                '${TimeUtils.dayName(DateTime.now().weekday)}, ${_formatDate(DateTime.now())}',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ],
-          ),
+  /// The dashboard, as an ordered list of blocks.
+  ///
+  /// Built as a list rather than inline so each block can be staggered in, and
+  /// so the running order is readable in one place instead of buried in a
+  /// hundred lines of nested `if` spreads.
+  List<Widget> _dashboardBlocks(bool hasDetox) {
+    final showsSetup = _setupTotal > _setupAnswered;
+    final showsCycle = _supportProfile?.menstrualProfile?.enabled ?? false;
+
+    return [
+      _buildHeader(),
+      const SizedBox(height: 26),
+
+      // Live state leads: the reason to open this app at 11pm is "what is
+      // happening to me right now", not a menu.
+      if (hasDetox && _todayBlocks.isNotEmpty) ...[
+        RightNowCard(
+          blocks: _todayBlocks,
+          now: _now,
+          onAct: () => _openResetFlow(context),
         ),
-        if (_profile?.hasDetox ?? false)
-          IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const CheckinScreen()),
-            ),
-            icon:
-                const Icon(Icons.nightlight_round, color: Colors.white70),
-            tooltip: 'Daily Check-in',
-          ),
+        const SizedBox(height: 14),
       ],
-    );
+      if (hasDetox) ...[
+        _buildTodaySoFar(),
+        const SizedBox(height: 28),
+      ],
+
+      if (showsSetup) ...[
+        FinishSetupCard(
+          answered: _setupAnswered,
+          total: _setupTotal,
+          onContinue: _openDeferredQuestions,
+        ),
+        const SizedBox(height: 28),
+      ],
+
+      _sectionLabel('Today'),
+      _buildCurrentStateCard(),
+      const SizedBox(height: 12),
+      _buildTodayResetPlan(),
+      const SizedBox(height: 28),
+
+      if (hasDetox || showsCycle) ...[
+        _sectionLabel('Your patterns'),
+        if (hasDetox) ...[
+          _buildTriggerChainPreview(),
+          const SizedBox(height: 12),
+        ],
+        _buildRecoveryMomentum(),
+        if (showsCycle) ...[
+          const SizedBox(height: 12),
+          CycleContextNote(profile: _supportProfile!),
+        ],
+        const SizedBox(height: 28),
+      ],
+
+      _sectionLabel('More'),
+      _buildSecondaryNav(),
+    ];
   }
 
-  String _getGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  }
+  /// Hero header: greeting, date, and the one line of framing.
+  ///
+  /// The check-in control used to live here *and* in its own card below —
+  /// two buttons for the same action, which is a large part of why the
+  /// dashboard read as noise. It now lives only in the check-in card.
+  Widget _buildHeader() {
+    final p = AppTheme.palette(context);
+    final greeting = _homeInsights?.greeting;
 
-  Widget _buildDailyInsight() {
     return Container(
-      padding: const EdgeInsets.all(14),
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(20, 22, 20, 24),
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [
-            Theme.of(context)
-                .colorScheme
-                .primary
-                .withValues(alpha: 0.12),
-            Theme.of(context)
-                .colorScheme
-                .primary
-                .withValues(alpha: 0.04),
+            p.accent.withValues(alpha: p.isDark ? 0.20 : 0.13),
+            p.calm.withValues(alpha: p.isDark ? 0.10 : 0.07),
           ],
         ),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-            color: Theme.of(context)
-                .colorScheme
-                .primary
-                .withValues(alpha: 0.2)),
       ),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.auto_awesome,
-              color: Theme.of(context).colorScheme.primary, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text("Today's Insight",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13)),
-                const SizedBox(height: 4),
-                Text(
-                  getTodayInsight(),
-                  style: const TextStyle(
-                      color: Colors.white60, fontSize: 13, height: 1.4),
-                ),
-              ],
+          Text(
+            (greeting?.dateLabel ??
+                    '${TimeUtils.dayName(DateTime.now().weekday)}, ${_formatDate(DateTime.now())}')
+                .toUpperCase(),
+            style: TextStyle(
+              color: p.textTertiary,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.1,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            greeting?.title ?? 'Welcome',
+            style: TextStyle(
+              color: p.textPrimary,
+              fontSize: 29,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.6,
+              height: 1.15,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'You do not need to fix the whole day. Just protect the next '
+            'choice.',
+            style: TextStyle(
+              color: p.textSecondary,
+              fontSize: 14,
+              height: 1.45,
             ),
           ),
         ],
@@ -351,7 +586,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildDailyTasks() {
+  /// Small caps divider between groups of cards.
+  ///
+  /// Eight cards of identical weight is what made this screen tiring; naming
+  /// the groups gives the eye somewhere to rest and something to skip.
+  Widget _sectionLabel(String label) {
+    final p = AppTheme.palette(context);
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 12),
+      child: Text(
+        label.toUpperCase(),
+        style: TextStyle(
+          color: p.textTertiary,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 1.1,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTodayResetPlan() {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -360,29 +615,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.task_alt,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 20),
+                Icon(
+                  Icons.task_alt,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
-                const Expanded(
-                  child: Text("Today's Tasks",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600)),
+                Expanded(
+                  child: Text(
+                    "Today's Reset Plan",
+                    style: TextStyle(
+                      color: AppTheme.palette(context).textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
                 Text(
                   '${_completedTaskIds.length}/${_todayTasks.length}',
                   style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13),
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            ..._todayTasks.take(5).map((task) {
+            if (_todayTasks.isEmpty)
+              Padding(
+                padding: EdgeInsets.only(top: 4),
+                child: Text(
+                  'Your reset plan will appear after your support profile is ready. '
+                  'Complete your check-in to get started.',
+                  style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13, height: 1.4),
+                ),
+              )
+            else
+              ..._todayTasks.take(5).map((task) {
               final taskId = task['id'] as String;
               final done = _completedTaskIds.contains(taskId);
+              final insight = _taskInsight(taskId);
+              final feedback = _taskFeedbackById[taskId];
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: InkWell(
@@ -392,13 +665,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: done
-                          ? AppTheme.success.withValues(alpha: 0.08)
-                          : Colors.white.withValues(alpha: 0.04),
+                          ? AppTheme.palette(context).success.withValues(alpha: 0.08)
+                          : AppTheme.palette(context).textPrimary.withValues(alpha: 0.04),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: done
-                            ? AppTheme.success.withValues(alpha: 0.3)
-                            : Colors.white10,
+                            ? AppTheme.palette(context).success.withValues(alpha: 0.3)
+                            : AppTheme.palette(context).borderSubtle,
                       ),
                     ),
                     child: Row(
@@ -407,23 +680,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           done
                               ? Icons.check_circle
                               : Icons.radio_button_unchecked,
-                          color: done
-                              ? AppTheme.success
-                              : Colors.white38,
+                          color: done ? AppTheme.palette(context).success : AppTheme.palette(context).textTertiary,
                           size: 20,
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 task['title'] as String,
                                 style: TextStyle(
-                                  color: done
-                                      ? Colors.white54
-                                      : Colors.white,
+                                  color: done ? AppTheme.palette(context).textSecondary : AppTheme.palette(context).textPrimary,
                                   fontWeight: FontWeight.w500,
                                   fontSize: 13,
                                   decoration: done
@@ -432,16 +700,94 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 ),
                               ),
                               Text(
-                                '${task['durationMinutes']}min',
-                                style: const TextStyle(
-                                    color: Colors.white38,
-                                    fontSize: 11),
+                                '${task['durationMinutes']}min'
+                                ' - ${insight?.whyChosen ?? 'Chosen for today'}',
+                                style: TextStyle(
+                                  color: AppTheme.palette(context).textTertiary,
+                                  fontSize: 11,
+                                ),
                               ),
+                              if (insight != null) ...[
+                                Text(
+                                  'Target driver: ${insight.targetDriver}',
+                                  style: TextStyle(
+                                    color: AppTheme.palette(context).textSecondary,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                                if (insight.steps.isNotEmpty)
+                                  Text(
+                                    'Step 1: ${insight.steps.first}',
+                                    style: TextStyle(
+                                      color: AppTheme.palette(context).textSecondary,
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                if (insight.domainTags.isNotEmpty)
+                                  Wrap(
+                                    spacing: 4,
+                                    children: insight.domainTags
+                                        .take(3)
+                                        .map(
+                                          (tag) => Chip(
+                                            label: Text(
+                                              tag,
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: AppTheme.palette(context).textSecondary,
+                                              ),
+                                            ),
+                                            visualDensity: VisualDensity.compact,
+                                            padding: EdgeInsets.zero,
+                                            materialTapTargetSize:
+                                                MaterialTapTargetSize.shrinkWrap,
+                                            backgroundColor: AppTheme.palette(context).textPrimary
+                                                .withValues(alpha: 0.08),
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
+                                const SizedBox(height: 6),
+                                Wrap(
+                                  spacing: 6,
+                                  runSpacing: 4,
+                                  children: insight.feedbackButtons
+                                      .map(
+                                        (label) => OutlinedButton(
+                                          onPressed: () =>
+                                              _recordTaskFeedback(taskId, label),
+                                          style: OutlinedButton.styleFrom(
+                                            minimumSize: const Size(0, 28),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            label,
+                                            style: const TextStyle(fontSize: 11),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                                if (feedback != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      'Feedback saved locally: $feedback',
+                                      style: TextStyle(
+                                        color: AppTheme.palette(context).textSecondary,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ],
                           ),
                         ),
                         _conditionBadge(
-                            task['conditionType'] as String),
+                          task['conditionType'] as String? ?? 'recovery',
+                        ),
                       ],
                     ),
                   ),
@@ -465,96 +811,178 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Text(
         config.shortLabel,
         style: TextStyle(
-            color: config.color, fontSize: 9, fontWeight: FontWeight.w600),
+          color: config.color,
+          fontSize: 9,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
 
-  Widget _buildActiveModuleCards() {
-    final conditions = _profile?.conditions ?? [];
-    if (conditions.length <= 1 && conditions.contains(ConditionType.detoxRecovery)) {
-      return const SizedBox.shrink();
+  Widget _buildRecoveryMomentum() {
+    final supportProfile = _supportProfile;
+    if (supportProfile != null) {
+      return RecoveryMomentumCard(profile: supportProfile);
     }
+    final momentum = _homeInsights?.recoveryMomentum;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Your Modules',
-            style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 90,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: conditions.where((c) => c != ConditionType.detoxRecovery).map((c) {
-              final config = _conditionConfig(c.name);
-              return Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(14),
-                  onTap: () => _navigateToModule(c),
-                  child: Container(
-                    width: 130,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          config.color.withValues(alpha: 0.2),
-                          config.color.withValues(alpha: 0.06),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                          color: config.color.withValues(alpha: 0.3)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Icon(config.icon, color: config.color, size: 24),
-                        Text(
-                          config.label,
-                          style: TextStyle(
-                              color: config.color,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          children: [
+            Icon(Icons.trending_up, color: AppTheme.palette(context).success, size: 22),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                momentum?.explanation ??
+                    'Momentum adjusts from your daily outcomes, check-ins, '
+                        'and completed support actions.',
+                style:  TextStyle(color: AppTheme.palette(context).textSecondary, height: 1.35),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
-  void _navigateToModule(ConditionType condition) {
-    Widget screen;
-    switch (condition) {
-      case ConditionType.moodTracking:
-        screen = const MoodHome();
-      case ConditionType.anxiety:
-        screen = const AnxietyHome();
-      case ConditionType.depression:
-        screen = const DepressionHome();
-      case ConditionType.adhd:
-        screen = const AdhdHome();
-      case ConditionType.periodTracking:
-        screen = const PeriodHome();
-      default:
-        return;
-    }
-    Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+  /// Today's counters, at a glance.
+  ///
+  /// Urges and slips were already being loaded on every refresh and then
+  /// discarded — surfacing them is the cheapest real-time signal the app has,
+  /// and "3 urges, 0 slips" is a far better read on the day than any score.
+  Widget _buildTodaySoFar() {
+    final p = AppTheme.palette(context);
+    final tasksDone = _completedTaskIds.length;
+    final tasksTotal = _todayTasks.length;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 16),
+      decoration: BoxDecoration(
+        color: p.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: p.borderSubtle),
+      ),
+      child: Row(
+        children: [
+          _StatCell(
+            value: '$_urgesToday',
+            label: _urgesToday == 1 ? 'urge logged' : 'urges logged',
+            tone: p.textPrimary,
+          ),
+          _StatDivider(color: p.borderSubtle),
+          _StatCell(
+            value: '$_slipsToday',
+            label: _slipsToday == 1 ? 'slip' : 'slips',
+            tone: _slipsToday == 0 ? p.success : p.supportNeeded,
+          ),
+          _StatDivider(color: p.borderSubtle),
+          _StatCell(
+            value: tasksTotal == 0 ? '—' : '$tasksDone/$tasksTotal',
+            label: 'resets done',
+            tone: tasksTotal > 0 && tasksDone >= tasksTotal
+                ? p.success
+                : p.textPrimary,
+          ),
+        ],
+      ),
+    );
   }
 
-  Widget _buildDailyProgress() {
-    final cleanDays =
-        _peaks.isNotEmpty ? _peaks.first.currentPeakStreak : 0;
+  Widget _buildCurrentStateCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  _checkedInToday ? Icons.check_circle : Icons.nightlight_round,
+                  color: _checkedInToday ? AppTheme.palette(context).success : AppTheme.palette(context).textSecondary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _checkedInToday ? 'Checked in today' : 'Not checked in yet',
+                    style: TextStyle(
+                      color: AppTheme.palette(context).textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                OutlinedButton(
+                  onPressed: _openCheckIn,
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(0, 34),
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                  ),
+                  child: Text(
+                    _checkedInToday ? 'Update' : 'Check in',
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _checkedInToday
+                  ? 'Your check-in helps Detoxia calibrate today\'s support.'
+                  : 'A quick check-in improves today\'s plan.',
+              style: TextStyle(
+                color: AppTheme.palette(context).textSecondary,
+                fontSize: 13,
+                height: 1.35,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTriggerChainPreview() {
+    final profile = _supportProfile;
+    if (profile == null) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              Icon(Icons.account_tree_outlined, color: AppTheme.palette(context).textTertiary, size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Your trigger chain will appear as Detoxia learns your patterns.',
+                  style: TextStyle(color: AppTheme.palette(context).textSecondary, height: 1.35),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final triggers = profile.triggerWeights.toList()
+      ..sort((a, b) => b.weight0To10.compareTo(a.weight0To10));
+    final pathways = profile.pathwayScores
+        .where((p) => p.enabled && p.score0To10 > 0)
+        .toList()
+      ..sort((a, b) => b.score0To10.compareTo(a.score0To10));
+
+    final chainLabels = triggers
+        .take(4)
+        .map((t) => t.label.toLowerCase())
+        .toList();
+
+    if (chainLabels.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final topPathway = pathways.isNotEmpty ? pathways.first.label.toLowerCase() : null;
 
     return Card(
       child: Padding(
@@ -564,127 +992,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.show_chart, color: AppTheme.success, size: 20),
+                Icon(Icons.account_tree_outlined,
+                    color: AppTheme.palette(context).accent, size: 20),
                 const SizedBox(width: 8),
-                const Text("Today's Status",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600)),
+                Text(
+                  'Your trigger chain',
+                  style: TextStyle(
+                    color: AppTheme.palette(context).textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 12),
-            _ProgressRow(
-              label: 'Clean days',
-              value: '$cleanDays',
-              icon: Icons.favorite,
-              color: AppTheme.success,
-            ),
-            _ProgressRow(
-              label: 'Urges resisted today',
-              value: '$_urgesToday',
-              icon: Icons.shield,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            _ProgressRow(
-              label: 'Risk windows survived',
-              value: _survivedWindows(),
-              icon: Icons.check_circle,
-              color: AppTheme.success,
-            ),
-            if (_slipsToday == 0)
-              const Padding(
-                padding: EdgeInsets.only(top: 8),
-                child: Text(
-                  'You\'re doing great today. Keep going.',
-                  style: TextStyle(
-                      color: Colors.white54,
-                      fontSize: 12,
-                      fontStyle: FontStyle.italic),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _survivedWindows() {
-    final now = DateTime.now();
-    final currentBlock = (now.hour * 60 + now.minute) ~/ 30;
-    int passed = 0;
-    for (final block in _todayBlocks) {
-      if (block.blockIndex < currentBlock && block.score >= 0.7) {
-        passed++;
-      }
-    }
-    return '$passed';
-  }
-
-  Widget _buildQuickStats() {
-    return Row(
-      children: [
-        _StatChip(
-          label: 'Clean streak',
-          value:
-              '${_peaks.isNotEmpty ? _peaks.first.currentPeakStreak : 0}d',
-          color: AppTheme.success,
-        ),
-        const SizedBox(width: 8),
-        _StatChip(
-          label: 'Urges today',
-          value: '$_urgesToday',
-          color: AppTheme.warning,
-        ),
-        const SizedBox(width: 8),
-        _StatChip(
-          label: 'Setbacks',
-          value: '$_slipsToday',
-          color: _slipsToday > 0 ? AppTheme.danger : AppTheme.success,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNextRiskCard(RiskBlock block) {
-    final minutesUntil = block.startMinute -
-        (DateTime.now().hour * 60 + DateTime.now().minute);
-    final countdownText = minutesUntil > 60
-        ? '${minutesUntil ~/ 60}h ${minutesUntil % 60}m'
-        : '${minutesUntil}m';
-
-    return Card(
-      color: AppTheme.danger.withValues(alpha: 0.15),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Icon(Icons.warning_amber, color: AppTheme.danger, size: 32),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Next high-risk window',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    '${TimeUtils.blockLabel(block.startMinute)} '
-                    '- in $countdownText',
-                    style: const TextStyle(color: Colors.white70),
-                  ),
-                ],
+            const SizedBox(height: 10),
+            Text(
+              _buildChainSentence(chainLabels, topPathway),
+              style: TextStyle(
+                color: AppTheme.palette(context).textSecondary,
+                fontSize: 13,
+                height: 1.5,
               ),
             ),
-            ElevatedButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const RescueScreen()),
+            const SizedBox(height: 6),
+            Text(
+              'Recognising the chain early is your strongest protection.',
+              style: TextStyle(
+                color: AppTheme.palette(context).textSecondary,
+                fontSize: 12,
+                height: 1.35,
               ),
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.danger),
-              child: const Text('Prepare'),
             ),
           ],
         ),
@@ -692,201 +1028,126 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildPeakCards(DateTime now) {
-    if (_peaks.isEmpty) return const SizedBox.shrink();
-    final currentMinute = now.hour * 60 + now.minute;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("Today's Peaks",
-            style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 12),
-        ..._peaks.map((peak) {
-          final status = _peakStatus(peak, currentMinute);
-          return Card(
-            child: ListTile(
-              leading: Icon(
-                status.icon,
-                color: status.color,
-                size: 28,
-              ),
-              title: Text(
-                '${peak.label} (${peak.centerTime.format(context)})',
-                style: const TextStyle(color: Colors.white),
-              ),
-              subtitle: Text(
-                status.text,
-                style: TextStyle(color: status.color),
-              ),
-              trailing: Text(
-                '${peak.currentPeakStreak}d',
-                style: const TextStyle(
-                    color: Colors.white54, fontSize: 12),
-              ),
-            ),
-          );
-        }),
-      ],
-    );
+  String _buildChainSentence(List<String> triggers, String? topPathway) {
+    if (triggers.length >= 4) {
+      return '${triggers[0]} → ${triggers[1]} → ${triggers[2]} → ${triggers[3]}${topPathway != null ? ' — this pattern often leads to $topPathway sensitivity' : ''}.';
+    }
+    if (triggers.length >= 2) {
+      final chain = triggers.join(' → ');
+      return '$chain${topPathway != null ? ' — these tend to increase $topPathway sensitivity' : ''}.';
+    }
+    return '${triggers.first} is your strongest current driver.${topPathway != null ? ' It most affects your $topPathway.' : ''}';
   }
 
-  Widget _buildTimeline(int currentBlock) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Risk Timeline',
-            style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 60,
-          child: Row(
-            children: List.generate(
-              48,
-              (i) {
-                final block =
-                    i < _todayBlocks.length ? _todayBlocks[i] : null;
-                return Expanded(
-                  child: Container(
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 0.5),
-                    decoration: BoxDecoration(
-                      color: block != null
-                          ? AppTheme.riskColor(block.score)
-                              .withValues(alpha: 0.7)
-                          : Colors.white12,
-                      border: i == currentBlock
-                          ? Border.all(color: Colors.white, width: 2)
-                          : null,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-        const SizedBox(height: 4),
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('12AM',
-                style: TextStyle(color: Colors.white38, fontSize: 10)),
-            Text('6AM',
-                style: TextStyle(color: Colors.white38, fontSize: 10)),
-            Text('12PM',
-                style: TextStyle(color: Colors.white38, fontSize: 10)),
-            Text('6PM',
-                style: TextStyle(color: Colors.white38, fontSize: 10)),
-            Text('12AM',
-                style: TextStyle(color: Colors.white38, fontSize: 10)),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNavigationGrid() {
-    final hasDetox = _profile?.hasDetox ?? false;
-    final cards = <Widget>[];
-
-    if (hasDetox) {
-      cards.addAll([
-        _NavCard(
-          icon: Icons.psychology,
-          label: 'Where You Stand',
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const ConfidenceScreen()),
-          ),
-        ),
-        _NavCard(
-          icon: Icons.trending_up,
-          label: 'My Journey',
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const ProjectionScreen()),
-          ),
-        ),
-        _NavCard(
-          icon: Icons.emoji_events,
-          label: 'Achievements',
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) => const AchievementsScreen()),
-          ),
-        ),
-        _NavCard(
-          icon: Icons.shield,
-          label: 'Urge Rescue',
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const RescueScreen()),
-          ),
-        ),
-      ]);
-    }
-
-    // Add module-specific nav cards
-    for (final condition in _profile?.conditions ?? <ConditionType>[]) {
-      if (condition == ConditionType.detoxRecovery) continue;
-      final config = _conditionConfig(condition.name);
-      cards.add(_NavCard(
-        icon: config.icon,
-        label: config.label,
-        color: config.color,
-        onTap: () => _navigateToModule(condition),
-      ));
-    }
-
-    if (cards.isEmpty) return const SizedBox.shrink();
-
+  Widget _buildSecondaryNav() {
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
-      childAspectRatio: 1.6,
-      children: cards,
+      childAspectRatio: 2.5,
+      children: [
+        _navTile(Icons.trending_up_rounded, 'Recovery path',
+            () => const ProjectionScreen()),
+        _navTile(Icons.insights_rounded, 'Where you stand',
+            () => const ConfidenceScreen()),
+        _navTile(Icons.emoji_events_rounded, 'Wins',
+            () => const AchievementsScreen()),
+        _navTile(Icons.school_rounded, '12-week program',
+            () => const ProgramScreen()),
+        _navTileAction(
+            Icons.radar_rounded, 'Support map', _openFullSupportMap),
+        _navTile(Icons.auto_graph_rounded, 'Weekly review',
+            () => const WeeklyReviewScreen()),
+      ],
     );
   }
 
-  void _showAdHocSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => AdHocSheet(
-        onComplete: () {
-          Navigator.pop(context);
-          _loadData();
-        },
+  /// One destination tile. Icon-led and evenly sized so the block reads as a
+  /// calm grid rather than a ragged row of chips.
+  Widget _navTile(IconData icon, String label, Widget Function() destination) =>
+      _navTileAction(
+        icon,
+        label,
+        () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => destination()),
+        ),
+      );
+
+  Widget _navTileAction(IconData icon, String label, VoidCallback onTap) {
+    final p = AppTheme.palette(context);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: p.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: p.borderSubtle),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: p.accentSoft,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 17, color: p.accent),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: p.textPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    height: 1.25,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  _PeakStatus _peakStatus(PeakNodeEntity peak, int currentMinute) {
-    if (currentMinute < peak.startMinutes) {
-      final diff = peak.startMinutes - currentMinute;
-      final text = diff > 60
-          ? 'Approaching in ${diff ~/ 60}h ${diff % 60}m'
-          : 'Approaching in ${diff}m';
-      return _PeakStatus(Icons.schedule, AppTheme.warning, text);
-    }
-    if (currentMinute <= peak.endMinutes) {
-      return _PeakStatus(
-          Icons.warning, AppTheme.danger, 'Active now - stay strong');
-    }
-    return _PeakStatus(
-        Icons.check_circle, AppTheme.success, 'Passed - held');
+  Widget _secondaryNavChip(IconData icon, String label, VoidCallback onTap) {
+    return ActionChip(
+      avatar: Icon(icon, size: 16, color: AppTheme.palette(context).accent),
+      label: Text(label, style: const TextStyle(fontSize: 12)),
+      onPressed: onTap,
+      backgroundColor: AppTheme.palette(context).textPrimary.withValues(alpha: 0.06),
+      side: BorderSide(color: AppTheme.palette(context).textPrimary.withValues(alpha: 0.08)),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+    );
+  }
+
+  void _openResetFlow(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const RescueScreen()),
+    ).then((_) => _loadData());
   }
 
   String _formatDate(DateTime dt) => '${dt.day}/${dt.month}/${dt.year}';
+
+  HomeTaskInsight? _taskInsight(String taskId) {
+    final tasks = _homeInsights?.todayTasks;
+    if (tasks == null) return null;
+    for (final task in tasks) {
+      if (task.id == taskId) return task;
+    }
+    return null;
+  }
 }
 
 class _ConditionConfig {
@@ -901,100 +1162,82 @@ _ConditionConfig _conditionConfig(String condition) {
   switch (condition) {
     case 'anxiety':
       return const _ConditionConfig(
-          'Anxiety', 'ANX', Icons.air, Color(0xFF4ECDC4));
+        'Anxiety',
+        'ANX',
+        Icons.air,
+        Color(0xFF4ECDC4),
+      );
     case 'depression':
       return const _ConditionConfig(
-          'Depression', 'DEP', Icons.wb_sunny_outlined, Color(0xFFFFB347));
+        'Depression',
+        'DEP',
+        Icons.wb_sunny_outlined,
+        Color(0xFFFFB347),
+      );
     case 'adhd':
       return const _ConditionConfig(
-          'ADHD', 'ADHD', Icons.psychology, Color(0xFFFF6B6B));
+        'ADHD',
+        'ADHD',
+        Icons.psychology,
+        Color(0xFFFF6B6B),
+      );
     case 'periodTracking':
       return const _ConditionConfig(
-          'Period Tracker', 'PER', Icons.favorite, Color(0xFFFF6B9D));
+        'Period Tracker',
+        'PER',
+        Icons.favorite,
+        Color(0xFFFF6B9D),
+      );
     case 'moodTracking':
       return const _ConditionConfig(
-          'Mood Tracker', 'MOOD', Icons.emoji_emotions, Color(0xFF9B59B6));
+        'Mood Tracker',
+        'MOOD',
+        Icons.emoji_emotions,
+        Color(0xFF9B59B6),
+      );
     default:
       return const _ConditionConfig(
-          'Recovery', 'REC', Icons.shield, Color(0xFF6C63FF));
+        'Recovery',
+        'REC',
+        Icons.shield,
+        Color(0xFF6C63FF),
+      );
   }
 }
 
-class _PeakStatus {
-  final IconData icon;
-  final Color color;
-  final String text;
-  const _PeakStatus(this.icon, this.color, this.text);
-}
-
-class _StatChip extends StatelessWidget {
-  final String label;
+/// One figure in the "today so far" row.
+class _StatCell extends StatelessWidget {
   final String value;
-  final Color color;
+  final String label;
+  final Color tone;
 
-  const _StatChip({
-    required this.label,
+  const _StatCell({
     required this.value,
-    required this.color,
+    required this.label,
+    required this.tone,
   });
 
   @override
   Widget build(BuildContext context) {
+    final p = AppTheme.palette(context);
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Text(value,
-                style: TextStyle(
-                    color: color,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            Text(label,
-                style: const TextStyle(
-                    color: Colors.white54, fontSize: 11)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ProgressRow extends StatelessWidget {
-  final String label;
-  final String value;
-  final IconData icon;
-  final Color color;
-
-  const _ProgressRow({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: color, size: 16),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(label,
-                style: const TextStyle(
-                    color: Colors.white70, fontSize: 13)),
-          ),
           Text(
             value,
             style: TextStyle(
-                color: color, fontWeight: FontWeight.bold, fontSize: 15),
+              color: tone,
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              height: 1.1,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: p.textTertiary, fontSize: 11.5),
           ),
         ],
       ),
@@ -1002,44 +1245,12 @@ class _ProgressRow extends StatelessWidget {
   }
 }
 
-class _NavCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final Color? color;
+class _StatDivider extends StatelessWidget {
+  final Color color;
 
-  const _NavCard({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.color,
-  });
+  const _StatDivider({required this.color});
 
   @override
-  Widget build(BuildContext context) {
-    final accentColor =
-        color ?? Theme.of(context).colorScheme.primary;
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: accentColor, size: 28),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                style: const TextStyle(
-                    color: Colors.white, fontSize: 13),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      Container(width: 1, height: 30, color: color);
 }

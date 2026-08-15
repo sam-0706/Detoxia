@@ -69,7 +69,7 @@ class _AdHocSheetState extends ConsumerState<AdHocSheet> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.white24,
+                    color: AppTheme.palette(context).borderStrong,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -85,7 +85,7 @@ class _AdHocSheetState extends ConsumerState<AdHocSheet> {
                 _ActionButton(
                   icon: Icons.flash_on,
                   label: "I'm having an urge RIGHT NOW",
-                  color: AppTheme.warning,
+                  color: AppTheme.palette(context).warning,
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(
@@ -97,27 +97,27 @@ class _AdHocSheetState extends ConsumerState<AdHocSheet> {
                 ),
                 const SizedBox(height: 12),
                 _ActionButton(
-                  icon: Icons.replay,
-                  label: 'I had a setback',
-                  color: AppTheme.danger,
+                  icon: Icons.refresh,
+                  label: 'I had a reset moment',
+                  color: AppTheme.palette(context).protectMoment,
                   onTap: () =>
                       setState(() => _isSlipReport = true),
                 ),
               ] else ...[
-                // Slip report flow
-                Text('Log a setback',
+                // Reset moment flow
+                Text('Save a reset moment',
                     style:
                         Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 8),
-                const Text(
-                  'One setback does not erase your progress. What matters is what you do next.',
-                  style: TextStyle(color: Colors.white54),
+                Text(
+                  'One reset moment does not erase your progress. What matters is what you do next.',
+                  style: TextStyle(color: AppTheme.palette(context).textSecondary),
                 ),
                 const SizedBox(height: 20),
 
-                const Text('When?',
+                Text('When?',
                     style: TextStyle(
-                        color: Colors.white70,
+                        color: AppTheme.palette(context).textSecondary,
                         fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 ChoiceChipGroup<String>(
@@ -138,9 +138,9 @@ class _AdHocSheetState extends ConsumerState<AdHocSheet> {
                 ),
 
                 const SizedBox(height: 16),
-                const Text('What happened?',
+                Text('What happened?',
                     style: TextStyle(
-                        color: Colors.white70,
+                        color: AppTheme.palette(context).textSecondary,
                         fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 ChoiceChipGroup<BehaviorType>(
@@ -159,9 +159,9 @@ class _AdHocSheetState extends ConsumerState<AdHocSheet> {
                 ),
 
                 const SizedBox(height: 16),
-                const Text('What triggered it?',
+                Text('What triggered it?',
                     style: TextStyle(
-                        color: Colors.white70,
+                        color: AppTheme.palette(context).textSecondary,
                         fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
                 ChoiceChipGroup<TriggerType>(
@@ -177,12 +177,12 @@ class _AdHocSheetState extends ConsumerState<AdHocSheet> {
 
                 const SizedBox(height: 16),
                 SwitchListTile(
-                  title: const Text('Were you scrolling before?',
-                      style: TextStyle(color: Colors.white70)),
+                  title: Text('Were you scrolling before?',
+                      style: TextStyle(color: AppTheme.palette(context).textSecondary)),
                   value: _precededByScrolling,
                   onChanged: (v) =>
                       setState(() => _precededByScrolling = v),
-                  activeTrackColor: AppTheme.accent,
+                  activeTrackColor: AppTheme.palette(context).accent,
                   contentPadding: EdgeInsets.zero,
                 ),
 
@@ -191,11 +191,11 @@ class _AdHocSheetState extends ConsumerState<AdHocSheet> {
                   controller: _reflectionController,
                   maxLength: 140,
                   maxLines: 2,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
+                  style:  TextStyle(color: AppTheme.palette(context).textPrimary),
+                  decoration: InputDecoration(
                     hintText:
                         'What could you do differently next time?',
-                    hintStyle: TextStyle(color: Colors.white38),
+                    hintStyle: TextStyle(color: AppTheme.palette(context).textTertiary),
                   ),
                 ),
 

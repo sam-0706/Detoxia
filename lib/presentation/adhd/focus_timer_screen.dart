@@ -138,12 +138,12 @@ class _FocusTimerScreenState extends ConsumerState<FocusTimerScreen>
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.surface,
-        title: const Text('Session Saved!',
-            style: TextStyle(color: Colors.white)),
+        backgroundColor: AppTheme.palette(context).surface,
+        title: Text('Session Saved!',
+            style: TextStyle(color: AppTheme.palette(context).textPrimary)),
         content: Text(
           'Great work! Take a $breakMinutes-minute break before your next session.',
-          style: const TextStyle(color: Colors.white70),
+          style:  TextStyle(color: AppTheme.palette(context).textSecondary),
         ),
         actions: [
           TextButton(
@@ -193,11 +193,11 @@ class _FocusTimerScreenState extends ConsumerState<FocusTimerScreen>
   Widget _buildTaskField() {
     return TextField(
       controller: _taskController,
-      style: const TextStyle(color: Colors.white, fontSize: 16),
+      style:  TextStyle(color: AppTheme.palette(context).textPrimary, fontSize: 16),
       decoration: InputDecoration(
         hintText: 'What are you focusing on?',
-        hintStyle: const TextStyle(color: Colors.white38),
-        prefixIcon: Icon(Icons.edit, color: AppTheme.accent, size: 20),
+        hintStyle:  TextStyle(color: AppTheme.palette(context).textTertiary),
+        prefixIcon: Icon(Icons.edit, color: AppTheme.palette(context).accent, size: 20),
       ),
     );
   }
@@ -216,12 +216,12 @@ class _FocusTimerScreenState extends ConsumerState<FocusTimerScreen>
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
                   color: selected
-                      ? AppTheme.accent.withValues(alpha: 0.2)
-                      : AppTheme.card,
+                      ? AppTheme.palette(context).accent.withValues(alpha: 0.2)
+                      : AppTheme.palette(context).surfaceRaised,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: selected
-                        ? AppTheme.accent
+                        ? AppTheme.palette(context).accent
                         : Colors.transparent,
                     width: 1.5,
                   ),
@@ -231,7 +231,7 @@ class _FocusTimerScreenState extends ConsumerState<FocusTimerScreen>
                     Text(
                       _labels[type]!,
                       style: TextStyle(
-                        color: selected ? AppTheme.accent : Colors.white,
+                        color: selected ? AppTheme.palette(context).accent : AppTheme.palette(context).textPrimary,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
@@ -241,8 +241,8 @@ class _FocusTimerScreenState extends ConsumerState<FocusTimerScreen>
                       _subtitles[type]!,
                       style: TextStyle(
                         color: selected
-                            ? AppTheme.accent.withValues(alpha: 0.7)
-                            : Colors.white38,
+                            ? AppTheme.palette(context).accent.withValues(alpha: 0.7)
+                            : AppTheme.palette(context).textTertiary,
                         fontSize: 11,
                       ),
                     ),
@@ -276,8 +276,8 @@ class _FocusTimerScreenState extends ConsumerState<FocusTimerScreen>
                   size: const Size(240, 240),
                   painter: _TimerPainter(
                     progress: _controller.value,
-                    color: _isComplete ? AppTheme.success : AppTheme.accent,
-                    backgroundColor: AppTheme.card,
+                    color: _isComplete ? AppTheme.palette(context).success : AppTheme.palette(context).accent,
+                    backgroundColor: AppTheme.palette(context).surfaceRaised,
                   ),
                 ),
                 Column(
@@ -285,8 +285,8 @@ class _FocusTimerScreenState extends ConsumerState<FocusTimerScreen>
                   children: [
                     Text(
                       '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: AppTheme.palette(context).textPrimary,
                         fontSize: 48,
                         fontWeight: FontWeight.w300,
                         fontFeatures: [FontFeature.tabularFigures()],
@@ -296,7 +296,7 @@ class _FocusTimerScreenState extends ConsumerState<FocusTimerScreen>
                       Text(
                         'Complete!',
                         style: TextStyle(
-                          color: AppTheme.success,
+                          color: AppTheme.palette(context).success,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -315,21 +315,21 @@ class _FocusTimerScreenState extends ConsumerState<FocusTimerScreen>
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text('Distractions:',
-            style: TextStyle(color: Colors.white70, fontSize: 14)),
+        Text('Distractions:',
+            style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 14)),
         const SizedBox(width: 12),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           decoration: BoxDecoration(
             color: _distractionCount > 0
-                ? AppTheme.warning.withValues(alpha: 0.15)
-                : AppTheme.card,
+                ? AppTheme.palette(context).warning.withValues(alpha: 0.15)
+                : AppTheme.palette(context).surfaceRaised,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
             '$_distractionCount',
             style: TextStyle(
-              color: _distractionCount > 0 ? AppTheme.warning : Colors.white,
+              color: _distractionCount > 0 ? AppTheme.palette(context).warning : AppTheme.palette(context).textPrimary,
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
@@ -339,7 +339,7 @@ class _FocusTimerScreenState extends ConsumerState<FocusTimerScreen>
         IconButton(
           onPressed: _isRunning ? _addDistraction : null,
           icon: Icon(Icons.add_circle_outline,
-              color: _isRunning ? AppTheme.warning : Colors.white24),
+              color: _isRunning ? AppTheme.palette(context).warning : AppTheme.palette(context).borderStrong),
           tooltip: 'Got distracted',
         ),
       ],
@@ -354,14 +354,14 @@ class _FocusTimerScreenState extends ConsumerState<FocusTimerScreen>
           _ControlButton(
             icon: Icons.refresh,
             label: 'Reset',
-            color: Colors.white38,
+            color: AppTheme.palette(context).textTertiary,
             onTap: _reset,
           ),
           const SizedBox(width: 24),
           _ControlButton(
             icon: _isRunning ? Icons.pause : Icons.play_arrow,
             label: _isRunning ? 'Pause' : 'Start',
-            color: AppTheme.accent,
+            color: AppTheme.palette(context).accent,
             large: true,
             onTap: _isRunning ? _pause : _start,
           ),
@@ -376,10 +376,10 @@ class _FocusTimerScreenState extends ConsumerState<FocusTimerScreen>
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const Text(
+            Text(
               'How was your focus?',
               style: TextStyle(
-                color: Colors.white,
+                color: AppTheme.palette(context).textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -388,7 +388,7 @@ class _FocusTimerScreenState extends ConsumerState<FocusTimerScreen>
             Text(
               '${_focusRating.round()}/10',
               style: TextStyle(
-                color: AppTheme.accent,
+                color: AppTheme.palette(context).accent,
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
               ),
@@ -398,15 +398,15 @@ class _FocusTimerScreenState extends ConsumerState<FocusTimerScreen>
               min: 1,
               max: 10,
               divisions: 9,
-              activeColor: AppTheme.accent,
-              inactiveColor: AppTheme.card,
+              activeColor: AppTheme.palette(context).accent,
+              inactiveColor: AppTheme.palette(context).surfaceRaised,
               onChanged: (v) => setState(() => _focusRating = v),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text('Scattered', style: TextStyle(color: Colors.white38, fontSize: 12)),
-                Text('Locked in', style: TextStyle(color: Colors.white38, fontSize: 12)),
+              children: [
+                Text('Scattered', style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 12)),
+                Text('Locked in', style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 12)),
               ],
             ),
             const SizedBox(height: 16),

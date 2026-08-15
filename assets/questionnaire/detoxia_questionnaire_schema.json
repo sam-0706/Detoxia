@@ -1,0 +1,234 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Detoxia Questionnaire Schema",
+  "description": "Schema for the Detoxia Questionnaire V1 source of truth. Source of truth for all questionnaire copy and gating rules.",
+  "type": "object",
+  "required": ["version", "sections"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Semantic version of the questionnaire content."
+    },
+    "locale": {
+      "type": "string",
+      "description": "BCP-47 locale of the copy.",
+      "default": "en"
+    },
+    "intro": {
+      "type": "object",
+      "description": "Optional global intro shown on the first card.",
+      "properties": {
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "privacyNote": { "type": "string" }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/section" }
+    }
+  },
+  "definitions": {
+    "section": {
+      "type": "object",
+      "required": ["sectionId", "sectionTitle", "order", "engineTarget"],
+      "properties": {
+        "sectionId": {
+          "type": "string",
+          "description": "Unique id, snake_case (e.g. 'scrolling_control')."
+        },
+        "sectionTitle": { "type": "string" },
+        "sectionSubtitle": { "type": "string" },
+        "engineTarget": {
+          "type": "string",
+          "enum": [
+            "routineAnalysis",
+            "triggerEngine",
+            "emotionActionLoop",
+            "pathwayDetection",
+            "riskScoring",
+            "feedbackLearning",
+            "registrationPassthrough",
+            "interventionPreferences",
+            "safetyRouting",
+            "goalSelection"
+          ]
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Display order within the questionnaire."
+        },
+        "visibleIf": {
+          "$ref": "#/definitions/visibilityRule",
+          "description": "Optional rule that controls whether this section is shown."
+        },
+        "completionMessage": {
+          "type": "string",
+          "description": "Section completion animation message (e.g. 'Routine Map unlocked')."
+        },
+        "questions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/question" }
+        },
+        "notScored": {
+          "type": "boolean",
+          "default": false,
+          "description": "True for safety gate or pass-through sections."
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "required": ["questionId", "questionType", "text"],
+      "properties": {
+        "questionId": {
+          "type": "string",
+          "description": "Unique id, snake_case (e.g. 'scrolling_q1')."
+        },
+        "questionType": {
+          "type": "string",
+          "enum": [
+            "singleChoice",
+            "multiChoice",
+            "scale",
+            "timeWindow",
+            "durationBand",
+            "datePicker",
+            "infoReward",
+            "microGame",
+            "yesNo"
+          ]
+        },
+        "text": { "type": "string" },
+        "helperText": { "type": "string" },
+        "required": { "type": "boolean", "default": true },
+        "scoreDomain": {
+          "type": "string",
+          "description": "Which domain score this question feeds (e.g. 'scrollingControl', 'anxietyLoad'). Omit for non-scored questions.",
+          "enum": [
+            "scrollingControl",
+            "sexualContentControl",
+            "sexualControlRecovery",
+            "focusSupport",
+            "anxietyLoad",
+            "lowMoodSupport",
+            "sleepDisruption",
+            "sleepDebt",
+            "physicalActivation",
+            "cycleSensitivity",
+            "routineRisk",
+            "triggerInventory",
+            "pathwayDetection",
+            "interventionPreferences",
+            "goalSelection",
+            "safetyRouting",
+            "menstrualPhase"
+          ]
+        },
+        "scaleMin": { "type": "integer" },
+        "scaleMax": { "type": "integer" },
+        "options": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/option" }
+        },
+        "visibleIf": { "$ref": "#/definitions/visibilityRule" },
+        "ageGate": {
+          "type": "object",
+          "properties": {
+            "include": {
+              "type": "array",
+              "items": { "type": "string", "enum": ["teen13To15", "teen16To17", "adult18Plus"] }
+            },
+            "exclude": {
+              "type": "array",
+              "items": { "type": "string", "enum": ["teen13To15", "teen16To17", "adult18Plus"] }
+            }
+          }
+        },
+        "genderGate": {
+          "type": "object",
+          "properties": {
+            "include": {
+              "type": "array",
+              "items": { "type": "string", "enum": ["male", "female", "preferNotToSay"] }
+            }
+          }
+        },
+        "safetyGate": {
+          "type": "boolean",
+          "default": false,
+          "description": "Marks a safety-routing question that is never scored."
+        },
+        "notScored": {
+          "type": "boolean",
+          "default": false,
+          "description": "Question is captured but never contributes to a domain score."
+        }
+      }
+    },
+    "option": {
+      "type": "object",
+      "required": ["optionId", "label"],
+      "properties": {
+        "optionId": { "type": "string" },
+        "label": { "type": "string" },
+        "numericValue": {
+          "type": "number",
+          "description": "Optional numeric value for scoring (e.g. 0, 1, 2, 3)."
+        },
+        "midpointMinutes": {
+          "type": "integer",
+          "description": "For time-window options, midpoint of the window in minutes since midnight."
+        },
+        "midpointDurationMinutes": {
+          "type": "integer",
+          "description": "For duration bands, midpoint in minutes."
+        },
+        "tag": {
+          "type": "string",
+          "description": "Optional tag for trigger/pathway/intervention mapping."
+        }
+      }
+    },
+    "visibilityRule": {
+      "type": "object",
+      "description": "Simple expression checked at runtime against the registration profile + selected goals.",
+      "properties": {
+        "all": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/visibilityRule" }
+        },
+        "any": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/visibilityRule" }
+        },
+        "ageBandIn": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["teen13To15", "teen16To17", "adult18Plus"] }
+        },
+        "ageBandNotIn": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["teen13To15", "teen16To17", "adult18Plus"] }
+        },
+        "genderIn": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["male", "female", "preferNotToSay"] }
+        },
+        "goalSelected": {
+          "type": "string",
+          "description": "True if this goal id is in selected goals."
+        },
+        "answerEquals": {
+          "type": "object",
+          "properties": {
+            "questionId": { "type": "string" },
+            "value": {}
+          },
+          "required": ["questionId", "value"]
+        }
+      }
+    }
+  }
+}

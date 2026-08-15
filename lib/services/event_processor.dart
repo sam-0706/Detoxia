@@ -6,12 +6,15 @@ import 'package:detoxia/core/event_bus/events.dart';
 import 'package:detoxia/data/repositories/event_repository.dart';
 import 'package:detoxia/data/repositories/peak_repository.dart';
 import 'package:detoxia/data/repositories/user_repository.dart';
+import 'package:detoxia/domain/learning/models/intervention_feedback.dart';
+import 'package:detoxia/domain/learning/models/outcome.dart';
 import 'package:detoxia/domain/prediction/adaptive_updater.dart';
 import 'package:detoxia/domain/prediction/cascade_detector.dart';
 import 'package:detoxia/domain/prediction/linked_pathway_detector.dart';
 import 'package:detoxia/domain/prediction/risk_calculator.dart';
 import 'package:detoxia/domain/prediction/trigger_model.dart';
 import 'package:detoxia/domain/streaks/streak_manager.dart';
+import 'package:detoxia/services/learning_service.dart';
 import 'package:detoxia/services/notification_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,13 +24,13 @@ class EventProcessor {
   final UserRepository _userRepo;
   final PeakRepository _peakRepo;
   final NotificationService _notifService;
+  final LearningService _learningService;
 
   final TriggerModel triggerModel = TriggerModel();
   final StreakManager streakManager = StreakManager();
   final AdaptiveUpdater adaptiveUpdater = AdaptiveUpdater();
   final CascadeDetector cascadeDetector = CascadeDetector();
-  final LinkedPathwayDetector linkedPathwayDetector =
-      LinkedPathwayDetector();
+  final LinkedPathwayDetector linkedPathwayDetector = LinkedPathwayDetector();
 
   StreamSubscription? _subscription;
 
@@ -37,11 +40,13 @@ class EventProcessor {
     required UserRepository userRepo,
     required PeakRepository peakRepo,
     required NotificationService notifService,
-  })  : _eventBus = eventBus,
-        _eventRepo = eventRepo,
-        _userRepo = userRepo,
-        _peakRepo = peakRepo,
-        _notifService = notifService;
+    required LearningService learningService,
+  }) : _eventBus = eventBus,
+       _eventRepo = eventRepo,
+       _userRepo = userRepo,
+       _peakRepo = peakRepo,
+       _notifService = notifService,
+       _learningService = learningService;
 
   void start() {
     _subscription = _eventBus.stream.listen(_handleEvent);
@@ -61,8 +66,19 @@ class EventProcessor {
         await _handleRescue(event);
       case CheckInCompletedEvent():
         await _handleCheckIn(event);
-      case StreakBrokenEvent():
+      case StreakInterruptedEvent():
         break;
+      case RiskWindowOutcomeEvent():
+        await _learningService.applyRiskWindowOutcome(
+          outcome: event.outcome,
+          predicted: event.predicted,
+          triggerOutcomes: event.triggerOutcomes,
+        );
+      case InterventionFeedbackEvent():
+        await _learningService.applyInterventionFeedback(
+          interventionId: event.interventionId,
+          feedback: event.feedback,
+        );
     }
 
     await _rescoreAndReschedule();
@@ -132,7 +148,48 @@ class EventProcessor {
       success: !slipped,
       intensityDrop: event.intensityAfter,
     );
+
+    // ── Local learning update ──────────────────────────────────────────
+    // Map the old UrgeOutcome to Outcome + InterventionFeedback,
+    // then persist through the existing LearningService API.
+    final outcome = _outcomeFromRescue(event.outcome);
+    final feedback = _feedbackFromRescue(event.outcome);
+
+    // Rescue is user-initiated, not a predicted risk-window event.
+    await _learningService.applyRiskWindowOutcome(
+      outcome: outcome,
+      predicted: false,
+    );
+
+    // Reward/penalise the chosen intervention only if one was actually selected.
+    final hasIntervention = event.interventionType.isNotEmpty &&
+        event.interventionType != 'none';
+    if (hasIntervention) {
+      await _learningService.applyInterventionFeedback(
+        interventionId: event.interventionType,
+        feedback: feedback,
+      );
+    }
   }
+
+  // ── Rescue outcome mappers ───────────────────────────────────────────
+
+  Outcome _outcomeFromRescue(UrgeOutcome o) => switch (o) {
+    UrgeOutcome.passed => Outcome.resisted,
+    UrgeOutcome.reduced => Outcome.resisted,
+    UrgeOutcome.same =>
+      // TODO: Preserve false-alarm distinction from Rescue UI
+      // once UrgeOutcome supports it.
+      Outcome.noUrge,
+    UrgeOutcome.slipped => Outcome.slipped,
+  };
+
+  InterventionFeedback _feedbackFromRescue(UrgeOutcome o) => switch (o) {
+    UrgeOutcome.passed => InterventionFeedback.helped,
+    UrgeOutcome.reduced => InterventionFeedback.somewhat,
+    UrgeOutcome.same => InterventionFeedback.ignored,
+    UrgeOutcome.slipped => InterventionFeedback.slippedAfterTask,
+  };
 
   Future<void> _handleCheckIn(CheckInCompletedEvent event) async {
     await _eventRepo.insertCheckin(
@@ -176,6 +233,7 @@ final eventProcessorProvider = Provider<EventProcessor>((ref) {
     userRepo: ref.watch(userRepositoryProvider),
     peakRepo: ref.watch(peakRepositoryProvider),
     notifService: ref.watch(notificationServiceProvider),
+    learningService: ref.watch(learningServiceProvider),
   );
   ref.onDispose(processor.dispose);
   return processor;

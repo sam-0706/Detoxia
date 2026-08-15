@@ -55,7 +55,7 @@ class AchievementRegistry {
         AchievementDef(
           key: 'day_3',
           title: 'Getting Started',
-          description: '3 consecutive clean days',
+          description: '3 consecutive steady days',
           insight:
               'Your brain is beginning to notice the change in pattern.',
           tier: AchievementTier.streak,
@@ -64,7 +64,7 @@ class AchievementRegistry {
         AchievementDef(
           key: 'day_7',
           title: 'One Week Strong',
-          description: '7-day clean streak',
+          description: '7-day steady streak',
           insight:
               'Research shows cue-reactivity begins to weaken after '
               'the first week.',
@@ -74,7 +74,7 @@ class AchievementRegistry {
         AchievementDef(
           key: 'day_14',
           title: 'Two Weeks',
-          description: '14-day clean streak',
+          description: '14-day steady streak',
           insight:
               'Your impulse control center is measurably stronger.',
           tier: AchievementTier.streak,
@@ -83,7 +83,7 @@ class AchievementRegistry {
         AchievementDef(
           key: 'day_21',
           title: 'Habit Breaker',
-          description: '21-day clean streak',
+          description: '21-day steady streak',
           insight:
               'The old automatic loop is losing its grip.',
           tier: AchievementTier.streak,
@@ -92,7 +92,7 @@ class AchievementRegistry {
         AchievementDef(
           key: 'day_30',
           title: 'One Month',
-          description: '30-day clean streak',
+          description: '30-day steady streak',
           insight: 'This is measurable, real progress.',
           tier: AchievementTier.streak,
           condition: (ctx) => ctx.cleanStreak >= 30,
@@ -100,7 +100,7 @@ class AchievementRegistry {
         AchievementDef(
           key: 'day_60',
           title: 'Two Months',
-          description: '60-day clean streak',
+          description: '60-day steady streak',
           insight:
               'Clinical studies show 50-60% behavior reduction '
               'at this point.',
@@ -110,9 +110,9 @@ class AchievementRegistry {
         AchievementDef(
           key: 'day_90',
           title: 'Quarter Year',
-          description: '90-day clean streak',
+          description: '90-day steady streak',
           insight:
-              'You are in maintenance territory. Relapse probability '
+              'You are in maintenance territory. Reset probability '
               'is at its lowest.',
           tier: AchievementTier.streak,
           condition: (ctx) => ctx.cleanStreak >= 90,
@@ -144,9 +144,9 @@ class AchievementRegistry {
         AchievementDef(
           key: 'weekend_warrior',
           title: 'Weekend Warrior',
-          description: '4 consecutive clean weekends',
+          description: '4 consecutive steady weekends',
           insight:
-              'Weekends are where most people fail. Not you.',
+              'Weekends can be challenging. You stayed steady.',
           tier: AchievementTier.behavioral,
           condition: (ctx) => ctx.weekendCleanCount >= 4,
         ),

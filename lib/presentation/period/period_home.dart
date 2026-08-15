@@ -181,6 +181,7 @@ class _PeriodHomeState extends ConsumerState<PeriodHome> {
         height: 220,
         child: CustomPaint(
           painter: _CycleRingPainter(
+                palette: AppTheme.palette(context),
             cycleDay: _cycleDay,
             avgLength: _avgLength,
             phaseColors: _phaseColors,
@@ -191,7 +192,7 @@ class _PeriodHomeState extends ConsumerState<PeriodHome> {
               children: [
                 Text(
                   'Day',
-                  style: tt.bodyMedium?.copyWith(color: Colors.white54),
+                  style: tt.bodyMedium?.copyWith(color: AppTheme.palette(context).textSecondary),
                 ),
                 Text(
                   '$_cycleDay',
@@ -203,7 +204,7 @@ class _PeriodHomeState extends ConsumerState<PeriodHome> {
                 ),
                 Text(
                   'of ~${_avgLength.round()}',
-                  style: tt.bodyMedium?.copyWith(color: Colors.white38),
+                  style: tt.bodyMedium?.copyWith(color: AppTheme.palette(context).textTertiary),
                 ),
               ],
             ),
@@ -316,11 +317,16 @@ class _PeriodHomeState extends ConsumerState<PeriodHome> {
 }
 
 class _CycleRingPainter extends CustomPainter {
+  /// Painters have no BuildContext, so the active palette is
+  /// handed in at construction.
+  final AppPalette palette;
+
   final int cycleDay;
   final double avgLength;
   final Map<CyclePhase, Color> phaseColors;
 
   _CycleRingPainter({
+    required this.palette,
     required this.cycleDay,
     required this.avgLength,
     required this.phaseColors,
@@ -386,7 +392,7 @@ class _CycleRingPainter extends CustomPainter {
     canvas.drawCircle(
       dotCenter,
       7,
-      Paint()..color = Colors.white,
+      Paint()..color = palette.textPrimary,
     );
   }
 

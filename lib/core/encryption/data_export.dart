@@ -66,5 +66,20 @@ class DataExport {
     await _db.delete(_db.maintenanceStates).go();
     await _db.delete(_db.modelStates).go();
     await _db.delete(_db.passiveUsages).go();
+    await _db.delete(_db.moodEntries).go();
+    await _db.delete(_db.anxietyEvents).go();
+    await _db.delete(_db.breathingLogs).go();
+    await _db.delete(_db.exposureHierarchyItems).go();
+    await _db.delete(_db.behavioralActivities).go();
+    await _db.delete(_db.thoughtRecords).go();
+    await _db.delete(_db.focusSessions).go();
+    await _db.delete(_db.adhdDailyPlans).go();
+    await _db.delete(_db.cycleEntries).go();
+    await _db.delete(_db.cyclePredictions).go();
+    await _db.delete(_db.dailyTaskAssignments).go();
+    await _db.delete(_db.weeklyAssessments).go();
+    await _db.delete(_db.questionnaireAnswers).go();
+    await _db.delete(_db.questionnaireSessions).go();
+    await _db.delete(_db.registrationProfiles).go();
   }
 }

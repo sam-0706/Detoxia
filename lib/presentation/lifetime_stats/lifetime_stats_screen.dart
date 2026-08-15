@@ -19,10 +19,10 @@ class LifetimeStatsScreen extends ConsumerWidget {
           Row(
             children: [
               _StatCard(
-                  label: 'Clean Days', value: '0', icon: Icons.sunny),
+                  label: 'Steady Days', value: '0', icon: Icons.sunny),
               const SizedBox(width: 12),
               _StatCard(
-                  label: 'Urges Resisted',
+                  label: 'Urges Navigated',
                   value: '0',
                   icon: Icons.shield),
             ],
@@ -52,27 +52,27 @@ class LifetimeStatsScreen extends ConsumerWidget {
                   Row(
                     children: [
                       Icon(Icons.trending_up,
-                          color: AppTheme.success),
+                          color: AppTheme.palette(context).success),
                       const SizedBox(width: 8),
-                      const Text('Recovery Score',
+                      Text('Recovery Score',
                           style: TextStyle(
-                              color: Colors.white,
+                              color: AppTheme.palette(context).textPrimary,
                               fontWeight: FontWeight.w600)),
                     ],
                   ),
                   const SizedBox(height: 12),
                   LinearProgressIndicator(
                     value: 0.0,
-                    backgroundColor: Colors.white12,
+                    backgroundColor: AppTheme.palette(context).borderSubtle,
                     borderRadius: BorderRadius.circular(4),
                     minHeight: 8,
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     '30-day rolling composite score. '
                     'This number trends upward over months.',
                     style: TextStyle(
-                        color: Colors.white54, fontSize: 12),
+                        color: AppTheme.palette(context).textSecondary, fontSize: 12),
                   ),
                 ],
               ),
@@ -86,15 +86,15 @@ class LifetimeStatsScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Long-term Insights',
+                  Text('Long-term Insights',
                       style: TextStyle(
-                          color: Colors.white,
+                          color: AppTheme.palette(context).textPrimary,
                           fontWeight: FontWeight.w600)),
                   const SizedBox(height: 12),
                   _InsightRow(
                     icon: Icons.info_outline,
                     text: 'Keep using the app to unlock insights '
-                        'like "Your risk drops 45% on days you '
+                        'like "Your support needs drop 45% on days you '
                         'exercise" (available after 3+ months).',
                   ),
                 ],
@@ -126,17 +126,17 @@ class _StatCard extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              Icon(icon, color: AppTheme.accent, size: 28),
+              Icon(icon, color: AppTheme.palette(context).accent, size: 28),
               const SizedBox(height: 8),
               Text(value,
-                  style: const TextStyle(
-                      color: Colors.white,
+                  style: TextStyle(
+                      color: AppTheme.palette(context).textPrimary,
                       fontSize: 28,
                       fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
               Text(label,
-                  style: const TextStyle(
-                      color: Colors.white54, fontSize: 12)),
+                  style: TextStyle(
+                      color: AppTheme.palette(context).textSecondary, fontSize: 12)),
             ],
           ),
         ),
@@ -156,12 +156,12 @@ class _InsightRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: AppTheme.accent, size: 18),
+        Icon(icon, color: AppTheme.palette(context).accent, size: 18),
         const SizedBox(width: 8),
         Expanded(
           child: Text(text,
-              style: const TextStyle(
-                  color: Colors.white70, fontSize: 13)),
+              style: TextStyle(
+                  color: AppTheme.palette(context).textSecondary, fontSize: 13)),
         ),
       ],
     );

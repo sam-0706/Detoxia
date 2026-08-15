@@ -68,15 +68,15 @@ class _AdhdHomeState extends ConsumerState<AdhdHome> {
     final task = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.surface,
-        title: const Text('Add a Task', style: TextStyle(color: Colors.white)),
+        backgroundColor: AppTheme.palette(context).surface,
+        title:  Text('Add a Task', style: TextStyle(color: AppTheme.palette(context).textPrimary)),
         content: TextField(
           controller: controller,
           autofocus: true,
-          style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
+          style:  TextStyle(color: AppTheme.palette(context).textPrimary),
+          decoration: InputDecoration(
             hintText: 'What do you need to do?',
-            hintStyle: TextStyle(color: Colors.white38),
+            hintStyle: TextStyle(color: AppTheme.palette(context).textTertiary),
           ),
           onSubmitted: (v) => Navigator.pop(ctx, v),
         ),
@@ -158,7 +158,7 @@ class _AdhdHomeState extends ConsumerState<AdhdHome> {
         title: const Text('ADHD Focus Hub'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.insights, color: Colors.white70),
+            icon:  Icon(Icons.insights, color: AppTheme.palette(context).textSecondary),
             tooltip: 'Insights',
             onPressed: () => Navigator.push(
               context,
@@ -183,7 +183,7 @@ class _AdhdHomeState extends ConsumerState<AdhdHome> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addTask,
-        backgroundColor: AppTheme.accent,
+        backgroundColor: AppTheme.palette(context).accent,
         child: const Icon(Icons.add),
       ),
     );
@@ -195,25 +195,25 @@ class _AdhdHomeState extends ConsumerState<AdhdHome> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppTheme.accent.withValues(alpha: 0.15),
-            AppTheme.accent.withValues(alpha: 0.05),
+            AppTheme.palette(context).accent.withValues(alpha: 0.15),
+            AppTheme.palette(context).accent.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.accent.withValues(alpha: 0.25)),
+        border: Border.all(color: AppTheme.palette(context).accent.withValues(alpha: 0.25)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppTheme.accent.withValues(alpha: 0.2),
+              color: AppTheme.palette(context).accent.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Text(
               '$_focusSessionsToday',
               style: TextStyle(
-                color: AppTheme.accent,
+                color: AppTheme.palette(context).accent,
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
@@ -224,10 +224,10 @@ class _AdhdHomeState extends ConsumerState<AdhdHome> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Focus Sessions Today',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppTheme.palette(context).textPrimary,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
                   ),
@@ -237,7 +237,7 @@ class _AdhdHomeState extends ConsumerState<AdhdHome> {
                   _focusSessionsToday == 0
                       ? 'Start your first session!'
                       : 'Keep the momentum going.',
-                  style: const TextStyle(color: Colors.white54, fontSize: 13),
+                  style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13),
                 ),
               ],
             ),
@@ -254,7 +254,7 @@ class _AdhdHomeState extends ConsumerState<AdhdHome> {
           child: _QuickActionCard(
             icon: Icons.timer,
             label: 'Focus Timer',
-            color: AppTheme.accent,
+            color: AppTheme.palette(context).accent,
             onTap: () async {
               await Navigator.push(
                 context,
@@ -269,7 +269,7 @@ class _AdhdHomeState extends ConsumerState<AdhdHome> {
           child: _QuickActionCard(
             icon: Icons.bolt,
             label: 'Dopamine Menu',
-            color: AppTheme.warning,
+            color: AppTheme.palette(context).warning,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const DopamineMenuScreen()),
@@ -286,9 +286,9 @@ class _AdhdHomeState extends ConsumerState<AdhdHome> {
       children: [
         Text("Today's Top 3", style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           'Focus on just these. Everything else can wait.',
-          style: TextStyle(color: Colors.white54, fontSize: 13),
+          style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13),
         ),
         const SizedBox(height: 12),
         if (_top3Tasks.isEmpty)
@@ -298,11 +298,11 @@ class _AdhdHomeState extends ConsumerState<AdhdHome> {
               child: Center(
                 child: Column(
                   children: [
-                    Icon(Icons.task_alt, color: Colors.white24, size: 40),
+                    Icon(Icons.task_alt, color: AppTheme.palette(context).borderStrong, size: 40),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'No tasks yet. Tap + to add up to 3.',
-                      style: TextStyle(color: Colors.white38),
+                      style: TextStyle(color: AppTheme.palette(context).textTertiary),
                     ),
                   ],
                 ),
@@ -318,20 +318,20 @@ class _AdhdHomeState extends ConsumerState<AdhdHome> {
                 leading: Checkbox(
                   value: done,
                   onChanged: (_) => _toggleTask(i),
-                  activeColor: AppTheme.success,
-                  side: const BorderSide(color: Colors.white38),
+                  activeColor: AppTheme.palette(context).success,
+                  side:  BorderSide(color: AppTheme.palette(context).textTertiary),
                 ),
                 title: Text(
                   task,
                   style: TextStyle(
-                    color: done ? Colors.white38 : Colors.white,
+                    color: done ? AppTheme.palette(context).textTertiary : AppTheme.palette(context).textPrimary,
                     decoration: done ? TextDecoration.lineThrough : null,
                     fontSize: 15,
                   ),
                 ),
                 trailing: IconButton(
                   icon: Icon(Icons.play_arrow,
-                      color: done ? Colors.white24 : AppTheme.accent),
+                      color: done ? AppTheme.palette(context).borderStrong : AppTheme.palette(context).accent),
                   onPressed: done
                       ? null
                       : () async {
@@ -381,8 +381,8 @@ class _QuickActionCard extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 label,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: AppTheme.palette(context).textPrimary,
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
                 ),

@@ -136,10 +136,10 @@ class _AnxietyInsightsScreenState
                 : '--',
             icon: Icons.show_chart,
             color: overallAvg <= 4
-                ? AppTheme.success
+                ? AppTheme.palette(context).success
                 : overallAvg <= 6
-                    ? AppTheme.warning
-                    : AppTheme.danger,
+                    ? AppTheme.palette(context).warning
+                    : AppTheme.palette(context).danger,
           ),
         ),
         const SizedBox(width: 12),
@@ -148,7 +148,7 @@ class _AnxietyInsightsScreenState
             label: 'Sessions',
             value: '$_sessionsThisWeek',
             icon: Icons.air,
-            color: AppTheme.accent,
+            color: AppTheme.palette(context).accent,
           ),
         ),
         const SizedBox(width: 12),
@@ -157,7 +157,7 @@ class _AnxietyInsightsScreenState
             label: 'Techniques',
             value: '${_techniqueEffectiveness.length}',
             icon: Icons.category,
-            color: AppTheme.success,
+            color: AppTheme.palette(context).success,
           ),
         ),
       ],
@@ -182,20 +182,20 @@ class _AnxietyInsightsScreenState
             Row(
               children: [
                 Icon(Icons.trending_down,
-                    color: AppTheme.accent, size: 20),
+                    color: AppTheme.palette(context).accent, size: 20),
                 const SizedBox(width: 8),
-                const Text('Anxiety Trend (7 days)',
+                Text('Anxiety Trend (7 days)',
                     style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w600)),
+                        color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 20),
             SizedBox(
               height: 120,
               child: _dailyAvgs.every((v) => v == 0)
-                  ? const Center(
+                  ? Center(
                       child: Text('No data yet',
-                          style: TextStyle(color: Colors.white38)),
+                          style: TextStyle(color: AppTheme.palette(context).textTertiary)),
                     )
                   : Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -203,10 +203,10 @@ class _AnxietyInsightsScreenState
                         final val = i < _dailyAvgs.length ? _dailyAvgs[i] : 0.0;
                         final height = val > 0 ? (val / chartMax) * 100 : 2.0;
                         final color = val <= 3
-                            ? AppTheme.success
+                            ? AppTheme.palette(context).success
                             : val <= 6
-                                ? AppTheme.warning
-                                : AppTheme.danger;
+                                ? AppTheme.palette(context).warning
+                                : AppTheme.palette(context).danger;
                         return Expanded(
                           child: Padding(
                             padding:
@@ -226,14 +226,14 @@ class _AnxietyInsightsScreenState
                                   decoration: BoxDecoration(
                                     color: val > 0
                                         ? color.withValues(alpha: 0.7)
-                                        : Colors.white12,
+                                        : AppTheme.palette(context).borderSubtle,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                 ),
                                 const SizedBox(height: 6),
                                 Text(dayLabels[i],
-                                    style: const TextStyle(
-                                        color: Colors.white38,
+                                    style: TextStyle(
+                                        color: AppTheme.palette(context).textTertiary,
                                         fontSize: 10)),
                               ],
                             ),
@@ -257,18 +257,18 @@ class _AnxietyInsightsScreenState
           children: [
             Row(
               children: [
-                Icon(Icons.star, color: AppTheme.warning, size: 20),
+                Icon(Icons.star, color: AppTheme.palette(context).warning, size: 20),
                 const SizedBox(width: 8),
-                const Text('Most Effective Techniques',
+                Text('Most Effective Techniques',
                     style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w600)),
+                        color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 16),
             if (_techniqueEffectiveness.isEmpty)
-              const Text(
+              Text(
                 'Complete breathing sessions with before/after ratings to see which techniques work best for you.',
-                style: TextStyle(color: Colors.white38, fontSize: 13),
+                style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 13),
               )
             else
               ..._techniqueEffectiveness.entries.take(5).map((entry) {
@@ -280,16 +280,16 @@ class _AnxietyInsightsScreenState
                     children: [
                       Expanded(
                         child: Text(name,
-                            style: const TextStyle(
-                                color: Colors.white70, fontSize: 14)),
+                            style: TextStyle(
+                                color: AppTheme.palette(context).textSecondary, fontSize: 14)),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                           color: drop > 0
-                              ? AppTheme.success.withValues(alpha: 0.15)
-                              : Colors.white.withValues(alpha: 0.06),
+                              ? AppTheme.palette(context).success.withValues(alpha: 0.15)
+                              : AppTheme.palette(context).textPrimary.withValues(alpha: 0.06),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -298,8 +298,8 @@ class _AnxietyInsightsScreenState
                               : 'no change',
                           style: TextStyle(
                             color: drop > 0
-                                ? AppTheme.success
-                                : Colors.white38,
+                                ? AppTheme.palette(context).success
+                                : AppTheme.palette(context).textTertiary,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
@@ -325,18 +325,18 @@ class _AnxietyInsightsScreenState
             Row(
               children: [
                 Icon(Icons.psychology,
-                    color: AppTheme.accent, size: 20),
+                    color: AppTheme.palette(context).accent, size: 20),
                 const SizedBox(width: 8),
-                const Text('Trigger Patterns',
+                Text('Trigger Patterns',
                     style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w600)),
+                        color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 16),
             if (_triggerCounts.isEmpty)
-              const Text(
+              Text(
                 'Log anxiety events with trigger situations to discover patterns.',
-                style: TextStyle(color: Colors.white38, fontSize: 13),
+                style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 13),
               )
             else
               ..._triggerCounts.entries.take(5).map((entry) {
@@ -353,13 +353,13 @@ class _AnxietyInsightsScreenState
                         children: [
                           Expanded(
                             child: Text(entry.key,
-                                style: const TextStyle(
-                                    color: Colors.white70, fontSize: 13)),
+                                style: TextStyle(
+                                    color: AppTheme.palette(context).textSecondary, fontSize: 13)),
                           ),
                           Text(
                             '${entry.value}x',
-                            style: const TextStyle(
-                                color: Colors.white38, fontSize: 12),
+                            style: TextStyle(
+                                color: AppTheme.palette(context).textTertiary, fontSize: 12),
                           ),
                         ],
                       ),
@@ -368,9 +368,9 @@ class _AnxietyInsightsScreenState
                         borderRadius: BorderRadius.circular(3),
                         child: LinearProgressIndicator(
                           value: fraction,
-                          backgroundColor: Colors.white12,
+                          backgroundColor: AppTheme.palette(context).borderSubtle,
                           valueColor:
-                              AlwaysStoppedAnimation(AppTheme.accent),
+                              AlwaysStoppedAnimation(AppTheme.palette(context).accent),
                           minHeight: 4,
                         ),
                       ),
@@ -425,7 +425,7 @@ class _SummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(label,
-              style: const TextStyle(color: Colors.white54, fontSize: 11)),
+              style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 11)),
         ],
       ),
     );

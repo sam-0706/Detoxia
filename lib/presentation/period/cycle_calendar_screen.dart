@@ -137,8 +137,8 @@ class _CycleCalendarScreenState extends ConsumerState<CycleCalendarScreen> {
             .map((d) => Expanded(
                   child: Center(
                     child: Text(d,
-                        style: const TextStyle(
-                            color: Colors.white38, fontSize: 12)),
+                        style: TextStyle(
+                            color: AppTheme.palette(context).textTertiary, fontSize: 12)),
                   ),
                 ))
             .toList(),
@@ -189,7 +189,7 @@ class _CycleCalendarScreenState extends ConsumerState<CycleCalendarScreen> {
               Text(
                 '$d',
                 style: TextStyle(
-                  color: isToday ? AppTheme.pinkAccent : Colors.white70,
+                  color: isToday ? AppTheme.pinkAccent : AppTheme.palette(context).textSecondary,
                   fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
                   fontSize: 13,
                 ),
@@ -282,7 +282,7 @@ class _CycleCalendarScreenState extends ConsumerState<CycleCalendarScreen> {
               const SizedBox(width: 4),
               Text(label,
                   style:
-                      const TextStyle(color: Colors.white54, fontSize: 12)),
+                       TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 12)),
             ],
           );
         }).toList(),

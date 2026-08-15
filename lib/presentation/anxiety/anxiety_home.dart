@@ -71,7 +71,7 @@ class _AnxietyHomeState extends ConsumerState<AnxietyHome> {
               MaterialPageRoute(
                   builder: (_) => const AnxietyInsightsScreen()),
             ),
-            icon: const Icon(Icons.insights, color: Colors.white70),
+            icon:  Icon(Icons.insights, color: AppTheme.palette(context).textSecondary),
             tooltip: 'Insights',
           ),
         ],
@@ -102,10 +102,10 @@ class _AnxietyHomeState extends ConsumerState<AnxietyHome> {
     final hasData = _lastAnxietyLevel != null;
     final level = _lastAnxietyLevel ?? 0;
     final color = level <= 3
-        ? AppTheme.success
+        ? AppTheme.palette(context).success
         : level <= 6
-            ? AppTheme.warning
-            : AppTheme.danger;
+            ? AppTheme.palette(context).warning
+            : AppTheme.palette(context).danger;
 
     return Card(
       child: Padding(
@@ -136,17 +136,17 @@ class _AnxietyHomeState extends ConsumerState<AnxietyHome> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Last anxiety level',
                           style: TextStyle(
-                              color: Colors.white,
+                              color: AppTheme.palette(context).textPrimary,
                               fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           _timeAgo(_lastLoggedAt!),
-                          style: const TextStyle(
-                              color: Colors.white54, fontSize: 13),
+                          style: TextStyle(
+                              color: AppTheme.palette(context).textSecondary, fontSize: 13),
                         ),
                       ],
                     ),
@@ -161,17 +161,17 @@ class _AnxietyHomeState extends ConsumerState<AnxietyHome> {
             : Column(
                 children: [
                   Icon(Icons.self_improvement,
-                      color: AppTheme.accent, size: 36),
+                      color: AppTheme.palette(context).accent, size: 36),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'No anxiety logged yet',
                     style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w600),
+                        color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     'Complete a breathing session to start tracking',
-                    style: TextStyle(color: Colors.white54, fontSize: 13),
+                    style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13),
                   ),
                 ],
               ),
@@ -181,7 +181,7 @@ class _AnxietyHomeState extends ConsumerState<AnxietyHome> {
 
   Widget _buildEmergencyButton() {
     return Material(
-      color: AppTheme.danger.withValues(alpha: 0.12),
+      color: AppTheme.palette(context).danger.withValues(alpha: 0.12),
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: () => Navigator.push(
@@ -193,16 +193,16 @@ class _AnxietyHomeState extends ConsumerState<AnxietyHome> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
           child: Row(
             children: [
-              Icon(Icons.air, color: AppTheme.danger, size: 28),
+              Icon(Icons.air, color: AppTheme.palette(context).danger, size: 28),
               const SizedBox(width: 16),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Feeling anxious right now?',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppTheme.palette(context).textPrimary,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -210,13 +210,13 @@ class _AnxietyHomeState extends ConsumerState<AnxietyHome> {
                     SizedBox(height: 2),
                     Text(
                       'Start a guided breathing exercise',
-                      style: TextStyle(color: Colors.white54, fontSize: 13),
+                      style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13),
                     ),
                   ],
                 ),
               ),
               Icon(Icons.arrow_forward_ios,
-                  color: AppTheme.danger, size: 16),
+                  color: AppTheme.palette(context).danger, size: 16),
             ],
           ),
         ),
@@ -232,7 +232,7 @@ class _AnxietyHomeState extends ConsumerState<AnxietyHome> {
             icon: Icons.air,
             label: 'Breathing',
             count: _breathingSessionsToday,
-            color: AppTheme.accent,
+            color: AppTheme.palette(context).accent,
           ),
         ),
         const SizedBox(width: 12),
@@ -241,7 +241,7 @@ class _AnxietyHomeState extends ConsumerState<AnxietyHome> {
             icon: Icons.self_improvement,
             label: 'Grounding',
             count: _groundingSessionsToday,
-            color: AppTheme.success,
+            color: AppTheme.palette(context).success,
           ),
         ),
       ],
@@ -264,7 +264,7 @@ class _AnxietyHomeState extends ConsumerState<AnxietyHome> {
               icon: Icons.air,
               label: t.name,
               subtitle: '${t.totalDurationSeconds ~/ 60} min',
-              color: AppTheme.accent,
+              color: AppTheme.palette(context).accent,
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -276,7 +276,7 @@ class _AnxietyHomeState extends ConsumerState<AnxietyHome> {
               icon: Icons.self_improvement,
               label: g.name,
               subtitle: '${g.durationMinutes} min',
-              color: AppTheme.success,
+              color: AppTheme.palette(context).success,
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -336,7 +336,7 @@ class _ProgressCard extends StatelessWidget {
           ),
           Text(
             '$label today',
-            style: const TextStyle(color: Colors.white54, fontSize: 12),
+            style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 12),
           ),
         ],
       ),
@@ -374,7 +374,7 @@ class _QuickAccessCard extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 label,
-                style: const TextStyle(color: Colors.white, fontSize: 13),
+                style:  TextStyle(color: AppTheme.palette(context).textPrimary, fontSize: 13),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -382,7 +382,7 @@ class _QuickAccessCard extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: const TextStyle(color: Colors.white38, fontSize: 11),
+                style:  TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 11),
               ),
             ],
           ),

@@ -59,7 +59,7 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
 
   Color _colorForMood(double mood) {
     final t = ((mood - 1) / 9).clamp(0.0, 1.0);
-    return Color.lerp(AppTheme.danger, AppTheme.success, t)!;
+    return Color.lerp(AppTheme.palette(context).danger, AppTheme.palette(context).success, t)!;
   }
 
   @override
@@ -110,7 +110,7 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text('1', style: TextStyle(color: Colors.white54, fontSize: 11)),
+         Text('1', style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 11)),
         const SizedBox(width: 4),
         for (var i = 1; i <= 10; i++)
           Container(
@@ -123,8 +123,8 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
             ),
           ),
         const SizedBox(width: 4),
-        const Text('10',
-            style: TextStyle(color: Colors.white54, fontSize: 11)),
+        Text('10',
+            style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 11)),
       ],
     );
   }
@@ -153,7 +153,7 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
                 alignment: Alignment.centerLeft,
                 child: Text(months[m],
                     style:
-                        const TextStyle(color: Colors.white54, fontSize: 10)),
+                         TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 10)),
               );
             }),
           ),
@@ -173,7 +173,7 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
                   decoration: BoxDecoration(
                     color: avg != null
                         ? _colorForMood(avg)
-                        : Colors.white.withValues(alpha: .06),
+                        : AppTheme.palette(context).textPrimary.withValues(alpha: .06),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -199,7 +199,7 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppTheme.card,
+      backgroundColor: AppTheme.palette(context).surfaceRaised,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -210,20 +210,20 @@ class _MoodCalendarScreenState extends ConsumerState<MoodCalendarScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(label,
-                style: const TextStyle(
-                    color: Colors.white,
+                style: TextStyle(
+                    color: AppTheme.palette(context).textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
             if (entries == null || entries.isEmpty)
-              const Text('No entries',
-                  style: TextStyle(color: Colors.white54))
+              Text('No entries',
+                  style: TextStyle(color: AppTheme.palette(context).textSecondary))
             else
               ...entries.map((e) => Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Text(
                       'Mood ${e.moodLevel}/10  ·  Energy ${e.energy}/10',
-                      style: const TextStyle(color: Colors.white70),
+                      style:  TextStyle(color: AppTheme.palette(context).textSecondary),
                     ),
                   )),
             const SizedBox(height: 8),

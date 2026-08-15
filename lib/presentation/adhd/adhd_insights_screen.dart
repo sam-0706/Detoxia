@@ -121,7 +121,7 @@ class _AdhdInsightsScreenState extends ConsumerState<AdhdInsightsScreen> {
           icon: Icons.timer,
           label: 'Sessions',
           value: '$_sessionsThisWeek',
-          color: AppTheme.accent,
+          color: AppTheme.palette(context).accent,
         ),
         const SizedBox(width: 12),
         _InsightTile(
@@ -130,7 +130,7 @@ class _AdhdInsightsScreenState extends ConsumerState<AdhdInsightsScreen> {
           value: _avgFocusRating > 0
               ? _avgFocusRating.toStringAsFixed(1)
               : '-',
-          color: AppTheme.warning,
+          color: AppTheme.palette(context).warning,
         ),
       ],
     );
@@ -159,12 +159,12 @@ class _AdhdInsightsScreenState extends ConsumerState<AdhdInsightsScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.access_time, color: AppTheme.success, size: 20),
+                Icon(Icons.access_time, color: AppTheme.palette(context).success, size: 20),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'Best Productive Hours',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppTheme.palette(context).textPrimary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -174,15 +174,15 @@ class _AdhdInsightsScreenState extends ConsumerState<AdhdInsightsScreen> {
             Text(
               bestHours,
               style: TextStyle(
-                color: AppTheme.success,
+                color: AppTheme.palette(context).success,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Based on when you start focus sessions',
-              style: TextStyle(color: Colors.white38, fontSize: 12),
+              style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 12),
             ),
             if (_hourlyDistribution.isNotEmpty) ...[
               const SizedBox(height: 16),
@@ -201,8 +201,8 @@ class _AdhdInsightsScreenState extends ConsumerState<AdhdInsightsScreen> {
                         height: fraction > 0 ? (fraction * 50 + 4) : 2,
                         decoration: BoxDecoration(
                           color: count > 0
-                              ? AppTheme.success.withValues(alpha: 0.4 + fraction * 0.6)
-                              : Colors.white12,
+                              ? AppTheme.palette(context).success.withValues(alpha: 0.4 + fraction * 0.6)
+                              : AppTheme.palette(context).borderSubtle,
                           borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(2)),
                         ),
@@ -214,12 +214,12 @@ class _AdhdInsightsScreenState extends ConsumerState<AdhdInsightsScreen> {
               const SizedBox(height: 4),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text('12AM', style: TextStyle(color: Colors.white24, fontSize: 9)),
-                  Text('6AM', style: TextStyle(color: Colors.white24, fontSize: 9)),
-                  Text('12PM', style: TextStyle(color: Colors.white24, fontSize: 9)),
-                  Text('6PM', style: TextStyle(color: Colors.white24, fontSize: 9)),
-                  Text('12AM', style: TextStyle(color: Colors.white24, fontSize: 9)),
+                children: [
+                  Text('12AM', style: TextStyle(color: AppTheme.palette(context).borderStrong, fontSize: 9)),
+                  Text('6AM', style: TextStyle(color: AppTheme.palette(context).borderStrong, fontSize: 9)),
+                  Text('12PM', style: TextStyle(color: AppTheme.palette(context).borderStrong, fontSize: 9)),
+                  Text('6PM', style: TextStyle(color: AppTheme.palette(context).borderStrong, fontSize: 9)),
+                  Text('12AM', style: TextStyle(color: AppTheme.palette(context).borderStrong, fontSize: 9)),
                 ],
               ),
             ],
@@ -242,12 +242,12 @@ class _AdhdInsightsScreenState extends ConsumerState<AdhdInsightsScreen> {
             Row(
               children: [
                 Icon(Icons.notifications_active,
-                    color: AppTheme.warning, size: 20),
+                    color: AppTheme.palette(context).warning, size: 20),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'Distraction Trend',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppTheme.palette(context).textPrimary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -255,9 +255,9 @@ class _AdhdInsightsScreenState extends ConsumerState<AdhdInsightsScreen> {
             ),
             const SizedBox(height: 16),
             if (!hasData)
-              const Text(
+              Text(
                 'Complete focus sessions to see your distraction trend.',
-                style: TextStyle(color: Colors.white38, fontSize: 13),
+                style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 13),
               )
             else
               SizedBox(
@@ -279,25 +279,25 @@ class _AdhdInsightsScreenState extends ConsumerState<AdhdInsightsScreen> {
                             if (count > 0)
                               Text(
                                 '$count',
-                                style: const TextStyle(
-                                    color: Colors.white54, fontSize: 10),
+                                style: TextStyle(
+                                    color: AppTheme.palette(context).textSecondary, fontSize: 10),
                               ),
                             const SizedBox(height: 2),
                             Container(
                               height: fraction > 0 ? fraction * 50 + 4 : 2,
                               decoration: BoxDecoration(
                                 color: count > 0
-                                    ? AppTheme.warning
+                                    ? AppTheme.palette(context).warning
                                         .withValues(alpha: 0.4 + fraction * 0.6)
-                                    : Colors.white12,
+                                    : AppTheme.palette(context).borderSubtle,
                                 borderRadius: BorderRadius.circular(3),
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               days[i],
-                              style: const TextStyle(
-                                  color: Colors.white38, fontSize: 10),
+                              style: TextStyle(
+                                  color: AppTheme.palette(context).textTertiary, fontSize: 10),
                             ),
                           ],
                         ),
@@ -324,12 +324,12 @@ class _AdhdInsightsScreenState extends ConsumerState<AdhdInsightsScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.task_alt, color: AppTheme.accent, size: 20),
+                Icon(Icons.task_alt, color: AppTheme.palette(context).accent, size: 20),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'Tasks: Planned vs Completed',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppTheme.palette(context).textPrimary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -341,13 +341,13 @@ class _AdhdInsightsScreenState extends ConsumerState<AdhdInsightsScreen> {
                 _TaskStat(
                   label: 'Planned',
                   count: _tasksPlanned,
-                  color: Colors.white54,
+                  color: AppTheme.palette(context).textSecondary,
                 ),
                 const SizedBox(width: 24),
                 _TaskStat(
                   label: 'Completed',
                   count: _tasksCompleted,
-                  color: AppTheme.success,
+                  color: AppTheme.palette(context).success,
                 ),
                 const SizedBox(width: 24),
                 _TaskStat(
@@ -355,10 +355,10 @@ class _AdhdInsightsScreenState extends ConsumerState<AdhdInsightsScreen> {
                   count: null,
                   display: '${(rate * 100).round()}%',
                   color: rate >= 0.7
-                      ? AppTheme.success
+                      ? AppTheme.palette(context).success
                       : rate >= 0.4
-                          ? AppTheme.warning
-                          : AppTheme.danger,
+                          ? AppTheme.palette(context).warning
+                          : AppTheme.palette(context).danger,
                 ),
               ],
             ),
@@ -368,13 +368,13 @@ class _AdhdInsightsScreenState extends ConsumerState<AdhdInsightsScreen> {
               child: LinearProgressIndicator(
                 value: rate,
                 minHeight: 8,
-                backgroundColor: AppTheme.card,
+                backgroundColor: AppTheme.palette(context).surfaceRaised,
                 valueColor: AlwaysStoppedAnimation(
                   rate >= 0.7
-                      ? AppTheme.success
+                      ? AppTheme.palette(context).success
                       : rate >= 0.4
-                          ? AppTheme.warning
-                          : AppTheme.danger,
+                          ? AppTheme.palette(context).warning
+                          : AppTheme.palette(context).danger,
                 ),
               ),
             ),
@@ -424,7 +424,7 @@ class _InsightTile extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               '$label this week',
-              style: const TextStyle(color: Colors.white54, fontSize: 12),
+              style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 12),
             ),
           ],
         ),
@@ -460,7 +460,7 @@ class _TaskStat extends StatelessWidget {
         ),
         Text(
           label,
-          style: const TextStyle(color: Colors.white38, fontSize: 12),
+          style:  TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 12),
         ),
       ],
     );

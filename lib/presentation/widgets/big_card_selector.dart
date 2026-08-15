@@ -25,7 +25,7 @@ class BigCardSelector<T> extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: Material(
-            color: isSelected ? AppTheme.accent : AppTheme.card,
+            color: isSelected ? AppTheme.palette(context).accent : AppTheme.palette(context).surfaceRaised,
             borderRadius: BorderRadius.circular(16),
             child: InkWell(
               onTap: () => onSelect(option),
@@ -40,8 +40,8 @@ class BigCardSelector<T> extends StatelessWidget {
                       Icon(
                         iconBuilder!(option),
                         color: isSelected
-                            ? Colors.white
-                            : Colors.white70,
+                            ? AppTheme.palette(context).textPrimary
+                            : AppTheme.palette(context).textSecondary,
                         size: 24,
                       ),
                       const SizedBox(width: 16),
@@ -52,8 +52,8 @@ class BigCardSelector<T> extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           color: isSelected
-                              ? Colors.white
-                              : Colors.white70,
+                              ? AppTheme.palette(context).textPrimary
+                              : AppTheme.palette(context).textSecondary,
                           fontWeight: isSelected
                               ? FontWeight.w600
                               : FontWeight.normal,
@@ -61,8 +61,8 @@ class BigCardSelector<T> extends StatelessWidget {
                       ),
                     ),
                     if (isSelected)
-                      const Icon(Icons.check_circle,
-                          color: Colors.white, size: 24),
+                      Icon(Icons.check_circle,
+                          color: AppTheme.palette(context).textPrimary, size: 24),
                   ],
                 ),
               ),

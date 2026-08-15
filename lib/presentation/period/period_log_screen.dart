@@ -174,7 +174,7 @@ class _PeriodLogScreenState extends ConsumerState<PeriodLogScreen> {
             Text(label, style: tt.titleLarge),
             const Spacer(),
             Text('${value.round()}/10',
-                style: const TextStyle(color: Colors.white70)),
+                style:  TextStyle(color: AppTheme.palette(context).textSecondary)),
           ],
         ),
         Slider(
@@ -198,11 +198,11 @@ class _PeriodLogScreenState extends ConsumerState<PeriodLogScreen> {
         TextField(
           controller: _notesController,
           maxLines: 3,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: 'How are you feeling today?',
-            hintStyle: TextStyle(color: Colors.white30),
+            hintStyle: TextStyle(color: AppTheme.palette(context).textTertiary),
           ),
-          style: const TextStyle(color: Colors.white),
+          style:  TextStyle(color: AppTheme.palette(context).textPrimary),
         ),
       ],
     );

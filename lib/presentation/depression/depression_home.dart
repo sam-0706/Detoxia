@@ -106,9 +106,9 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
       _ => Icons.trending_flat,
     };
     final trendColor = switch (trend) {
-      'improving' => AppTheme.success,
-      'worsening' => AppTheme.danger,
-      _ => Colors.white54,
+      'improving' => AppTheme.palette(context).success,
+      'worsening' => AppTheme.palette(context).danger,
+      _ => AppTheme.palette(context).textSecondary,
     };
     final trendText = switch (trend) {
       'improving' => 'Improving',
@@ -124,11 +124,11 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
           children: [
             Row(
               children: [
-                Icon(Icons.assessment, color: AppTheme.accent, size: 20),
+                Icon(Icons.assessment, color: AppTheme.palette(context).accent, size: 20),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'Last Weekly Check-in',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                  style: TextStyle(color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -156,7 +156,7 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(label,
-                          style: const TextStyle(color: Colors.white, fontSize: 15)),
+                          style:  TextStyle(color: AppTheme.palette(context).textPrimary, fontSize: 15)),
                       const SizedBox(height: 4),
                       Row(
                         children: [
@@ -178,11 +178,11 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
   }
 
   Color _severityColor(int score) {
-    if (score <= 4) return AppTheme.success;
+    if (score <= 4) return AppTheme.palette(context).success;
     if (score <= 9) return Colors.lightGreen;
-    if (score <= 14) return AppTheme.warning;
+    if (score <= 14) return AppTheme.palette(context).warning;
     if (score <= 19) return Colors.deepOrange;
-    return AppTheme.danger;
+    return AppTheme.palette(context).danger;
   }
 
   Widget _buildTodayActivities() {
@@ -194,12 +194,12 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
           children: [
             Row(
               children: [
-                Icon(Icons.check_circle_outline, color: AppTheme.success, size: 20),
+                Icon(Icons.check_circle_outline, color: AppTheme.palette(context).success, size: 20),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Today\'s Activities',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                    style: TextStyle(color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600),
                   ),
                 ),
                 TextButton.icon(
@@ -216,11 +216,11 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
               ],
             ),
             if (_todayActivities.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(vertical: 12),
                 child: Text(
                   'No activities logged yet today. Schedule some to get started.',
-                  style: TextStyle(color: Colors.white38, fontSize: 13),
+                  style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 13),
                 ),
               )
             else
@@ -229,11 +229,11 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
                     child: Row(
                       children: [
                         Icon(Icons.check_circle,
-                            color: AppTheme.success, size: 18),
+                            color: AppTheme.palette(context).success, size: 18),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(a.activityType,
-                              style: const TextStyle(color: Colors.white70, fontSize: 14)),
+                              style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 14)),
                         ),
                         if (a.pleasureRating > 0)
                           _ratingChip('P', a.pleasureRating),
@@ -254,12 +254,12 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: AppTheme.accent.withValues(alpha: 0.2),
+        color: AppTheme.palette(context).accent.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         '$label:$value',
-        style: TextStyle(color: AppTheme.accent, fontSize: 11),
+        style: TextStyle(color: AppTheme.palette(context).accent, fontSize: 11),
       ),
     );
   }
@@ -273,12 +273,12 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
           children: [
             Row(
               children: [
-                Icon(Icons.psychology, color: AppTheme.accent, size: 20),
+                Icon(Icons.psychology, color: AppTheme.palette(context).accent, size: 20),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Recent Thought Records',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                    style: TextStyle(color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600),
                   ),
                 ),
                 TextButton.icon(
@@ -295,11 +295,11 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
               ],
             ),
             if (_recentThoughts.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(vertical: 12),
                 child: Text(
                   'No thought records yet. Logging thoughts helps identify patterns.',
-                  style: TextStyle(color: Colors.white38, fontSize: 13),
+                  style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 13),
                 ),
               )
             else
@@ -312,7 +312,7 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
                           t.automaticThought,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(color: Colors.white60, fontSize: 13),
+                          style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13),
                         ),
                         const SizedBox(height: 4),
                         Row(
@@ -320,7 +320,7 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
                             Text(
                               t.emotion,
                               style: TextStyle(
-                                  color: AppTheme.accent,
+                                  color: AppTheme.palette(context).accent,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500),
                             ),
@@ -328,13 +328,13 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
                               const SizedBox(width: 8),
                               Text(
                                 t.distortionType!,
-                                style: const TextStyle(
-                                    color: Colors.white38, fontSize: 11),
+                                style: TextStyle(
+                                    color: AppTheme.palette(context).textTertiary, fontSize: 11),
                               ),
                             ],
                           ],
                         ),
-                        const Divider(color: Colors.white12, height: 16),
+                         Divider(color: AppTheme.palette(context).borderSubtle, height: 16),
                       ],
                     ),
                   )),
@@ -356,7 +356,7 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
               child: _ActionCard(
                 icon: Icons.directions_run,
                 label: 'Schedule\nActivities',
-                color: AppTheme.success,
+                color: AppTheme.palette(context).success,
                 onTap: () async {
                   await Navigator.push(
                     context,
@@ -371,7 +371,7 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
               child: _ActionCard(
                 icon: Icons.edit_note,
                 label: 'Log a\nThought',
-                color: AppTheme.accent,
+                color: AppTheme.palette(context).accent,
                 onTap: () async {
                   await Navigator.push(
                     context,
@@ -386,7 +386,7 @@ class _DepressionHomeState extends ConsumerState<DepressionHome> {
               child: _ActionCard(
                 icon: Icons.insights,
                 label: 'View\nInsights',
-                color: AppTheme.warning,
+                color: AppTheme.palette(context).warning,
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const DepressionInsightsScreen()),
@@ -428,7 +428,7 @@ class _ActionCard extends StatelessWidget {
               Text(
                 label,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontSize: 12),
+                style:  TextStyle(color: AppTheme.palette(context).textPrimary, fontSize: 12),
               ),
             ],
           ),

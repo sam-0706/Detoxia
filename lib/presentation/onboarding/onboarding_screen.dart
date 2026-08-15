@@ -5,7 +5,9 @@ import 'package:detoxia/data/repositories/user_repository.dart';
 import 'package:detoxia/domain/entities/peak_node.dart';
 import 'package:detoxia/domain/entities/user_profile.dart';
 import 'package:detoxia/presentation/guide/feature_guide_screen.dart';
+import 'package:detoxia/presentation/onboarding/pages/welcome_page.dart';
 import 'package:detoxia/presentation/onboarding/pages/personal_info_page.dart';
+import 'package:detoxia/presentation/onboarding/widgets/animated_onboarding_page.dart';
 import 'package:detoxia/presentation/onboarding/pages/condition_select_page.dart';
 import 'package:detoxia/presentation/onboarding/pages/goal_page.dart';
 import 'package:detoxia/presentation/onboarding/pages/life_structure_page.dart';
@@ -78,18 +80,40 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _pageController = PageController();
   int _currentPage = 0;
+  bool _isCompleting = false;
 
   List<Widget> _buildPages() {
     final state = ref.watch(onboardingStateProvider);
     final hasDetox = state.conditions.contains(ConditionType.detoxRecovery);
 
     return [
-      PersonalInfoPage(onNext: _nextPage),
-      ConditionSelectPage(onNext: _onConditionsNext),
-      LifeStructurePage(onNext: _nextPage),
-      if (hasDetox) ScopeTimingPage(onNext: _nextPage),
-      if (hasDetox) TriggersDepthPage(onNext: _nextPage),
-      GoalPage(onComplete: _complete),
+      OnboardingWelcomePage(onNext: _nextPage),
+      AnimatedOnboardingPage(
+        pageIndex: 1,
+        child: PersonalInfoPage(onNext: _nextPage),
+      ),
+      AnimatedOnboardingPage(
+        pageIndex: 2,
+        child: ConditionSelectPage(onNext: _onConditionsNext),
+      ),
+      AnimatedOnboardingPage(
+        pageIndex: 3,
+        child: LifeStructurePage(onNext: _nextPage),
+      ),
+      if (hasDetox)
+        AnimatedOnboardingPage(
+          pageIndex: 4,
+          child: ScopeTimingPage(onNext: _nextPage),
+        ),
+      if (hasDetox)
+        AnimatedOnboardingPage(
+          pageIndex: 5,
+          child: TriggersDepthPage(onNext: _nextPage),
+        ),
+      AnimatedOnboardingPage(
+        pageIndex: hasDetox ? 6 : 4,
+        child: GoalPage(onComplete: _complete),
+      ),
     ];
   }
 
@@ -107,8 +131,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _pageController.animateToPage(
         _currentPage + 1,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeOutCubic,
       );
     });
   }
@@ -118,8 +142,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     if (_currentPage < pages.length - 1) {
       _pageController.animateToPage(
         _currentPage + 1,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeOutCubic,
       );
     } else {
       _complete();
@@ -130,13 +154,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     if (_currentPage > 0) {
       _pageController.animateToPage(
         _currentPage - 1,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeOutCubic,
       );
     }
   }
 
   Future<void> _complete() async {
+    if (_isCompleting) return;
+
     final state = ref.read(onboardingStateProvider);
     final hasDetox = state.conditions.contains(ConditionType.detoxRecovery);
 
@@ -164,6 +190,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       return;
     }
 
+    setState(() => _isCompleting = true);
+
+    try {
     final profile = UserProfile(
       name: state.name,
       email: state.email,
@@ -191,31 +220,35 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     await ref.read(userRepositoryProvider).saveUser(profile);
 
     if (hasDetox) {
-      final peakRepo = ref.read(peakRepositoryProvider);
-      final allPins = [...state.peakPins];
+      try {
+        final peakRepo = ref.read(peakRepositoryProvider);
+        final allPins = [...state.peakPins];
 
-      for (int i = 0; i < allPins.length; i++) {
-        final pin = allPins[i];
-        final label = _labelForTime(pin.time);
-        await peakRepo.insertPeak(PeakNodeEntity(
-          label: label,
-          centerTime: pin.time,
-          frequency: pin.frequency,
-          isHardest: i == 0,
-          dayTypes: const ['both'],
-        ));
-      }
-
-      if (state.weekendDifferent) {
-        for (final pin in state.weekendPeakPins) {
-          final label = 'Weekend ${_labelForTime(pin.time)}';
+        for (int i = 0; i < allPins.length; i++) {
+          final pin = allPins[i];
+          final label = _labelForTime(pin.time);
           await peakRepo.insertPeak(PeakNodeEntity(
             label: label,
             centerTime: pin.time,
             frequency: pin.frequency,
-            dayTypes: const ['weekend'],
+            isHardest: i == 0,
+            dayTypes: const ['both'],
           ));
         }
+
+        if (state.weekendDifferent) {
+          for (final pin in state.weekendPeakPins) {
+            final label = 'Weekend ${_labelForTime(pin.time)}';
+            await peakRepo.insertPeak(PeakNodeEntity(
+              label: label,
+              centerTime: pin.time,
+              frequency: pin.frequency,
+              dayTypes: const ['weekend'],
+            ));
+          }
+        }
+      } catch (e) {
+        debugPrint('Peak save failed (non-fatal): $e');
       }
     }
 
@@ -237,6 +270,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const FeatureGuideScreen()),
     );
+    } catch (e, st) {
+      debugPrint('Onboarding complete failed: $e\n$st');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Could not save your profile. Please try again. ($e)',
+            ),
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isCompleting = false);
+    }
   }
 
   String _labelForTime(TimeOfDay time) {
@@ -251,7 +299,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      body: Stack(
+        children: [
+          SafeArea(
         child: Column(
           children: [
             Padding(
@@ -266,8 +316,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   const Spacer(),
                   Text(
                     '${_currentPage + 1}/$_totalPages',
-                    style: const TextStyle(
-                      color: Colors.white54,
+                    style: TextStyle(
+                      color: AppTheme.palette(context).textSecondary,
                       fontSize: 14,
                     ),
                   ),
@@ -277,10 +327,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             // Progress bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: LinearProgressIndicator(
-                value: (_currentPage + 1) / _totalPages,
-                backgroundColor: Colors.white12,
-                borderRadius: BorderRadius.circular(4),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(
+                  begin: 0,
+                  end: (_currentPage + 1) / _totalPages,
+                ),
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, _) => LinearProgressIndicator(
+                  value: value,
+                  backgroundColor: AppTheme.palette(context).borderSubtle,
+                  borderRadius: BorderRadius.circular(4),
+                  minHeight: 6,
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -295,6 +354,25 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             ),
           ],
         ),
+      ),
+          if (_isCompleting)
+            Container(
+              color: AppTheme.palette(context).scrim,
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text(
+                      'Setting up your profile...',
+                      style: TextStyle(color: AppTheme.palette(context).textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -1,0 +1,3102 @@
+{
+  "version": "1.0.0",
+  "locale": "en",
+  "intro": {
+    "title": "Let's calibrate Detoxia",
+    "body": "You're not taking a test. You're calibrating Detoxia to understand your patterns.",
+    "privacyNote": "Sensitive answers stay on this device."
+  },
+  "sections": [
+    {
+      "sectionId": "goal_selection",
+      "sectionTitle": "What can Detoxia help with?",
+      "sectionSubtitle": "Pick everything that applies.",
+      "engineTarget": "goalSelection",
+      "order": 1,
+      "completionMessage": "Goal direction set",
+      "notScored": false,
+      "questions": [
+        {
+          "questionId": "goal_q1",
+          "questionType": "multiChoice",
+          "tier": "core",
+          "text": "What do you want Detoxia to help you with?",
+          "required": true,
+          "scoreDomain": "goalSelection",
+          "options": [
+            {
+              "optionId": "goal_scrolling",
+              "label": "Endless scrolling / reels / shorts",
+              "tag": "scrolling"
+            },
+            {
+              "optionId": "goal_sexual_content",
+              "label": "Sexual content or unwanted urges",
+              "tag": "sexualContent",
+              "ageGate": {
+                "include": [
+                  "teen16To17",
+                  "adult18Plus"
+                ]
+              }
+            },
+            {
+              "optionId": "goal_porn_masturbation",
+              "label": "Porn / masturbation control",
+              "tag": "sexualControl",
+              "ageGate": {
+                "include": [
+                  "adult18Plus"
+                ]
+              }
+            },
+            {
+              "optionId": "goal_focus",
+              "label": "Focus / ADHD-like difficulty",
+              "tag": "focus"
+            },
+            {
+              "optionId": "goal_anxiety",
+              "label": "Anxiety / overthinking",
+              "tag": "anxiety"
+            },
+            {
+              "optionId": "goal_low_mood",
+              "label": "Low mood",
+              "tag": "lowMood"
+            },
+            {
+              "optionId": "goal_sleep",
+              "label": "Sleep",
+              "tag": "sleep"
+            },
+            {
+              "optionId": "goal_energy",
+              "label": "Energy / exercise / confidence",
+              "tag": "physicalActivation"
+            },
+            {
+              "optionId": "goal_cycle",
+              "label": "Period or cycle-related changes",
+              "tag": "cycle"
+            }
+          ],
+          "ageGate": {
+            "exclude": []
+          }
+        },
+        {
+          "questionId": "goal_q1_adult_only_option",
+          "questionType": "infoReward",
+          "tier": "core",
+          "text": "Adult-only options unlock at 18+.",
+          "notScored": true,
+          "required": false,
+          "visibleIf": {
+            "ageBandIn": [
+              "teen13To15",
+              "teen16To17"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "routine_map",
+      "sectionTitle": "Your daily routine",
+      "sectionSubtitle": "A rough picture of your day is enough — windows, not exact times.",
+      "engineTarget": "routineAnalysis",
+      "order": 2,
+      "completionMessage": "Routine Map unlocked",
+      "questions": [
+        {
+          "questionId": "routine_context",
+          "questionType": "singleChoice",
+          "tier": "core",
+          "text": "What does a typical weekday look like for you?",
+          "helperText": "This decides which questions Detoxia asks next, so nothing irrelevant gets in your way.",
+          "scoreDomain": "routineAnalysis",
+          "options": [
+            {
+              "optionId": "ctx_student_campus",
+              "label": "Student — I travel to school or college",
+              "tag": "studentCampus"
+            },
+            {
+              "optionId": "ctx_student_remote",
+              "label": "Student — mostly online, from home",
+              "tag": "studentRemote"
+            },
+            {
+              "optionId": "ctx_work_onsite",
+              "label": "Working — I travel to a workplace",
+              "tag": "workOnsite"
+            },
+            {
+              "optionId": "ctx_work_hybrid",
+              "label": "Working — hybrid, some days from home",
+              "tag": "workHybrid"
+            },
+            {
+              "optionId": "ctx_work_home",
+              "label": "Working — fully from home",
+              "tag": "workHome"
+            },
+            {
+              "optionId": "ctx_shift",
+              "label": "Shift work or rotating hours",
+              "tag": "shiftWork"
+            },
+            {
+              "optionId": "ctx_between",
+              "label": "Between jobs or taking a break",
+              "tag": "between"
+            },
+            {
+              "optionId": "ctx_home_duties",
+              "label": "At home — caregiving, or retired",
+              "tag": "homeDuties"
+            }
+          ]
+        },
+        {
+          "questionId": "routine_wake",
+          "questionType": "timeWindow",
+          "tier": "core",
+          "text": "When do you usually wake up?",
+          "scoreDomain": "routineRisk",
+          "options": [
+            {
+              "optionId": "wake_before_5",
+              "label": "Before 5 AM",
+              "midpointMinutes": 270
+            },
+            {
+              "optionId": "wake_5_6",
+              "label": "5–6 AM",
+              "midpointMinutes": 330
+            },
+            {
+              "optionId": "wake_6_7",
+              "label": "6–7 AM",
+              "midpointMinutes": 390
+            },
+            {
+              "optionId": "wake_7_8",
+              "label": "7–8 AM",
+              "midpointMinutes": 450
+            },
+            {
+              "optionId": "wake_8_9",
+              "label": "8–9 AM",
+              "midpointMinutes": 510
+            },
+            {
+              "optionId": "wake_9_10",
+              "label": "9–10 AM",
+              "midpointMinutes": 570
+            },
+            {
+              "optionId": "wake_after_10",
+              "label": "After 10 AM",
+              "midpointMinutes": 660
+            },
+            {
+              "optionId": "wake_flexible",
+              "label": "Flexible / changes daily",
+              "midpointMinutes": 480
+            }
+          ]
+        },
+        {
+          "questionId": "routine_arrival",
+          "questionType": "timeWindow",
+          "text": "When do you usually need to be there?",
+          "scoreDomain": "routineRisk",
+          "options": [
+            {
+              "optionId": "arrival_before_8",
+              "label": "Before 8 AM",
+              "midpointMinutes": 450
+            },
+            {
+              "optionId": "arrival_8_9",
+              "label": "8–9 AM",
+              "midpointMinutes": 510
+            },
+            {
+              "optionId": "arrival_9_10",
+              "label": "9–10 AM",
+              "midpointMinutes": 570
+            },
+            {
+              "optionId": "arrival_10_11",
+              "label": "10–11 AM",
+              "midpointMinutes": 630
+            },
+            {
+              "optionId": "arrival_after_11",
+              "label": "After 11 AM",
+              "midpointMinutes": 720
+            },
+            {
+              "optionId": "arrival_flexible",
+              "label": "Flexible / changes daily"
+            }
+          ],
+          "helperText": "Your school, college, or workplace.",
+          "visibleIf": {
+            "answerIn": {
+              "questionId": "routine_context",
+              "values": [
+                "ctx_student_campus",
+                "ctx_work_onsite",
+                "ctx_work_hybrid"
+              ]
+            }
+          }
+        },
+        {
+          "questionId": "routine_busy_start",
+          "questionType": "timeWindow",
+          "text": "When does your busiest stretch usually start?",
+          "scoreDomain": "routineRisk",
+          "options": [
+            {
+              "optionId": "busy_start_morning",
+              "label": "Morning",
+              "midpointMinutes": 540
+            },
+            {
+              "optionId": "busy_start_late_morning",
+              "label": "Late morning",
+              "midpointMinutes": 660
+            },
+            {
+              "optionId": "busy_start_afternoon",
+              "label": "Afternoon",
+              "midpointMinutes": 840
+            },
+            {
+              "optionId": "busy_start_evening",
+              "label": "Evening",
+              "midpointMinutes": 1080
+            },
+            {
+              "optionId": "busy_start_none",
+              "label": "No fixed busy window"
+            }
+          ]
+        },
+        {
+          "questionId": "routine_busy_end",
+          "questionType": "timeWindow",
+          "text": "When does your busiest stretch usually end?",
+          "scoreDomain": "routineRisk",
+          "options": [
+            {
+              "optionId": "busy_end_afternoon",
+              "label": "Afternoon",
+              "midpointMinutes": 900
+            },
+            {
+              "optionId": "busy_end_evening",
+              "label": "Evening",
+              "midpointMinutes": 1080
+            },
+            {
+              "optionId": "busy_end_late_evening",
+              "label": "Late evening",
+              "midpointMinutes": 1200
+            },
+            {
+              "optionId": "busy_end_late_night",
+              "label": "Late night",
+              "midpointMinutes": 1320
+            },
+            {
+              "optionId": "busy_end_none",
+              "label": "No fixed busy window"
+            }
+          ]
+        },
+        {
+          "questionId": "routine_commute_mode",
+          "questionType": "singleChoice",
+          "text": "How do you usually get there?",
+          "scoreDomain": "routineRisk",
+          "options": [
+            {
+              "optionId": "mode_walk",
+              "label": "Walk"
+            },
+            {
+              "optionId": "mode_bike",
+              "label": "Bike"
+            },
+            {
+              "optionId": "mode_bus_metro_train",
+              "label": "Bus / metro / train"
+            },
+            {
+              "optionId": "mode_cab_auto",
+              "label": "Cab / auto"
+            },
+            {
+              "optionId": "mode_car_bike_driving",
+              "label": "Car / bike driving"
+            },
+            {
+              "optionId": "mode_mixed",
+              "label": "Mixed / it varies"
+            }
+          ],
+          "visibleIf": {
+            "answerIn": {
+              "questionId": "routine_context",
+              "values": [
+                "ctx_student_campus",
+                "ctx_work_onsite",
+                "ctx_work_hybrid",
+                "ctx_shift"
+              ]
+            }
+          }
+        },
+        {
+          "questionId": "routine_commute_to",
+          "questionType": "durationBand",
+          "text": "How long does that trip usually take?",
+          "scoreDomain": "routineRisk",
+          "options": [
+            {
+              "optionId": "commute_to_lt15",
+              "label": "Less than 15 min",
+              "midpointDurationMinutes": 8
+            },
+            {
+              "optionId": "commute_to_15_30",
+              "label": "15–30 min",
+              "midpointDurationMinutes": 22
+            },
+            {
+              "optionId": "commute_to_30_60",
+              "label": "30–60 min",
+              "midpointDurationMinutes": 45
+            },
+            {
+              "optionId": "commute_to_60_90",
+              "label": "60–90 min",
+              "midpointDurationMinutes": 75
+            },
+            {
+              "optionId": "commute_to_90_plus",
+              "label": "90+ min",
+              "midpointDurationMinutes": 110
+            }
+          ],
+          "visibleIf": {
+            "answerIn": {
+              "questionId": "routine_commute_mode",
+              "values": [
+                "mode_walk",
+                "mode_bike",
+                "mode_bus_metro_train",
+                "mode_cab_auto",
+                "mode_car_bike_driving",
+                "mode_mixed"
+              ]
+            }
+          }
+        },
+        {
+          "questionId": "routine_commute_back",
+          "questionType": "durationBand",
+          "text": "And the trip back home?",
+          "scoreDomain": "routineRisk",
+          "options": [
+            {
+              "optionId": "commute_back_lt15",
+              "label": "Less than 15 min",
+              "midpointDurationMinutes": 8
+            },
+            {
+              "optionId": "commute_back_15_30",
+              "label": "15–30 min",
+              "midpointDurationMinutes": 22
+            },
+            {
+              "optionId": "commute_back_30_60",
+              "label": "30–60 min",
+              "midpointDurationMinutes": 45
+            },
+            {
+              "optionId": "commute_back_60_90",
+              "label": "60–90 min",
+              "midpointDurationMinutes": 75
+            },
+            {
+              "optionId": "commute_back_90_plus",
+              "label": "90+ min",
+              "midpointDurationMinutes": 110
+            }
+          ],
+          "visibleIf": {
+            "answerIn": {
+              "questionId": "routine_commute_mode",
+              "values": [
+                "mode_walk",
+                "mode_bike",
+                "mode_bus_metro_train",
+                "mode_cab_auto",
+                "mode_car_bike_driving",
+                "mode_mixed"
+              ]
+            }
+          }
+        },
+        {
+          "questionId": "routine_commute_phone",
+          "questionType": "scale",
+          "text": "While travelling, I use my phone for scrolling, browsing, or entertainment.",
+          "scoreDomain": "routineRisk",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "p0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "p1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "p2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "p3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ],
+          "visibleIf": {
+            "answerIn": {
+              "questionId": "routine_commute_mode",
+              "values": [
+                "mode_walk",
+                "mode_bike",
+                "mode_bus_metro_train",
+                "mode_cab_auto",
+                "mode_car_bike_driving",
+                "mode_mixed"
+              ]
+            }
+          }
+        },
+        {
+          "questionId": "routine_free_windows",
+          "questionType": "multiChoice",
+          "text": "When are you usually free?",
+          "scoreDomain": "routineRisk",
+          "options": [
+            {
+              "optionId": "free_early_morning",
+              "label": "Early morning"
+            },
+            {
+              "optionId": "free_late_morning",
+              "label": "Late morning"
+            },
+            {
+              "optionId": "free_afternoon",
+              "label": "Afternoon"
+            },
+            {
+              "optionId": "free_after_school_work",
+              "label": "After my main commitments"
+            },
+            {
+              "optionId": "free_evening",
+              "label": "Evening"
+            },
+            {
+              "optionId": "free_late_night",
+              "label": "Late night"
+            },
+            {
+              "optionId": "free_weekends",
+              "label": "Weekends"
+            }
+          ]
+        },
+        {
+          "questionId": "routine_alone_windows",
+          "questionType": "multiChoice",
+          "text": "When are you usually on your own?",
+          "helperText": "Time by yourself changes what kind of support helps.",
+          "scoreDomain": "routineRisk",
+          "options": [
+            {
+              "optionId": "alone_morning",
+              "label": "Morning"
+            },
+            {
+              "optionId": "alone_afternoon",
+              "label": "Afternoon"
+            },
+            {
+              "optionId": "alone_evening",
+              "label": "Evening"
+            },
+            {
+              "optionId": "alone_late_night",
+              "label": "Late night"
+            },
+            {
+              "optionId": "alone_bedroom",
+              "label": "Bedroom time"
+            },
+            {
+              "optionId": "alone_bathroom",
+              "label": "Bathroom time",
+              "visibleIf": {
+                "any": [
+                  {
+                    "goalSelected": "scrolling"
+                  },
+                  {
+                    "goalSelected": "sexualContent"
+                  },
+                  {
+                    "goalSelected": "sexualControl"
+                  }
+                ]
+              }
+            },
+            {
+              "optionId": "alone_weekends",
+              "label": "Weekends"
+            }
+          ]
+        },
+        {
+          "questionId": "routine_vulnerable_windows",
+          "questionType": "multiChoice",
+          "tier": "core",
+          "text": "Which parts of the day are hardest for you?",
+          "helperText": "Detoxia plans its check-ins around these windows.",
+          "scoreDomain": "routineRisk",
+          "options": [
+            {
+              "optionId": "vuln_after_waking",
+              "label": "After waking"
+            },
+            {
+              "optionId": "vuln_afternoon",
+              "label": "Afternoon"
+            },
+            {
+              "optionId": "vuln_commute",
+              "label": "During commute",
+              "visibleIf": {
+                "answerIn": {
+                  "questionId": "routine_commute_mode",
+                  "values": [
+                    "mode_walk",
+                    "mode_bike",
+                    "mode_bus_metro_train",
+                    "mode_cab_auto",
+                    "mode_car_bike_driving",
+                    "mode_mixed"
+                  ]
+                }
+              }
+            },
+            {
+              "optionId": "vuln_after_work",
+              "label": "After my main commitments end"
+            },
+            {
+              "optionId": "vuln_evening",
+              "label": "Evening"
+            },
+            {
+              "optionId": "vuln_late_night",
+              "label": "Late night"
+            },
+            {
+              "optionId": "vuln_before_sleep",
+              "label": "Before sleep"
+            },
+            {
+              "optionId": "vuln_weekends",
+              "label": "Weekends"
+            },
+            {
+              "optionId": "vuln_random",
+              "label": "Random / unpredictable"
+            }
+          ]
+        },
+        {
+          "questionId": "routine_sleep_attempt",
+          "questionType": "timeWindow",
+          "tier": "core",
+          "text": "When do you usually try to sleep?",
+          "scoreDomain": "routineRisk",
+          "options": [
+            {
+              "optionId": "sleep_before_9pm",
+              "label": "Before 9 PM",
+              "midpointMinutes": 1200
+            },
+            {
+              "optionId": "sleep_9_10pm",
+              "label": "9–10 PM",
+              "midpointMinutes": 1290
+            },
+            {
+              "optionId": "sleep_10_11pm",
+              "label": "10–11 PM",
+              "midpointMinutes": 1350
+            },
+            {
+              "optionId": "sleep_11_12am",
+              "label": "11 PM–12 AM",
+              "midpointMinutes": 1410
+            },
+            {
+              "optionId": "sleep_12_1am",
+              "label": "12–1 AM",
+              "midpointMinutes": 30
+            },
+            {
+              "optionId": "sleep_1_2am",
+              "label": "1–2 AM",
+              "midpointMinutes": 90
+            },
+            {
+              "optionId": "sleep_after_2am",
+              "label": "After 2 AM",
+              "midpointMinutes": 150
+            },
+            {
+              "optionId": "sleep_flexible",
+              "label": "Flexible / changes daily",
+              "midpointMinutes": 1380
+            }
+          ]
+        },
+        {
+          "questionId": "routine_sleep_latency",
+          "questionType": "durationBand",
+          "text": "How long after trying to sleep do you usually fall asleep?",
+          "scoreDomain": "sleepDebt",
+          "options": [
+            {
+              "optionId": "latency_0_15",
+              "label": "0–15 min",
+              "midpointDurationMinutes": 7
+            },
+            {
+              "optionId": "latency_15_30",
+              "label": "15–30 min",
+              "midpointDurationMinutes": 22
+            },
+            {
+              "optionId": "latency_30_60",
+              "label": "30–60 min",
+              "midpointDurationMinutes": 45
+            },
+            {
+              "optionId": "latency_60_120",
+              "label": "1–2 hours",
+              "midpointDurationMinutes": 90
+            },
+            {
+              "optionId": "latency_120_plus",
+              "label": "2+ hours",
+              "midpointDurationMinutes": 150
+            },
+            {
+              "optionId": "latency_variable",
+              "label": "Highly variable",
+              "midpointDurationMinutes": 60
+            }
+          ]
+        },
+        {
+          "questionId": "routine_phone_in_bed",
+          "questionType": "scale",
+          "text": "I use my phone while lying in bed.",
+          "scoreDomain": "routineRisk",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "p0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "p1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "p2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "p3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "scrolling_control",
+      "sectionTitle": "Scrolling patterns",
+      "sectionSubtitle": "Past 2 weeks. Honest is best.",
+      "engineTarget": "riskScoring",
+      "order": 3,
+      "completionMessage": "Scrolling Pattern mapped",
+      "questions": [
+        {
+          "questionId": "scroll_q1",
+          "questionType": "scale",
+          "tier": "core",
+          "text": "I open feed-based apps automatically when I feel bored, stressed, anxious, or lonely.",
+          "scoreDomain": "scrollingControl",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "scroll_q2",
+          "questionType": "scale",
+          "tier": "core",
+          "text": "Once I start scrolling, I stay longer than I planned.",
+          "scoreDomain": "scrollingControl",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "scroll_q3",
+          "questionType": "scale",
+          "text": "I find it hard to stop even when I know I should.",
+          "scoreDomain": "scrollingControl",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "scroll_q4",
+          "questionType": "scale",
+          "text": "Scrolling replaces sleep, movement, responsibilities, or real-life time.",
+          "scoreDomain": "scrollingControl",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "scroll_q5",
+          "questionType": "scale",
+          "text": "After scrolling, I feel worse because of comparison, numbness, guilt, or lost time.",
+          "scoreDomain": "scrollingControl",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "sexual_content_teen",
+      "sectionTitle": "Online content",
+      "sectionSubtitle": "Honest answers help Detoxia support you.",
+      "engineTarget": "riskScoring",
+      "order": 4,
+      "completionMessage": "Support Pattern calibrated",
+      "visibleIf": {
+        "ageBandIn": [
+          "teen16To17"
+        ]
+      },
+      "questions": [
+        {
+          "questionId": "sxteen_q1",
+          "questionType": "scale",
+          "tier": "core",
+          "text": "I see sexual or suggestive content online even when I do not want to.",
+          "scoreDomain": "sexualContentControl",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "sxteen_q2",
+          "questionType": "scale",
+          "tier": "core",
+          "text": "After seeing suggestive content, I find it hard to stop looking for more.",
+          "scoreDomain": "sexualContentControl",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "sxteen_q3",
+          "questionType": "scale",
+          "text": "This content affects my mood, focus, sleep, or self-control.",
+          "scoreDomain": "sexualContentControl",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "sxteen_q4",
+          "questionType": "scale",
+          "text": "I use online content when I feel bored, stressed, lonely, or low.",
+          "scoreDomain": "sexualContentControl",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "sxteen_q5",
+          "questionType": "scale",
+          "text": "I want help creating distance from this kind of content.",
+          "scoreDomain": "sexualContentControl",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Not really",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "A little",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Yes",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Strongly yes",
+              "numericValue": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "sexual_control_adult",
+      "sectionTitle": "Sexual control recovery",
+      "sectionSubtitle": "No shame here — Detoxia uses this only to personalize support.",
+      "engineTarget": "riskScoring",
+      "order": 5,
+      "completionMessage": "Support Pattern calibrated",
+      "visibleIf": {
+        "ageBandIn": [
+          "adult18Plus"
+        ]
+      },
+      "questions": [
+        {
+          "questionId": "sxadult_q1",
+          "questionType": "scale",
+          "tier": "core",
+          "text": "I spend more time than I mean to on sexual content, fantasy, or masturbation.",
+          "scoreDomain": "sexualControlRecovery",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "sxadult_q2",
+          "questionType": "scale",
+          "tier": "core",
+          "text": "I have tried to cut back or stop, but slipped back more than once.",
+          "scoreDomain": "sexualControlRecovery",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "sxadult_q3",
+          "questionType": "scale",
+          "text": "Strong urges feel hard to resist.",
+          "scoreDomain": "sexualControlRecovery",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "sxadult_q4",
+          "questionType": "scale",
+          "text": "I use sexual content, fantasy, or masturbation to cope with stress, boredom, loneliness, anger, or sadness.",
+          "scoreDomain": "sexualControlRecovery",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "sxadult_q5",
+          "questionType": "scale",
+          "text": "This behavior leaves me feeling out of control, guilty, secretive, or interferes with sleep, focus, work, or relationships.",
+          "scoreDomain": "sexualControlRecovery",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "focus_support",
+      "sectionTitle": "Focus & attention",
+      "sectionSubtitle": "Past 6 months.",
+      "engineTarget": "riskScoring",
+      "order": 6,
+      "completionMessage": "Focus Pattern mapped",
+      "questions": [
+        {
+          "questionId": "focus_q1",
+          "questionType": "scale",
+          "tier": "core",
+          "text": "I struggle to finish the final details of tasks after the hard part is done.",
+          "scoreDomain": "focusSupport",
+          "scaleMin": 0,
+          "scaleMax": 4,
+          "options": [
+            {
+              "optionId": "f0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "f1",
+              "label": "Rarely",
+              "numericValue": 1
+            },
+            {
+              "optionId": "f2",
+              "label": "Sometimes",
+              "numericValue": 2
+            },
+            {
+              "optionId": "f3",
+              "label": "Often",
+              "numericValue": 3
+            },
+            {
+              "optionId": "f4",
+              "label": "Very often",
+              "numericValue": 4
+            }
+          ]
+        },
+        {
+          "questionId": "focus_q2",
+          "questionType": "scale",
+          "tier": "core",
+          "text": "I have trouble organizing tasks that require planning.",
+          "scoreDomain": "focusSupport",
+          "scaleMin": 0,
+          "scaleMax": 4,
+          "options": [
+            {
+              "optionId": "f0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "f1",
+              "label": "Rarely",
+              "numericValue": 1
+            },
+            {
+              "optionId": "f2",
+              "label": "Sometimes",
+              "numericValue": 2
+            },
+            {
+              "optionId": "f3",
+              "label": "Often",
+              "numericValue": 3
+            },
+            {
+              "optionId": "f4",
+              "label": "Very often",
+              "numericValue": 4
+            }
+          ]
+        },
+        {
+          "questionId": "focus_q3",
+          "questionType": "scale",
+          "text": "I forget appointments, deadlines, homework, chores, or commitments.",
+          "scoreDomain": "focusSupport",
+          "scaleMin": 0,
+          "scaleMax": 4,
+          "options": [
+            {
+              "optionId": "f0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "f1",
+              "label": "Rarely",
+              "numericValue": 1
+            },
+            {
+              "optionId": "f2",
+              "label": "Sometimes",
+              "numericValue": 2
+            },
+            {
+              "optionId": "f3",
+              "label": "Often",
+              "numericValue": 3
+            },
+            {
+              "optionId": "f4",
+              "label": "Very often",
+              "numericValue": 4
+            }
+          ]
+        },
+        {
+          "questionId": "focus_q4",
+          "questionType": "scale",
+          "text": "I delay starting tasks that need a lot of thought.",
+          "scoreDomain": "focusSupport",
+          "scaleMin": 0,
+          "scaleMax": 4,
+          "options": [
+            {
+              "optionId": "f0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "f1",
+              "label": "Rarely",
+              "numericValue": 1
+            },
+            {
+              "optionId": "f2",
+              "label": "Sometimes",
+              "numericValue": 2
+            },
+            {
+              "optionId": "f3",
+              "label": "Often",
+              "numericValue": 3
+            },
+            {
+              "optionId": "f4",
+              "label": "Very often",
+              "numericValue": 4
+            }
+          ]
+        },
+        {
+          "questionId": "focus_q5",
+          "questionType": "scale",
+          "text": "I fidget, squirm, or feel restless when expected to stay still.",
+          "scoreDomain": "focusSupport",
+          "scaleMin": 0,
+          "scaleMax": 4,
+          "options": [
+            {
+              "optionId": "f0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "f1",
+              "label": "Rarely",
+              "numericValue": 1
+            },
+            {
+              "optionId": "f2",
+              "label": "Sometimes",
+              "numericValue": 2
+            },
+            {
+              "optionId": "f3",
+              "label": "Often",
+              "numericValue": 3
+            },
+            {
+              "optionId": "f4",
+              "label": "Very often",
+              "numericValue": 4
+            }
+          ]
+        },
+        {
+          "questionId": "focus_q6",
+          "questionType": "scale",
+          "text": "I feel internally driven to keep moving, switching, or doing something.",
+          "scoreDomain": "focusSupport",
+          "scaleMin": 0,
+          "scaleMax": 4,
+          "options": [
+            {
+              "optionId": "f0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "f1",
+              "label": "Rarely",
+              "numericValue": 1
+            },
+            {
+              "optionId": "f2",
+              "label": "Sometimes",
+              "numericValue": 2
+            },
+            {
+              "optionId": "f3",
+              "label": "Often",
+              "numericValue": 3
+            },
+            {
+              "optionId": "f4",
+              "label": "Very often",
+              "numericValue": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "anxiety_load",
+      "sectionTitle": "Anxiety & worry",
+      "sectionSubtitle": "Over the last 2 weeks.",
+      "engineTarget": "riskScoring",
+      "order": 7,
+      "completionMessage": "Anxiety Engine calibrated",
+      "questions": [
+        {
+          "questionId": "anx_q1",
+          "questionType": "scale",
+          "tier": "core",
+          "text": "I feel nervous, keyed up, or on edge.",
+          "scoreDomain": "anxietyLoad",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "a0",
+              "label": "Not at all",
+              "numericValue": 0
+            },
+            {
+              "optionId": "a1",
+              "label": "Several days",
+              "numericValue": 1
+            },
+            {
+              "optionId": "a2",
+              "label": "More than half the days",
+              "numericValue": 2
+            },
+            {
+              "optionId": "a3",
+              "label": "Nearly every day",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "anx_q2",
+          "questionType": "scale",
+          "tier": "core",
+          "text": "I cannot stop or control my worrying.",
+          "scoreDomain": "anxietyLoad",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "a0",
+              "label": "Not at all",
+              "numericValue": 0
+            },
+            {
+              "optionId": "a1",
+              "label": "Several days",
+              "numericValue": 1
+            },
+            {
+              "optionId": "a2",
+              "label": "More than half the days",
+              "numericValue": 2
+            },
+            {
+              "optionId": "a3",
+              "label": "Nearly every day",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "anx_q3",
+          "questionType": "scale",
+          "text": "I worry too much about different things.",
+          "scoreDomain": "anxietyLoad",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "a0",
+              "label": "Not at all",
+              "numericValue": 0
+            },
+            {
+              "optionId": "a1",
+              "label": "Several days",
+              "numericValue": 1
+            },
+            {
+              "optionId": "a2",
+              "label": "More than half the days",
+              "numericValue": 2
+            },
+            {
+              "optionId": "a3",
+              "label": "Nearly every day",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "anx_q4",
+          "questionType": "scale",
+          "text": "I have trouble relaxing, or feel like something bad might happen.",
+          "scoreDomain": "anxietyLoad",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "a0",
+              "label": "Not at all",
+              "numericValue": 0
+            },
+            {
+              "optionId": "a1",
+              "label": "Several days",
+              "numericValue": 1
+            },
+            {
+              "optionId": "a2",
+              "label": "More than half the days",
+              "numericValue": 2
+            },
+            {
+              "optionId": "a3",
+              "label": "Nearly every day",
+              "numericValue": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "low_mood_support",
+      "sectionTitle": "Mood & energy",
+      "sectionSubtitle": "Over the last 2 weeks.",
+      "engineTarget": "riskScoring",
+      "order": 8,
+      "completionMessage": "Mood Support mapped",
+      "questions": [
+        {
+          "questionId": "mood_q1",
+          "questionType": "scale",
+          "tier": "core",
+          "text": "I have little interest or pleasure in things I normally care about.",
+          "scoreDomain": "lowMoodSupport",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "m0",
+              "label": "Not at all",
+              "numericValue": 0
+            },
+            {
+              "optionId": "m1",
+              "label": "Several days",
+              "numericValue": 1
+            },
+            {
+              "optionId": "m2",
+              "label": "More than half the days",
+              "numericValue": 2
+            },
+            {
+              "optionId": "m3",
+              "label": "Nearly every day",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "mood_q2",
+          "questionType": "scale",
+          "tier": "core",
+          "text": "I feel down, sad, empty, or hopeless.",
+          "scoreDomain": "lowMoodSupport",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "m0",
+              "label": "Not at all",
+              "numericValue": 0
+            },
+            {
+              "optionId": "m1",
+              "label": "Several days",
+              "numericValue": 1
+            },
+            {
+              "optionId": "m2",
+              "label": "More than half the days",
+              "numericValue": 2
+            },
+            {
+              "optionId": "m3",
+              "label": "Nearly every day",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "mood_q3",
+          "questionType": "scale",
+          "text": "I feel tired, drained, or low-energy most days.",
+          "scoreDomain": "lowMoodSupport",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "m0",
+              "label": "Not at all",
+              "numericValue": 0
+            },
+            {
+              "optionId": "m1",
+              "label": "Several days",
+              "numericValue": 1
+            },
+            {
+              "optionId": "m2",
+              "label": "More than half the days",
+              "numericValue": 2
+            },
+            {
+              "optionId": "m3",
+              "label": "Nearly every day",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "mood_q4",
+          "questionType": "scale",
+          "text": "I feel like I am failing, letting people down, or not good enough.",
+          "scoreDomain": "lowMoodSupport",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "m0",
+              "label": "Not at all",
+              "numericValue": 0
+            },
+            {
+              "optionId": "m1",
+              "label": "Several days",
+              "numericValue": 1
+            },
+            {
+              "optionId": "m2",
+              "label": "More than half the days",
+              "numericValue": 2
+            },
+            {
+              "optionId": "m3",
+              "label": "Nearly every day",
+              "numericValue": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "safety_gate",
+      "sectionTitle": "A quick check-in",
+      "sectionSubtitle": "Detoxia asks everyone this, whatever they came for — poor sleep and low mood often travel together. Your answers are never scored, never shared, and only decide whether to show you support options.",
+      "engineTarget": "safetyRouting",
+      "order": 9,
+      "notScored": true,
+      "completionMessage": "Thanks for sharing",
+      "questions": [
+        {
+          "questionId": "safety_q1",
+          "questionType": "yesNo",
+          "tier": "core",
+          "text": "In the past month, have you wished you could go to sleep and not wake up?",
+          "scoreDomain": "safetyRouting",
+          "safetyGate": true,
+          "notScored": true,
+          "options": [
+            {
+              "optionId": "no",
+              "label": "No"
+            },
+            {
+              "optionId": "yes",
+              "label": "Yes"
+            }
+          ]
+        },
+        {
+          "questionId": "safety_q2",
+          "questionType": "yesNo",
+          "tier": "core",
+          "text": "In the past month, have you had thoughts of killing yourself?",
+          "scoreDomain": "safetyRouting",
+          "safetyGate": true,
+          "notScored": true,
+          "options": [
+            {
+              "optionId": "no",
+              "label": "No"
+            },
+            {
+              "optionId": "yes",
+              "label": "Yes"
+            }
+          ]
+        },
+        {
+          "questionId": "safety_q3",
+          "questionType": "yesNo",
+          "tier": "core",
+          "text": "Have you thought about how you might do it, or taken any steps toward it?",
+          "scoreDomain": "safetyRouting",
+          "safetyGate": true,
+          "notScored": true,
+          "visibleIf": {
+            "answerEquals": {
+              "questionId": "safety_q2",
+              "value": "yes"
+            }
+          },
+          "options": [
+            {
+              "optionId": "no",
+              "label": "No"
+            },
+            {
+              "optionId": "yes",
+              "label": "Yes"
+            }
+          ]
+        }
+      ],
+      "visibleIf": {
+        "any": [
+          {
+            "goalSelected": "anxiety"
+          },
+          {
+            "goalSelected": "lowMood"
+          },
+          {
+            "goalSelected": "cycle"
+          }
+        ]
+      }
+    },
+    {
+      "sectionId": "sleep_disruption",
+      "sectionTitle": "Sleep quality",
+      "sectionSubtitle": "Past 2 weeks.",
+      "engineTarget": "riskScoring",
+      "order": 10,
+      "completionMessage": "Sleep Engine calibrated",
+      "questions": [
+        {
+          "questionId": "sleep_q1",
+          "questionType": "scale",
+          "tier": "core",
+          "text": "It takes me more than about 30 minutes to fall asleep.",
+          "scoreDomain": "sleepDisruption",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "sleep_q2",
+          "questionType": "scale",
+          "text": "I wake during the night or too early and struggle to sleep again.",
+          "scoreDomain": "sleepDisruption",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "sleep_q3",
+          "questionType": "scale",
+          "tier": "core",
+          "text": "My sleep feels poor, unrefreshing, or too short.",
+          "scoreDomain": "sleepDisruption",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "sleep_q4",
+          "questionType": "scale",
+          "text": "I struggle to stay awake or feel sleepy during the day.",
+          "scoreDomain": "sleepDisruption",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "sleep_q5",
+          "questionType": "scale",
+          "text": "Sleep problems reduce my energy, motivation, focus, or self-control.",
+          "scoreDomain": "sleepDisruption",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "s0",
+              "label": "Never",
+              "numericValue": 0
+            },
+            {
+              "optionId": "s1",
+              "label": "Sometimes",
+              "numericValue": 1
+            },
+            {
+              "optionId": "s2",
+              "label": "Often",
+              "numericValue": 2
+            },
+            {
+              "optionId": "s3",
+              "label": "Very often",
+              "numericValue": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "physical_activation",
+      "sectionTitle": "Physical activity",
+      "sectionSubtitle": "Movement is a strong modifier on mood, focus, and urges.",
+      "engineTarget": "riskScoring",
+      "order": 11,
+      "completionMessage": "Movement Profile mapped",
+      "questions": [
+        {
+          "questionId": "phys_q1",
+          "questionType": "singleChoice",
+          "tier": "core",
+          "text": "What best describes your usual day?",
+          "scoreDomain": "physicalActivation",
+          "options": [
+            {
+              "optionId": "p0",
+              "label": "Mostly sitting or standing, very little exertion",
+              "numericValue": 0
+            },
+            {
+              "optionId": "p1",
+              "label": "Regular light movement or walking",
+              "numericValue": 1
+            },
+            {
+              "optionId": "p2",
+              "label": "Moderate manual activity during the day",
+              "numericValue": 2
+            },
+            {
+              "optionId": "p3",
+              "label": "Heavy physical work during the day",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "phys_q2",
+          "questionType": "singleChoice",
+          "text": "What best describes your usual leisure-time activity?",
+          "scoreDomain": "physicalActivation",
+          "options": [
+            {
+              "optionId": "p0",
+              "label": "Mostly inactive",
+              "numericValue": 0
+            },
+            {
+              "optionId": "p1",
+              "label": "Light activity now and then, mostly on weekends",
+              "numericValue": 1
+            },
+            {
+              "optionId": "p2",
+              "label": "Moderate activity about 3 times per week",
+              "numericValue": 2
+            },
+            {
+              "optionId": "p3",
+              "label": "Vigorous activity about 3 times per week",
+              "numericValue": 3
+            },
+            {
+              "optionId": "p4",
+              "label": "Vigorous activity 5 or more times per week",
+              "numericValue": 4
+            }
+          ]
+        },
+        {
+          "questionId": "phys_q3",
+          "questionType": "singleChoice",
+          "text": "How many days per week do you intentionally do strength, mobility, or body-weight work?",
+          "scoreDomain": "physicalActivation",
+          "options": [
+            {
+              "optionId": "p0",
+              "label": "None",
+              "numericValue": 0
+            },
+            {
+              "optionId": "p1",
+              "label": "One day",
+              "numericValue": 1
+            },
+            {
+              "optionId": "p2",
+              "label": "Two days",
+              "numericValue": 2
+            },
+            {
+              "optionId": "p3",
+              "label": "Three or more days",
+              "numericValue": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "cycle_sensitivity",
+      "sectionTitle": "Cycle sensitivity",
+      "sectionSubtitle": "These appear because cycle changes can amplify mood, sleep, and self-control.",
+      "engineTarget": "riskScoring",
+      "order": 12,
+      "completionMessage": "Cycle Sensitivity calibrated",
+      "visibleIf": {
+        "all": [
+          {
+            "genderIn": [
+              "female"
+            ]
+          },
+          {
+            "answerEquals": {
+              "questionId": "cycle_menstruation_gate",
+              "value": "yes_or_unsure"
+            }
+          }
+        ]
+      },
+      "questions": [
+        {
+          "questionId": "cycle_menstruation_gate",
+          "questionType": "singleChoice",
+          "tier": "core",
+          "text": "Do you currently menstruate?",
+          "scoreDomain": "cycleSensitivity",
+          "notScored": true,
+          "options": [
+            {
+              "optionId": "yes_or_unsure",
+              "label": "Yes, or sometimes / irregular"
+            },
+            {
+              "optionId": "no",
+              "label": "No"
+            }
+          ]
+        },
+        {
+          "questionId": "cycle_pattern_gate",
+          "questionType": "singleChoice",
+          "tier": "core",
+          "text": "Across the last 3 cycles, do symptoms usually get worse in the week before bleeding and ease within a few days after?",
+          "scoreDomain": "cycleSensitivity",
+          "notScored": true,
+          "options": [
+            {
+              "optionId": "yes",
+              "label": "Yes"
+            },
+            {
+              "optionId": "no",
+              "label": "No"
+            },
+            {
+              "optionId": "not_sure",
+              "label": "Not sure"
+            }
+          ]
+        },
+        {
+          "questionId": "cycle_q1",
+          "questionType": "scale",
+          "tier": "core",
+          "text": "Before my period, I have stronger mood swings or tearfulness.",
+          "scoreDomain": "cycleSensitivity",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "c0",
+              "label": "Not at all",
+              "numericValue": 0
+            },
+            {
+              "optionId": "c1",
+              "label": "Mild",
+              "numericValue": 1
+            },
+            {
+              "optionId": "c2",
+              "label": "Moderate",
+              "numericValue": 2
+            },
+            {
+              "optionId": "c3",
+              "label": "Strong",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "cycle_q2",
+          "questionType": "scale",
+          "text": "Before my period, I am more irritable, angry, or easily hurt.",
+          "scoreDomain": "cycleSensitivity",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "c0",
+              "label": "Not at all",
+              "numericValue": 0
+            },
+            {
+              "optionId": "c1",
+              "label": "Mild",
+              "numericValue": 1
+            },
+            {
+              "optionId": "c2",
+              "label": "Moderate",
+              "numericValue": 2
+            },
+            {
+              "optionId": "c3",
+              "label": "Strong",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "cycle_q3",
+          "questionType": "scale",
+          "text": "Before my period, I feel more anxious, tense, overwhelmed, or unable to cope.",
+          "scoreDomain": "cycleSensitivity",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "c0",
+              "label": "Not at all",
+              "numericValue": 0
+            },
+            {
+              "optionId": "c1",
+              "label": "Mild",
+              "numericValue": 1
+            },
+            {
+              "optionId": "c2",
+              "label": "Moderate",
+              "numericValue": 2
+            },
+            {
+              "optionId": "c3",
+              "label": "Strong",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "cycle_q4",
+          "questionType": "scale",
+          "text": "Before my period, I feel more down, hopeless, or uninterested in things.",
+          "scoreDomain": "cycleSensitivity",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "c0",
+              "label": "Not at all",
+              "numericValue": 0
+            },
+            {
+              "optionId": "c1",
+              "label": "Mild",
+              "numericValue": 1
+            },
+            {
+              "optionId": "c2",
+              "label": "Moderate",
+              "numericValue": 2
+            },
+            {
+              "optionId": "c3",
+              "label": "Strong",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "cycle_q5",
+          "questionType": "scale",
+          "text": "Before my period, I have worse concentration, lower energy, or feel out of control.",
+          "scoreDomain": "cycleSensitivity",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "c0",
+              "label": "Not at all",
+              "numericValue": 0
+            },
+            {
+              "optionId": "c1",
+              "label": "Mild",
+              "numericValue": 1
+            },
+            {
+              "optionId": "c2",
+              "label": "Moderate",
+              "numericValue": 2
+            },
+            {
+              "optionId": "c3",
+              "label": "Strong",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "cycle_q6",
+          "questionType": "scale",
+          "text": "Before my period, I have worse sleep, appetite changes, bloating, breast tenderness, headache, cramps, or similar body symptoms.",
+          "scoreDomain": "cycleSensitivity",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "c0",
+              "label": "Not at all",
+              "numericValue": 0
+            },
+            {
+              "optionId": "c1",
+              "label": "Mild",
+              "numericValue": 1
+            },
+            {
+              "optionId": "c2",
+              "label": "Moderate",
+              "numericValue": 2
+            },
+            {
+              "optionId": "c3",
+              "label": "Strong",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "questionId": "cycle_q7",
+          "questionType": "scale",
+          "text": "These symptoms interfere with daily responsibilities, home life, social life, routines, or relationships.",
+          "scoreDomain": "cycleSensitivity",
+          "scaleMin": 0,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "c0",
+              "label": "Not at all",
+              "numericValue": 0
+            },
+            {
+              "optionId": "c1",
+              "label": "Mild",
+              "numericValue": 1
+            },
+            {
+              "optionId": "c2",
+              "label": "Moderate",
+              "numericValue": 2
+            },
+            {
+              "optionId": "c3",
+              "label": "Strong",
+              "numericValue": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "menstrual_phase",
+      "sectionTitle": "Cycle tracking",
+      "sectionSubtitle": "Used to time gentle support around your phase.",
+      "engineTarget": "riskScoring",
+      "order": 13,
+      "completionMessage": "Cycle tracking online",
+      "visibleIf": {
+        "all": [
+          {
+            "genderIn": [
+              "female"
+            ]
+          },
+          {
+            "answerEquals": {
+              "questionId": "cycle_menstruation_gate",
+              "value": "yes_or_unsure"
+            }
+          }
+        ]
+      },
+      "questions": [
+        {
+          "questionId": "mens_last_period_start",
+          "questionType": "datePicker",
+          "text": "First day of your last period",
+          "scoreDomain": "menstrualPhase"
+        },
+        {
+          "questionId": "mens_avg_cycle_length",
+          "questionType": "singleChoice",
+          "text": "Average cycle length",
+          "scoreDomain": "menstrualPhase",
+          "options": [
+            {
+              "optionId": "cyc_21_24",
+              "label": "21–24 days",
+              "numericValue": 22
+            },
+            {
+              "optionId": "cyc_25_28",
+              "label": "25–28 days",
+              "numericValue": 27
+            },
+            {
+              "optionId": "cyc_29_32",
+              "label": "29–32 days",
+              "numericValue": 30
+            },
+            {
+              "optionId": "cyc_33_36",
+              "label": "33–36 days",
+              "numericValue": 34
+            },
+            {
+              "optionId": "cyc_37_45",
+              "label": "37–45 days",
+              "numericValue": 40
+            },
+            {
+              "optionId": "cyc_unsure",
+              "label": "Not sure",
+              "numericValue": 28
+            }
+          ]
+        },
+        {
+          "questionId": "mens_avg_bleeding_length",
+          "questionType": "singleChoice",
+          "text": "Average bleeding length",
+          "scoreDomain": "menstrualPhase",
+          "options": [
+            {
+              "optionId": "bld_2_3",
+              "label": "2–3 days",
+              "numericValue": 3
+            },
+            {
+              "optionId": "bld_4_5",
+              "label": "4–5 days",
+              "numericValue": 5
+            },
+            {
+              "optionId": "bld_6_7",
+              "label": "6–7 days",
+              "numericValue": 6
+            },
+            {
+              "optionId": "bld_8_10",
+              "label": "8–10 days",
+              "numericValue": 9
+            },
+            {
+              "optionId": "bld_unsure",
+              "label": "Not sure",
+              "numericValue": 5
+            }
+          ]
+        },
+        {
+          "questionId": "mens_regularity",
+          "questionType": "singleChoice",
+          "text": "Are your cycles regular?",
+          "scoreDomain": "menstrualPhase",
+          "options": [
+            {
+              "optionId": "reg_regular",
+              "label": "Regular"
+            },
+            {
+              "optionId": "reg_slightly",
+              "label": "Slightly irregular"
+            },
+            {
+              "optionId": "reg_very",
+              "label": "Very irregular"
+            },
+            {
+              "optionId": "reg_unsure",
+              "label": "Not sure"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "trigger_inventory",
+      "sectionTitle": "Your triggers",
+      "sectionSubtitle": "Which situations usually set things off for you?",
+      "engineTarget": "triggerEngine",
+      "order": 14,
+      "completionMessage": "Trigger Engine calibrated",
+      "questions": [
+        {
+          "questionId": "trig_select",
+          "questionType": "multiChoice",
+          "text": "Which situations usually set things off for you?",
+          "scoreDomain": "triggerInventory",
+          "options": [
+            {
+              "optionId": "trig_stress",
+              "label": "Stress",
+              "tag": "stress"
+            },
+            {
+              "optionId": "trig_boredom",
+              "label": "Boredom",
+              "tag": "boredom"
+            },
+            {
+              "optionId": "trig_loneliness",
+              "label": "Loneliness",
+              "tag": "loneliness"
+            },
+            {
+              "optionId": "trig_anxiety",
+              "label": "Anxiety",
+              "tag": "anxiety"
+            },
+            {
+              "optionId": "trig_sexual_content",
+              "label": "Sexualized content",
+              "tag": "sexualContent",
+              "visibleIf": {
+                "all": [
+                  {
+                    "ageBandIn": [
+                      "teen16To17",
+                      "adult18Plus"
+                    ]
+                  },
+                  {
+                    "any": [
+                      {
+                        "goalSelected": "sexualContent"
+                      },
+                      {
+                        "goalSelected": "sexualControl"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "optionId": "trig_thirst_traps",
+              "label": "Thirst traps / suggestive reels",
+              "tag": "thirstTraps",
+              "visibleIf": {
+                "all": [
+                  {
+                    "ageBandIn": [
+                      "teen16To17",
+                      "adult18Plus"
+                    ]
+                  },
+                  {
+                    "any": [
+                      {
+                        "goalSelected": "sexualContent"
+                      },
+                      {
+                        "goalSelected": "sexualControl"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "optionId": "trig_late_night_phone",
+              "label": "Late-night phone use",
+              "tag": "lateNightPhone"
+            },
+            {
+              "optionId": "trig_chrome_browser",
+              "label": "Chrome/browser use at night",
+              "tag": "browserNight"
+            },
+            {
+              "optionId": "trig_phone_in_bed",
+              "label": "Phone in bed",
+              "tag": "phoneInBed"
+            },
+            {
+              "optionId": "trig_commute",
+              "label": "During commute",
+              "tag": "commuteIdle",
+              "visibleIf": {
+                "answerIn": {
+                  "questionId": "routine_commute_mode",
+                  "values": [
+                    "mode_walk",
+                    "mode_bike",
+                    "mode_bus_metro_train",
+                    "mode_cab_auto",
+                    "mode_car_bike_driving",
+                    "mode_mixed"
+                  ]
+                }
+              }
+            },
+            {
+              "optionId": "trig_after_work",
+              "label": "When the day's commitments end",
+              "tag": "postWorkStress"
+            },
+            {
+              "optionId": "trig_unfinished_work",
+              "label": "Unfinished tasks hanging over me",
+              "tag": "taskAvoidance"
+            },
+            {
+              "optionId": "trig_argument",
+              "label": "Argument/conflict",
+              "tag": "conflict"
+            },
+            {
+              "optionId": "trig_guilt_shame",
+              "label": "Guilt/shame",
+              "tag": "guiltShame"
+            },
+            {
+              "optionId": "trig_low_confidence",
+              "label": "Low confidence",
+              "tag": "lowConfidence"
+            },
+            {
+              "optionId": "trig_poor_sleep",
+              "label": "Poor sleep",
+              "tag": "poorSleep"
+            },
+            {
+              "optionId": "trig_being_alone",
+              "label": "Being alone",
+              "tag": "beingAlone"
+            },
+            {
+              "optionId": "trig_privacy",
+              "label": "Bedroom/bathroom privacy",
+              "tag": "privacy",
+              "visibleIf": {
+                "any": [
+                  {
+                    "goalSelected": "scrolling"
+                  },
+                  {
+                    "goalSelected": "sexualContent"
+                  },
+                  {
+                    "goalSelected": "sexualControl"
+                  }
+                ]
+              }
+            },
+            {
+              "optionId": "trig_cycle_mood",
+              "label": "Cycle-related mood shift",
+              "tag": "cycleMood",
+              "visibleIf": {
+                "all": [
+                  {
+                    "genderIn": [
+                      "female"
+                    ]
+                  },
+                  {
+                    "goalSelected": "cycle"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "questionId": "trig_strength_template",
+          "questionType": "scale",
+          "text": "Overall, how strongly do those situations affect you?",
+          "scoreDomain": "triggerInventory",
+          "scaleMin": 1,
+          "scaleMax": 3,
+          "options": [
+            {
+              "optionId": "tg1",
+              "label": "Small",
+              "numericValue": 1
+            },
+            {
+              "optionId": "tg2",
+              "label": "Medium",
+              "numericValue": 2
+            },
+            {
+              "optionId": "tg3",
+              "label": "Strong",
+              "numericValue": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "pathway_map",
+      "sectionTitle": "Emotion-action pathways",
+      "sectionSubtitle": "Pick the patterns that feel like yours.",
+      "engineTarget": "pathwayDetection",
+      "order": 15,
+      "completionMessage": "Pathway Detector online",
+      "questions": [
+        {
+          "questionId": "path_scrolling",
+          "questionType": "multiChoice",
+          "text": "Scrolling pathways that feel familiar.",
+          "scoreDomain": "pathwayDetection",
+          "options": [
+            {
+              "optionId": "p_scroll_boredom",
+              "label": "Boredom → open app → lose time",
+              "tag": "boredomToScroll"
+            },
+            {
+              "optionId": "p_scroll_anxiety",
+              "label": "Anxiety → check phone repeatedly",
+              "tag": "anxietyToScroll"
+            },
+            {
+              "optionId": "p_scroll_low_mood",
+              "label": "Low mood → doomscroll / numb out",
+              "tag": "lowMoodToDoomscroll"
+            },
+            {
+              "optionId": "p_scroll_avoid",
+              "label": "Avoiding a task → reels/shorts",
+              "tag": "taskAvoidance"
+            },
+            {
+              "optionId": "p_scroll_commute",
+              "label": "Commute → idle scrolling",
+              "tag": "commuteIdleToScroll",
+              "visibleIf": {
+                "answerIn": {
+                  "questionId": "routine_commute_mode",
+                  "values": [
+                    "mode_walk",
+                    "mode_bike",
+                    "mode_bus_metro_train",
+                    "mode_cab_auto",
+                    "mode_car_bike_driving",
+                    "mode_mixed"
+                  ]
+                }
+              }
+            },
+            {
+              "optionId": "p_scroll_before_sleep",
+              "label": "Before sleep → keep scrolling",
+              "tag": "lateNightScroll"
+            }
+          ],
+          "visibleIf": {
+            "goalSelected": "scrolling"
+          }
+        },
+        {
+          "questionId": "path_sexual_teen",
+          "questionType": "multiChoice",
+          "text": "Content pathways that feel familiar.",
+          "scoreDomain": "pathwayDetection",
+          "visibleIf": {
+            "all": [
+              {
+                "ageBandIn": [
+                  "teen16To17"
+                ]
+              },
+              {
+                "goalSelected": "sexualContent"
+              }
+            ]
+          },
+          "options": [
+            {
+              "optionId": "p_teen_suggestive",
+              "label": "Suggestive content → keep looking → loss of control",
+              "tag": "suggestiveToLossOfControl"
+            },
+            {
+              "optionId": "p_teen_stress",
+              "label": "Stress → need relief → risky content",
+              "tag": "stressToReliefSeeking"
+            },
+            {
+              "optionId": "p_teen_boredom",
+              "label": "Boredom → feed apps → suggestive content",
+              "tag": "boredomToSuggestive"
+            },
+            {
+              "optionId": "p_teen_loneliness",
+              "label": "Loneliness → fantasy/thought loop",
+              "tag": "lonelinessToFantasy"
+            },
+            {
+              "optionId": "p_teen_night",
+              "label": "Night habit → automatic behavior",
+              "tag": "nightHabit"
+            }
+          ]
+        },
+        {
+          "questionId": "path_sexual_adult",
+          "questionType": "multiChoice",
+          "text": "Sexual control pathways that feel familiar.",
+          "scoreDomain": "pathwayDetection",
+          "visibleIf": {
+            "all": [
+              {
+                "ageBandIn": [
+                  "adult18Plus"
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "goalSelected": "sexualContent"
+                  },
+                  {
+                    "goalSelected": "sexualControl"
+                  }
+                ]
+              }
+            ]
+          },
+          "options": [
+            {
+              "optionId": "p_adult_arousal",
+              "label": "Sexualized content → arousal → search more → masturbation",
+              "tag": "scrollingToSexualCue"
+            },
+            {
+              "optionId": "p_adult_stress",
+              "label": "Stress/anxiety → relief seeking → porn/masturbation",
+              "tag": "stressToReliefSeeking"
+            },
+            {
+              "optionId": "p_adult_scrolling",
+              "label": "Boredom → scrolling → sexual cue → urge",
+              "tag": "scrollingToSexualCue"
+            },
+            {
+              "optionId": "p_adult_loneliness",
+              "label": "Loneliness → fantasy → masturbation",
+              "tag": "lonelinessToFantasy"
+            },
+            {
+              "optionId": "p_adult_sleep",
+              "label": "Poor sleep → low control → relapse",
+              "tag": "sleepToLowControl"
+            },
+            {
+              "optionId": "p_adult_post_work",
+              "label": "End-of-day stress → privacy → relapse",
+              "tag": "postWorkStressToReliefSeeking"
+            }
+          ]
+        },
+        {
+          "questionId": "path_anxiety",
+          "questionType": "multiChoice",
+          "text": "Anxiety pathways that feel familiar.",
+          "scoreDomain": "pathwayDetection",
+          "options": [
+            {
+              "optionId": "p_anx_checking",
+              "label": "Worry → checking phone/browser",
+              "tag": "anxietyToScroll"
+            },
+            {
+              "optionId": "p_anx_avoid",
+              "label": "Overwhelm → avoidance",
+              "tag": "anxietyToAvoidance"
+            },
+            {
+              "optionId": "p_anx_school_work",
+              "label": "Pressure or deadlines → panic/restlessness",
+              "tag": "pressureToPanic"
+            },
+            {
+              "optionId": "p_anx_night",
+              "label": "Night worry → sleep delay",
+              "tag": "nightWorryToSleepDelay"
+            },
+            {
+              "optionId": "p_anx_commute",
+              "label": "Commute stress → phone escape",
+              "tag": "commuteStressToPhone",
+              "visibleIf": {
+                "answerIn": {
+                  "questionId": "routine_commute_mode",
+                  "values": [
+                    "mode_walk",
+                    "mode_bike",
+                    "mode_bus_metro_train",
+                    "mode_cab_auto",
+                    "mode_car_bike_driving",
+                    "mode_mixed"
+                  ]
+                }
+              }
+            }
+          ],
+          "visibleIf": {
+            "goalSelected": "anxiety"
+          }
+        },
+        {
+          "questionId": "path_low_mood",
+          "questionType": "multiChoice",
+          "text": "Low mood pathways that feel familiar.",
+          "scoreDomain": "pathwayDetection",
+          "options": [
+            {
+              "optionId": "p_mood_guilt",
+              "label": "Missed task → guilt → avoidance",
+              "tag": "guiltToAvoidance"
+            },
+            {
+              "optionId": "p_mood_low_energy",
+              "label": "Low energy → no action → worse mood",
+              "tag": "energyDownward"
+            },
+            {
+              "optionId": "p_mood_isolation",
+              "label": "Isolation → loneliness → scrolling",
+              "tag": "lonelinessToScroll"
+            },
+            {
+              "optionId": "p_mood_sleep",
+              "label": "Poor sleep → low mood → low productivity",
+              "tag": "sleepToLowMood"
+            },
+            {
+              "optionId": "p_mood_post_work",
+              "label": "End-of-day exhaustion → numb scrolling",
+              "tag": "postWorkToNumb"
+            }
+          ],
+          "visibleIf": {
+            "goalSelected": "lowMood"
+          }
+        },
+        {
+          "questionId": "path_cycle",
+          "questionType": "multiChoice",
+          "text": "Cycle pathways that feel familiar.",
+          "scoreDomain": "pathwayDetection",
+          "visibleIf": {
+            "all": [
+              {
+                "genderIn": [
+                  "female"
+                ]
+              },
+              {
+                "answerEquals": {
+                  "questionId": "cycle_menstruation_gate",
+                  "value": "yes_or_unsure"
+                }
+              }
+            ]
+          },
+          "options": [
+            {
+              "optionId": "p_cycle_mood_anx",
+              "label": "Mood swings → anxiety",
+              "tag": "cycleMoodToAnxiety"
+            },
+            {
+              "optionId": "p_cycle_low_mood_iso",
+              "label": "Low mood → isolation",
+              "tag": "cycleLowMoodToIsolation"
+            },
+            {
+              "optionId": "p_cycle_sleep_control",
+              "label": "Poor sleep → low self-control",
+              "tag": "cycleSleepToLowControl"
+            },
+            {
+              "optionId": "p_cycle_body_low_move",
+              "label": "Body discomfort → low movement",
+              "tag": "cycleDiscomfortToLowMovement"
+            },
+            {
+              "optionId": "p_cycle_irritability_conflict",
+              "label": "Irritability → conflict/stress",
+              "tag": "cycleIrritabilityToConflict"
+            },
+            {
+              "optionId": "p_cycle_cravings_scroll",
+              "label": "Cravings/urges → scrolling or loss of control",
+              "tag": "cycleCravingsToScroll"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "intervention_preference",
+      "sectionTitle": "Your resets",
+      "sectionSubtitle": "When you struggle, what feels realistic?",
+      "engineTarget": "interventionPreferences",
+      "order": 16,
+      "completionMessage": "Personal Feedback Learning ready",
+      "questions": [
+        {
+          "questionId": "intv_select",
+          "questionType": "multiChoice",
+          "tier": "core",
+          "text": "When you struggle, what kind of reset feels realistic?",
+          "scoreDomain": "interventionPreferences",
+          "options": [
+            {
+              "optionId": "intv_physical",
+              "label": "Physical reset: walk, squats, leave room",
+              "tag": "physicalReset"
+            },
+            {
+              "optionId": "intv_breathing",
+              "label": "Breathing / grounding",
+              "tag": "breathingGrounding"
+            },
+            {
+              "optionId": "intv_friction",
+              "label": "App friction / delay",
+              "tag": "appFrictionDelay"
+            },
+            {
+              "optionId": "intv_journaling",
+              "label": "Journaling / thought dump",
+              "tag": "journalingThoughtDump"
+            },
+            {
+              "optionId": "intv_focus",
+              "label": "Focus sprint",
+              "tag": "focusSprint"
+            },
+            {
+              "optionId": "intv_sleep_shutdown",
+              "label": "Sleep shutdown",
+              "tag": "sleepShutdown"
+            },
+            {
+              "optionId": "intv_spiritual",
+              "label": "Spiritual / values-based reset",
+              "tag": "spiritualValuesReset"
+            },
+            {
+              "optionId": "intv_low_pressure",
+              "label": "Low-pressure task",
+              "tag": "lowPressureTask"
+            }
+          ]
+        },
+        {
+          "questionId": "intv_directness",
+          "questionType": "singleChoice",
+          "tier": "core",
+          "text": "How direct should Detoxia feel?",
+          "scoreDomain": "interventionPreferences",
+          "options": [
+            {
+              "optionId": "dir_gentle",
+              "label": "Gentle",
+              "tag": "gentle"
+            },
+            {
+              "optionId": "dir_balanced",
+              "label": "Balanced",
+              "tag": "balanced"
+            },
+            {
+              "optionId": "dir_strong",
+              "label": "Strong, but not harsh",
+              "tag": "strong"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

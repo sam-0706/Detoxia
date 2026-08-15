@@ -200,7 +200,7 @@ class _PeriodInsightsScreenState extends ConsumerState<PeriodInsightsScreen> {
         child: Column(
           children: [
             Text(label,
-                style: tt.bodyMedium?.copyWith(color: Colors.white54)),
+                style: tt.bodyMedium?.copyWith(color: AppTheme.palette(context).textSecondary)),
             const SizedBox(height: 4),
             Text(value,
                 style: tt.titleLarge?.copyWith(fontSize: 15),
@@ -259,7 +259,7 @@ class _PeriodInsightsScreenState extends ConsumerState<PeriodInsightsScreen> {
                   child: Text(
                     '${(_phaseDurations[phase] ?? 0).toStringAsFixed(1)}d',
                     style:
-                        const TextStyle(color: Colors.white70, fontSize: 13),
+                         TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13),
                   ),
                 ),
               ],
@@ -277,8 +277,8 @@ class _PeriodInsightsScreenState extends ConsumerState<PeriodInsightsScreen> {
         children: [
           Text('Common Symptoms', style: tt.titleLarge),
           const SizedBox(height: 12),
-          const Text('Log symptoms to see patterns here.',
-              style: TextStyle(color: Colors.white54)),
+          Text('Log symptoms to see patterns here.',
+              style: TextStyle(color: AppTheme.palette(context).textSecondary)),
         ],
       );
     }
@@ -292,10 +292,10 @@ class _PeriodInsightsScreenState extends ConsumerState<PeriodInsightsScreen> {
               child: ListTile(
                 leading: Text(s.emoji, style: const TextStyle(fontSize: 24)),
                 title: Text(s.name,
-                    style: const TextStyle(color: Colors.white)),
+                    style:  TextStyle(color: AppTheme.palette(context).textPrimary)),
                 subtitle: s.avgCycleDay > 0
                     ? Text('Usually around day ${s.avgCycleDay}',
-                        style: const TextStyle(color: Colors.white54))
+                        style:  TextStyle(color: AppTheme.palette(context).textSecondary))
                     : null,
                 trailing: Container(
                   padding: const EdgeInsets.symmetric(

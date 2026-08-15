@@ -102,7 +102,7 @@ class _MoodHomeState extends ConsumerState<MoodHome> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: AppTheme.accent,
+        backgroundColor: AppTheme.palette(context).accent,
         icon: const Icon(Icons.add),
         label: const Text('Full Log'),
         onPressed: () async {
@@ -129,13 +129,13 @@ class _MoodHomeState extends ConsumerState<MoodHome> {
             Text(_moodFaces[idx], style: const TextStyle(fontSize: 48)),
             const SizedBox(height: 4),
             Text('${_quickMood.round()}/10',
-                style: const TextStyle(color: Colors.white70, fontSize: 16)),
+                style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 16)),
             Slider(
               value: _quickMood,
               min: 1,
               max: 10,
               divisions: 9,
-              activeColor: AppTheme.accent,
+              activeColor: AppTheme.palette(context).accent,
               onChanged: (v) => setState(() => _quickMood = v),
             ),
             const SizedBox(height: 8),
@@ -159,9 +159,9 @@ class _MoodHomeState extends ConsumerState<MoodHome> {
 
   Widget _buildTrendBanner() {
     final (icon, label, color) = switch (_trend) {
-      'improving' => (Icons.trending_up, 'Trending up', AppTheme.success),
-      'declining' => (Icons.trending_down, 'Trending down', AppTheme.danger),
-      _ => (Icons.trending_flat, 'Stable', AppTheme.warning),
+      'improving' => (Icons.trending_up, 'Trending up', AppTheme.palette(context).success),
+      'declining' => (Icons.trending_down, 'Trending down', AppTheme.palette(context).danger),
+      _ => (Icons.trending_flat, 'Stable', AppTheme.palette(context).warning),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -179,7 +179,7 @@ class _MoodHomeState extends ConsumerState<MoodHome> {
           const Spacer(),
           Text(
             '${_todayEntries.length} log${_todayEntries.length == 1 ? '' : 's'} today',
-            style: const TextStyle(color: Colors.white54, fontSize: 13),
+            style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13),
           ),
         ],
       ),
@@ -188,11 +188,11 @@ class _MoodHomeState extends ConsumerState<MoodHome> {
 
   Widget _buildTodayHistory() {
     if (_todayEntries.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
           padding: EdgeInsets.only(top: 32),
           child: Text('No moods logged today',
-              style: TextStyle(color: Colors.white54)),
+              style: TextStyle(color: AppTheme.palette(context).textSecondary)),
         ),
       );
     }
@@ -216,13 +216,13 @@ class _MoodHomeState extends ConsumerState<MoodHome> {
       child: ListTile(
         leading: Text(face, style: const TextStyle(fontSize: 28)),
         title: Text('Mood ${entry.moodLevel}/10  ·  Energy ${entry.energy}/10',
-            style: const TextStyle(color: Colors.white)),
+            style:  TextStyle(color: AppTheme.palette(context).textPrimary)),
         subtitle: emotions.isNotEmpty
             ? Text(emotions.join(', '),
-                style: const TextStyle(color: Colors.white54))
+                style:  TextStyle(color: AppTheme.palette(context).textSecondary))
             : null,
         trailing: Text(time,
-            style: const TextStyle(color: Colors.white54, fontSize: 12)),
+            style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 12)),
       ),
     );
   }

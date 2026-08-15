@@ -137,18 +137,18 @@ class _MoodInsightsScreenState extends ConsumerState<MoodInsightsScreen> {
   Widget _buildWeekComparison() {
     final delta = _thisWeekAvg - _lastWeekAvg;
     final (icon, color) = delta > 0.3
-        ? (Icons.arrow_upward, AppTheme.success)
+        ? (Icons.arrow_upward, AppTheme.palette(context).success)
         : delta < -0.3
-            ? (Icons.arrow_downward, AppTheme.danger)
-            : (Icons.remove, AppTheme.warning);
+            ? (Icons.arrow_downward, AppTheme.palette(context).danger)
+            : (Icons.remove, AppTheme.palette(context).warning);
 
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const Text('Weekly Average',
-                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+            Text('Weekly Average',
+                style: TextStyle(color: AppTheme.palette(context).textPrimary, fontSize: 16, fontWeight: FontWeight.w600)),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -168,10 +168,10 @@ class _MoodInsightsScreenState extends ConsumerState<MoodInsightsScreen> {
     return Column(
       children: [
         Text(avg.toStringAsFixed(1),
-            style: const TextStyle(
-                color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+            style: TextStyle(
+                color: AppTheme.palette(context).textPrimary, fontSize: 28, fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
-        Text(label, style: const TextStyle(color: Colors.white54, fontSize: 13)),
+        Text(label, style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13)),
       ],
     );
   }
@@ -181,12 +181,12 @@ class _MoodInsightsScreenState extends ConsumerState<MoodInsightsScreen> {
   Widget _buildBestTime() {
     return Card(
       child: ListTile(
-        leading: const Icon(Icons.schedule, color: Colors.white70),
-        title: const Text('Best time of day',
-            style: TextStyle(color: Colors.white)),
+        leading:  Icon(Icons.schedule, color: AppTheme.palette(context).textSecondary),
+        title: Text('Best time of day',
+            style: TextStyle(color: AppTheme.palette(context).textPrimary)),
         trailing: Text(_bestTime,
             style: TextStyle(
-                color: AppTheme.accent,
+                color: AppTheme.palette(context).accent,
                 fontSize: 16,
                 fontWeight: FontWeight.w600)),
       ),
@@ -203,8 +203,8 @@ class _MoodInsightsScreenState extends ConsumerState<MoodInsightsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Most Common Emotions',
-                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+            Text('Most Common Emotions',
+                style: TextStyle(color: AppTheme.palette(context).textPrimary, fontSize: 16, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
             ..._topEmotions.map((e) => Padding(
                   padding: const EdgeInsets.only(bottom: 8),
@@ -212,14 +212,14 @@ class _MoodInsightsScreenState extends ConsumerState<MoodInsightsScreen> {
                     children: [
                       Expanded(
                         child: Text(e.key,
-                            style: const TextStyle(color: Colors.white70)),
+                            style:  TextStyle(color: AppTheme.palette(context).textSecondary)),
                       ),
                       Container(
                         width: 120,
                         height: 8,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(4),
-                          color: AppTheme.surface,
+                          color: AppTheme.palette(context).surface,
                         ),
                         child: FractionallySizedBox(
                           alignment: Alignment.centerLeft,
@@ -230,7 +230,7 @@ class _MoodInsightsScreenState extends ConsumerState<MoodInsightsScreen> {
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(4),
-                              color: AppTheme.accent,
+                              color: AppTheme.palette(context).accent,
                             ),
                           ),
                         ),
@@ -240,8 +240,8 @@ class _MoodInsightsScreenState extends ConsumerState<MoodInsightsScreen> {
                         width: 24,
                         child: Text('${e.value}',
                             textAlign: TextAlign.end,
-                            style: const TextStyle(
-                                color: Colors.white54, fontSize: 12)),
+                            style: TextStyle(
+                                color: AppTheme.palette(context).textSecondary, fontSize: 12)),
                       ),
                     ],
                   ),
@@ -265,11 +265,11 @@ class _MoodInsightsScreenState extends ConsumerState<MoodInsightsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Activity Impact on Mood',
-                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+            Text('Activity Impact on Mood',
+                style: TextStyle(color: AppTheme.palette(context).textPrimary, fontSize: 16, fontWeight: FontWeight.w600)),
             const SizedBox(height: 4),
-            const Text('Avg mood delta vs overall',
-                style: TextStyle(color: Colors.white38, fontSize: 12)),
+            Text('Avg mood delta vs overall',
+                style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 12)),
             const SizedBox(height: 12),
             ...sorted.map((e) {
               final positive = e.value >= 0;
@@ -280,18 +280,18 @@ class _MoodInsightsScreenState extends ConsumerState<MoodInsightsScreen> {
                     SizedBox(
                       width: 100,
                       child: Text(e.key,
-                          style: const TextStyle(color: Colors.white70)),
+                          style:  TextStyle(color: AppTheme.palette(context).textSecondary)),
                     ),
                     Icon(
                       positive ? Icons.add_circle_outline : Icons.remove_circle_outline,
                       size: 16,
-                      color: positive ? AppTheme.success : AppTheme.danger,
+                      color: positive ? AppTheme.palette(context).success : AppTheme.palette(context).danger,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       '${positive ? '+' : ''}${e.value.toStringAsFixed(1)}',
                       style: TextStyle(
-                        color: positive ? AppTheme.success : AppTheme.danger,
+                        color: positive ? AppTheme.palette(context).success : AppTheme.palette(context).danger,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -331,8 +331,8 @@ class _MoodInsightsScreenState extends ConsumerState<MoodInsightsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Day of Week Pattern',
-                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+            Text('Day of Week Pattern',
+                style: TextStyle(color: AppTheme.palette(context).textPrimary, fontSize: 16, fontWeight: FontWeight.w600)),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -343,10 +343,10 @@ class _MoodInsightsScreenState extends ConsumerState<MoodInsightsScreen> {
                 final isBest = dow == bestDay;
                 final isWorst = dow == worstDay;
                 final color = isBest
-                    ? AppTheme.success
+                    ? AppTheme.palette(context).success
                     : isWorst
-                        ? AppTheme.danger
-                        : AppTheme.accent;
+                        ? AppTheme.palette(context).danger
+                        : AppTheme.palette(context).accent;
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -364,7 +364,7 @@ class _MoodInsightsScreenState extends ConsumerState<MoodInsightsScreen> {
                     const SizedBox(height: 4),
                     Text(_dayNames[dow],
                         style:
-                            const TextStyle(color: Colors.white54, fontSize: 11)),
+                             TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 11)),
                   ],
                 );
               }),
@@ -374,9 +374,9 @@ class _MoodInsightsScreenState extends ConsumerState<MoodInsightsScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Best: ${_dayNames[bestDay]}',
-                    style: TextStyle(color: AppTheme.success, fontSize: 13)),
+                    style: TextStyle(color: AppTheme.palette(context).success, fontSize: 13)),
                 Text('Worst: ${_dayNames[worstDay]}',
-                    style: TextStyle(color: AppTheme.danger, fontSize: 13)),
+                    style: TextStyle(color: AppTheme.palette(context).danger, fontSize: 13)),
               ],
             ),
           ],

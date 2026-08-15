@@ -51,9 +51,9 @@ class ScopeTimingPage extends ConsumerWidget {
           if (state.struggles.length >= 2 &&
               state.struggles.contains(BehaviorType.scrolling)) ...[
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Does scrolling usually lead to the other?',
-              style: TextStyle(color: Colors.white70),
+              style: TextStyle(color: AppTheme.palette(context).textSecondary),
             ),
             const SizedBox(height: 8),
             ChoiceChipGroup<ScrollingLinkage>(
@@ -79,10 +79,10 @@ class ScopeTimingPage extends ConsumerWidget {
           ],
 
           const SizedBox(height: 28),
-          const Text(
+          Text(
             'It usually happens around...',
             style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w600),
+                color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Text(
@@ -120,10 +120,10 @@ class ScopeTimingPage extends ConsumerWidget {
           ),
 
           const SizedBox(height: 20),
-          const Text(
+          Text(
             'Are weekends different?',
             style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w600),
+                color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Row(
@@ -246,12 +246,13 @@ class _DayTimeline extends StatelessWidget {
           child: Container(
             height: 56,
             decoration: BoxDecoration(
-              color: AppTheme.card,
+              color: AppTheme.palette(context).surfaceRaised,
               borderRadius: BorderRadius.circular(12),
             ),
             child: CustomPaint(
               size: const Size(double.infinity, 56),
               painter: _TimelinePainter(
+                palette: AppTheme.palette(context),
                 peaks: peaks,
                 wakeTime: wakeTime,
                 sleepTime: sleepTime,
@@ -266,11 +267,11 @@ class _DayTimeline extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(wakeTime.format(context),
-                style: const TextStyle(
-                    color: Colors.white38, fontSize: 12)),
+                style: TextStyle(
+                    color: AppTheme.palette(context).textTertiary, fontSize: 12)),
             Text(sleepTime.format(context),
-                style: const TextStyle(
-                    color: Colors.white38, fontSize: 12)),
+                style: TextStyle(
+                    color: AppTheme.palette(context).textTertiary, fontSize: 12)),
           ],
         ),
         if (peaks.isNotEmpty) ...[
@@ -283,11 +284,11 @@ class _DayTimeline extends StatelessWidget {
               child: Row(
                 children: [
                   Icon(Icons.location_on,
-                      color: AppTheme.danger, size: 20),
+                      color: AppTheme.palette(context).danger, size: 20),
                   const SizedBox(width: 8),
                   Text(
                     pin.time.format(context),
-                    style: const TextStyle(color: Colors.white),
+                    style:  TextStyle(color: AppTheme.palette(context).textPrimary),
                   ),
                   const Spacer(),
                   _FrequencyPill(
@@ -297,8 +298,8 @@ class _DayTimeline extends StatelessWidget {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () => onPeakRemoved(i),
-                    child: const Icon(Icons.close,
-                        color: Colors.white38, size: 20),
+                    child: Icon(Icons.close,
+                        color: AppTheme.palette(context).textTertiary, size: 20),
                   ),
                 ],
               ),
@@ -311,6 +312,10 @@ class _DayTimeline extends StatelessWidget {
 }
 
 class _TimelinePainter extends CustomPainter {
+  /// Painters have no BuildContext, so the active palette is
+  /// handed in at construction.
+  final AppPalette palette;
+
   final List<PeakPin> peaks;
   final TimeOfDay wakeTime;
   final TimeOfDay sleepTime;
@@ -318,6 +323,7 @@ class _TimelinePainter extends CustomPainter {
   final TimeOfDay? workEnd;
 
   _TimelinePainter({
+    required this.palette,
     required this.peaks,
     required this.wakeTime,
     required this.sleepTime,
@@ -345,7 +351,7 @@ class _TimelinePainter extends CustomPainter {
           Rect.fromLTRB(toX(ws), 0, toX(we), size.height),
           const Radius.circular(4),
         ),
-        Paint()..color = Colors.white.withValues(alpha: 0.05),
+        Paint()..color = palette.textPrimary.withValues(alpha: 0.05),
       );
     }
 
@@ -356,7 +362,7 @@ class _TimelinePainter extends CustomPainter {
             0, size.height / 2 - 3, size.width, size.height / 2 + 3),
         const Radius.circular(3),
       ),
-      Paint()..color = Colors.white24,
+      Paint()..color = palette.borderStrong,
     );
 
     // Peak pins
@@ -371,7 +377,7 @@ class _TimelinePainter extends CustomPainter {
       canvas.drawCircle(
         Offset(x, size.height / 2),
         5,
-        Paint()..color = Colors.white,
+        Paint()..color = palette.textPrimary,
       );
     }
   }
@@ -391,12 +397,12 @@ class _FrequencyPill extends StatelessWidget {
     return PopupMenuButton<Frequency>(
       initialValue: value,
       onSelected: onChanged,
-      color: AppTheme.surface,
+      color: AppTheme.palette(context).surface,
       child: Container(
         padding:
             const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
+          color: AppTheme.palette(context).surface,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
@@ -407,7 +413,7 @@ class _FrequencyPill extends StatelessWidget {
             Frequency.weekendsOnly => 'Weekends',
           },
           style:
-              const TextStyle(color: Colors.white70, fontSize: 12),
+               TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 12),
         ),
       ),
       itemBuilder: (_) => Frequency.values
@@ -444,13 +450,13 @@ class _ToggleButton extends StatelessWidget {
         padding:
             const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.accent : AppTheme.card,
+          color: isSelected ? AppTheme.palette(context).accent : AppTheme.palette(context).surfaceRaised,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.white70,
+            color: isSelected ? AppTheme.palette(context).textPrimary : AppTheme.palette(context).textSecondary,
             fontWeight:
                 isSelected ? FontWeight.w600 : FontWeight.normal,
           ),

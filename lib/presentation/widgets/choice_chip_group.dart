@@ -28,16 +28,16 @@ class ChoiceChipGroup<T> extends StatelessWidget {
           label: Text(
             labelBuilder(option),
             style: TextStyle(
-              color: isSelected ? Colors.white : Colors.white70,
+              color: isSelected ? AppTheme.palette(context).textPrimary : AppTheme.palette(context).textSecondary,
               fontWeight:
                   isSelected ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
           selected: isSelected,
           onSelected: (_) => onToggle(option),
-          backgroundColor: AppTheme.card,
-          selectedColor: AppTheme.accent,
-          checkmarkColor: Colors.white,
+          backgroundColor: AppTheme.palette(context).surfaceRaised,
+          selectedColor: AppTheme.palette(context).accent,
+          checkmarkColor: AppTheme.palette(context).textPrimary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),

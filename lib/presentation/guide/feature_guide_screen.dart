@@ -1,4 +1,5 @@
 import 'package:detoxia/presentation/home/home_screen.dart';
+import 'package:detoxia/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class _GuideStep {
@@ -55,7 +56,7 @@ const _steps = [
         'visual timeline of when you\'re most vulnerable.',
     bullets: [
       'Color-coded blocks show risk levels throughout the day',
-      'Countdown to your next high-risk window',
+      'Countdown to your next support window',
       'Tap "Prepare" to get ready before a tough moment',
     ],
   ),
@@ -202,8 +203,8 @@ class _FeatureGuideScreenState extends State<FeatureGuideScreen> {
                 children: [
                   Text(
                     '${_current + 1}/${_steps.length}',
-                    style: const TextStyle(
-                        color: Colors.white54, fontSize: 14),
+                    style: TextStyle(
+                        color: AppTheme.palette(context).textSecondary, fontSize: 14),
                   ),
                   const Spacer(),
                   if (_current < _steps.length - 1)
@@ -214,8 +215,8 @@ class _FeatureGuideScreenState extends State<FeatureGuideScreen> {
                               builder: (_) => const HomeScreen()),
                         );
                       },
-                      child: const Text('Skip',
-                          style: TextStyle(color: Colors.white38)),
+                      child: Text('Skip',
+                          style: TextStyle(color: AppTheme.palette(context).textTertiary)),
                     ),
                 ],
               ),
@@ -224,7 +225,7 @@ class _FeatureGuideScreenState extends State<FeatureGuideScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: LinearProgressIndicator(
                 value: (_current + 1) / _steps.length,
-                backgroundColor: Colors.white12,
+                backgroundColor: AppTheme.palette(context).borderSubtle,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -287,8 +288,8 @@ class _GuidePage extends StatelessWidget {
           const SizedBox(height: 28),
           Text(
             step.title,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: AppTheme.palette(context).textPrimary,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
@@ -297,8 +298,8 @@ class _GuidePage extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             step.subtitle,
-            style: const TextStyle(
-              color: Colors.white60,
+            style: TextStyle(
+              color: AppTheme.palette(context).textSecondary,
               fontSize: 15,
               height: 1.5,
             ),
@@ -323,8 +324,8 @@ class _GuidePage extends StatelessWidget {
                     Expanded(
                       child: Text(
                         b,
-                        style: const TextStyle(
-                          color: Colors.white70,
+                        style: TextStyle(
+                          color: AppTheme.palette(context).textSecondary,
                           fontSize: 15,
                           height: 1.4,
                         ),

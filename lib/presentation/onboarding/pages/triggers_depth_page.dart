@@ -2,6 +2,7 @@ import 'package:detoxia/core/constants/enums.dart';
 import 'package:detoxia/presentation/onboarding/onboarding_screen.dart';
 import 'package:detoxia/presentation/widgets/big_card_selector.dart';
 import 'package:detoxia/presentation/widgets/choice_chip_group.dart';
+import 'package:detoxia/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -52,10 +53,10 @@ class TriggersDepthPage extends ConsumerWidget {
           ),
 
           const SizedBox(height: 32),
-          const Text(
+          Text(
             'How long has this been going on?',
             style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w600),
+                color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
           BigCardSelector<StruggleDuration>(
@@ -75,10 +76,10 @@ class TriggersDepthPage extends ConsumerWidget {
           ),
 
           const SizedBox(height: 24),
-          const Text(
+          Text(
             'When you try to resist, how often can you?',
             style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w600),
+                color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
           BigCardSelector<ResistAbility>(

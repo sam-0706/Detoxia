@@ -19085,6 +19085,3016 @@ class WeeklyAssessmentsCompanion extends UpdateCompanion<WeeklyAssessment> {
   }
 }
 
+class $SupportProfileSnapshotsTable extends SupportProfileSnapshots
+    with TableInfo<$SupportProfileSnapshotsTable, SupportProfileSnapshot> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SupportProfileSnapshotsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _registrationProfileIdMeta =
+      const VerificationMeta('registrationProfileId');
+  @override
+  late final GeneratedColumn<int> registrationProfileId = GeneratedColumn<int>(
+    'registration_profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _selectedGoalsJsonMeta = const VerificationMeta(
+    'selectedGoalsJson',
+  );
+  @override
+  late final GeneratedColumn<String> selectedGoalsJson =
+      GeneratedColumn<String>(
+        'selected_goals_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('[]'),
+      );
+  static const VerificationMeta _domainScoresJsonMeta = const VerificationMeta(
+    'domainScoresJson',
+  );
+  @override
+  late final GeneratedColumn<String> domainScoresJson = GeneratedColumn<String>(
+    'domain_scores_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _routineProfileJsonMeta =
+      const VerificationMeta('routineProfileJson');
+  @override
+  late final GeneratedColumn<String> routineProfileJson =
+      GeneratedColumn<String>(
+        'routine_profile_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('{}'),
+      );
+  static const VerificationMeta _sleepProfileJsonMeta = const VerificationMeta(
+    'sleepProfileJson',
+  );
+  @override
+  late final GeneratedColumn<String> sleepProfileJson = GeneratedColumn<String>(
+    'sleep_profile_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('{}'),
+  );
+  static const VerificationMeta _menstrualProfileJsonMeta =
+      const VerificationMeta('menstrualProfileJson');
+  @override
+  late final GeneratedColumn<String> menstrualProfileJson =
+      GeneratedColumn<String>(
+        'menstrual_profile_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _triggerWeightsJsonMeta =
+      const VerificationMeta('triggerWeightsJson');
+  @override
+  late final GeneratedColumn<String> triggerWeightsJson =
+      GeneratedColumn<String>(
+        'trigger_weights_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('[]'),
+      );
+  static const VerificationMeta _pathwayScoresJsonMeta = const VerificationMeta(
+    'pathwayScoresJson',
+  );
+  @override
+  late final GeneratedColumn<String> pathwayScoresJson =
+      GeneratedColumn<String>(
+        'pathway_scores_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('[]'),
+      );
+  static const VerificationMeta _interventionPreferencesJsonMeta =
+      const VerificationMeta('interventionPreferencesJson');
+  @override
+  late final GeneratedColumn<String> interventionPreferencesJson =
+      GeneratedColumn<String>(
+        'intervention_preferences_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('{}'),
+      );
+  static const VerificationMeta _learningStateJsonMeta = const VerificationMeta(
+    'learningStateJson',
+  );
+  @override
+  late final GeneratedColumn<String> learningStateJson =
+      GeneratedColumn<String>(
+        'learning_state_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('{}'),
+      );
+  static const VerificationMeta _supportMapCompletedAtMeta =
+      const VerificationMeta('supportMapCompletedAt');
+  @override
+  late final GeneratedColumn<DateTime> supportMapCompletedAt =
+      GeneratedColumn<DateTime>(
+        'support_map_completed_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    registrationProfileId,
+    selectedGoalsJson,
+    domainScoresJson,
+    routineProfileJson,
+    sleepProfileJson,
+    menstrualProfileJson,
+    triggerWeightsJson,
+    pathwayScoresJson,
+    interventionPreferencesJson,
+    learningStateJson,
+    supportMapCompletedAt,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'support_profile_snapshots';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SupportProfileSnapshot> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('registration_profile_id')) {
+      context.handle(
+        _registrationProfileIdMeta,
+        registrationProfileId.isAcceptableOrUnknown(
+          data['registration_profile_id']!,
+          _registrationProfileIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_registrationProfileIdMeta);
+    }
+    if (data.containsKey('selected_goals_json')) {
+      context.handle(
+        _selectedGoalsJsonMeta,
+        selectedGoalsJson.isAcceptableOrUnknown(
+          data['selected_goals_json']!,
+          _selectedGoalsJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('domain_scores_json')) {
+      context.handle(
+        _domainScoresJsonMeta,
+        domainScoresJson.isAcceptableOrUnknown(
+          data['domain_scores_json']!,
+          _domainScoresJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('routine_profile_json')) {
+      context.handle(
+        _routineProfileJsonMeta,
+        routineProfileJson.isAcceptableOrUnknown(
+          data['routine_profile_json']!,
+          _routineProfileJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('sleep_profile_json')) {
+      context.handle(
+        _sleepProfileJsonMeta,
+        sleepProfileJson.isAcceptableOrUnknown(
+          data['sleep_profile_json']!,
+          _sleepProfileJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('menstrual_profile_json')) {
+      context.handle(
+        _menstrualProfileJsonMeta,
+        menstrualProfileJson.isAcceptableOrUnknown(
+          data['menstrual_profile_json']!,
+          _menstrualProfileJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('trigger_weights_json')) {
+      context.handle(
+        _triggerWeightsJsonMeta,
+        triggerWeightsJson.isAcceptableOrUnknown(
+          data['trigger_weights_json']!,
+          _triggerWeightsJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('pathway_scores_json')) {
+      context.handle(
+        _pathwayScoresJsonMeta,
+        pathwayScoresJson.isAcceptableOrUnknown(
+          data['pathway_scores_json']!,
+          _pathwayScoresJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('intervention_preferences_json')) {
+      context.handle(
+        _interventionPreferencesJsonMeta,
+        interventionPreferencesJson.isAcceptableOrUnknown(
+          data['intervention_preferences_json']!,
+          _interventionPreferencesJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('learning_state_json')) {
+      context.handle(
+        _learningStateJsonMeta,
+        learningStateJson.isAcceptableOrUnknown(
+          data['learning_state_json']!,
+          _learningStateJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('support_map_completed_at')) {
+      context.handle(
+        _supportMapCompletedAtMeta,
+        supportMapCompletedAt.isAcceptableOrUnknown(
+          data['support_map_completed_at']!,
+          _supportMapCompletedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SupportProfileSnapshot map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SupportProfileSnapshot(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      registrationProfileId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}registration_profile_id'],
+      )!,
+      selectedGoalsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}selected_goals_json'],
+      )!,
+      domainScoresJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}domain_scores_json'],
+      )!,
+      routineProfileJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}routine_profile_json'],
+      )!,
+      sleepProfileJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sleep_profile_json'],
+      )!,
+      menstrualProfileJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}menstrual_profile_json'],
+      ),
+      triggerWeightsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}trigger_weights_json'],
+      )!,
+      pathwayScoresJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pathway_scores_json'],
+      )!,
+      interventionPreferencesJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}intervention_preferences_json'],
+      )!,
+      learningStateJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}learning_state_json'],
+      )!,
+      supportMapCompletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}support_map_completed_at'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SupportProfileSnapshotsTable createAlias(String alias) {
+    return $SupportProfileSnapshotsTable(attachedDatabase, alias);
+  }
+}
+
+class SupportProfileSnapshot extends DataClass
+    implements Insertable<SupportProfileSnapshot> {
+  final int id;
+  final int registrationProfileId;
+  final String selectedGoalsJson;
+  final String domainScoresJson;
+  final String routineProfileJson;
+  final String sleepProfileJson;
+  final String? menstrualProfileJson;
+  final String triggerWeightsJson;
+  final String pathwayScoresJson;
+  final String interventionPreferencesJson;
+  final String learningStateJson;
+  final DateTime? supportMapCompletedAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const SupportProfileSnapshot({
+    required this.id,
+    required this.registrationProfileId,
+    required this.selectedGoalsJson,
+    required this.domainScoresJson,
+    required this.routineProfileJson,
+    required this.sleepProfileJson,
+    this.menstrualProfileJson,
+    required this.triggerWeightsJson,
+    required this.pathwayScoresJson,
+    required this.interventionPreferencesJson,
+    required this.learningStateJson,
+    this.supportMapCompletedAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['registration_profile_id'] = Variable<int>(registrationProfileId);
+    map['selected_goals_json'] = Variable<String>(selectedGoalsJson);
+    map['domain_scores_json'] = Variable<String>(domainScoresJson);
+    map['routine_profile_json'] = Variable<String>(routineProfileJson);
+    map['sleep_profile_json'] = Variable<String>(sleepProfileJson);
+    if (!nullToAbsent || menstrualProfileJson != null) {
+      map['menstrual_profile_json'] = Variable<String>(menstrualProfileJson);
+    }
+    map['trigger_weights_json'] = Variable<String>(triggerWeightsJson);
+    map['pathway_scores_json'] = Variable<String>(pathwayScoresJson);
+    map['intervention_preferences_json'] = Variable<String>(
+      interventionPreferencesJson,
+    );
+    map['learning_state_json'] = Variable<String>(learningStateJson);
+    if (!nullToAbsent || supportMapCompletedAt != null) {
+      map['support_map_completed_at'] = Variable<DateTime>(
+        supportMapCompletedAt,
+      );
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  SupportProfileSnapshotsCompanion toCompanion(bool nullToAbsent) {
+    return SupportProfileSnapshotsCompanion(
+      id: Value(id),
+      registrationProfileId: Value(registrationProfileId),
+      selectedGoalsJson: Value(selectedGoalsJson),
+      domainScoresJson: Value(domainScoresJson),
+      routineProfileJson: Value(routineProfileJson),
+      sleepProfileJson: Value(sleepProfileJson),
+      menstrualProfileJson: menstrualProfileJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(menstrualProfileJson),
+      triggerWeightsJson: Value(triggerWeightsJson),
+      pathwayScoresJson: Value(pathwayScoresJson),
+      interventionPreferencesJson: Value(interventionPreferencesJson),
+      learningStateJson: Value(learningStateJson),
+      supportMapCompletedAt: supportMapCompletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(supportMapCompletedAt),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory SupportProfileSnapshot.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SupportProfileSnapshot(
+      id: serializer.fromJson<int>(json['id']),
+      registrationProfileId: serializer.fromJson<int>(
+        json['registrationProfileId'],
+      ),
+      selectedGoalsJson: serializer.fromJson<String>(json['selectedGoalsJson']),
+      domainScoresJson: serializer.fromJson<String>(json['domainScoresJson']),
+      routineProfileJson: serializer.fromJson<String>(
+        json['routineProfileJson'],
+      ),
+      sleepProfileJson: serializer.fromJson<String>(json['sleepProfileJson']),
+      menstrualProfileJson: serializer.fromJson<String?>(
+        json['menstrualProfileJson'],
+      ),
+      triggerWeightsJson: serializer.fromJson<String>(
+        json['triggerWeightsJson'],
+      ),
+      pathwayScoresJson: serializer.fromJson<String>(json['pathwayScoresJson']),
+      interventionPreferencesJson: serializer.fromJson<String>(
+        json['interventionPreferencesJson'],
+      ),
+      learningStateJson: serializer.fromJson<String>(json['learningStateJson']),
+      supportMapCompletedAt: serializer.fromJson<DateTime?>(
+        json['supportMapCompletedAt'],
+      ),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'registrationProfileId': serializer.toJson<int>(registrationProfileId),
+      'selectedGoalsJson': serializer.toJson<String>(selectedGoalsJson),
+      'domainScoresJson': serializer.toJson<String>(domainScoresJson),
+      'routineProfileJson': serializer.toJson<String>(routineProfileJson),
+      'sleepProfileJson': serializer.toJson<String>(sleepProfileJson),
+      'menstrualProfileJson': serializer.toJson<String?>(menstrualProfileJson),
+      'triggerWeightsJson': serializer.toJson<String>(triggerWeightsJson),
+      'pathwayScoresJson': serializer.toJson<String>(pathwayScoresJson),
+      'interventionPreferencesJson': serializer.toJson<String>(
+        interventionPreferencesJson,
+      ),
+      'learningStateJson': serializer.toJson<String>(learningStateJson),
+      'supportMapCompletedAt': serializer.toJson<DateTime?>(
+        supportMapCompletedAt,
+      ),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  SupportProfileSnapshot copyWith({
+    int? id,
+    int? registrationProfileId,
+    String? selectedGoalsJson,
+    String? domainScoresJson,
+    String? routineProfileJson,
+    String? sleepProfileJson,
+    Value<String?> menstrualProfileJson = const Value.absent(),
+    String? triggerWeightsJson,
+    String? pathwayScoresJson,
+    String? interventionPreferencesJson,
+    String? learningStateJson,
+    Value<DateTime?> supportMapCompletedAt = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => SupportProfileSnapshot(
+    id: id ?? this.id,
+    registrationProfileId: registrationProfileId ?? this.registrationProfileId,
+    selectedGoalsJson: selectedGoalsJson ?? this.selectedGoalsJson,
+    domainScoresJson: domainScoresJson ?? this.domainScoresJson,
+    routineProfileJson: routineProfileJson ?? this.routineProfileJson,
+    sleepProfileJson: sleepProfileJson ?? this.sleepProfileJson,
+    menstrualProfileJson: menstrualProfileJson.present
+        ? menstrualProfileJson.value
+        : this.menstrualProfileJson,
+    triggerWeightsJson: triggerWeightsJson ?? this.triggerWeightsJson,
+    pathwayScoresJson: pathwayScoresJson ?? this.pathwayScoresJson,
+    interventionPreferencesJson:
+        interventionPreferencesJson ?? this.interventionPreferencesJson,
+    learningStateJson: learningStateJson ?? this.learningStateJson,
+    supportMapCompletedAt: supportMapCompletedAt.present
+        ? supportMapCompletedAt.value
+        : this.supportMapCompletedAt,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  SupportProfileSnapshot copyWithCompanion(
+    SupportProfileSnapshotsCompanion data,
+  ) {
+    return SupportProfileSnapshot(
+      id: data.id.present ? data.id.value : this.id,
+      registrationProfileId: data.registrationProfileId.present
+          ? data.registrationProfileId.value
+          : this.registrationProfileId,
+      selectedGoalsJson: data.selectedGoalsJson.present
+          ? data.selectedGoalsJson.value
+          : this.selectedGoalsJson,
+      domainScoresJson: data.domainScoresJson.present
+          ? data.domainScoresJson.value
+          : this.domainScoresJson,
+      routineProfileJson: data.routineProfileJson.present
+          ? data.routineProfileJson.value
+          : this.routineProfileJson,
+      sleepProfileJson: data.sleepProfileJson.present
+          ? data.sleepProfileJson.value
+          : this.sleepProfileJson,
+      menstrualProfileJson: data.menstrualProfileJson.present
+          ? data.menstrualProfileJson.value
+          : this.menstrualProfileJson,
+      triggerWeightsJson: data.triggerWeightsJson.present
+          ? data.triggerWeightsJson.value
+          : this.triggerWeightsJson,
+      pathwayScoresJson: data.pathwayScoresJson.present
+          ? data.pathwayScoresJson.value
+          : this.pathwayScoresJson,
+      interventionPreferencesJson: data.interventionPreferencesJson.present
+          ? data.interventionPreferencesJson.value
+          : this.interventionPreferencesJson,
+      learningStateJson: data.learningStateJson.present
+          ? data.learningStateJson.value
+          : this.learningStateJson,
+      supportMapCompletedAt: data.supportMapCompletedAt.present
+          ? data.supportMapCompletedAt.value
+          : this.supportMapCompletedAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SupportProfileSnapshot(')
+          ..write('id: $id, ')
+          ..write('registrationProfileId: $registrationProfileId, ')
+          ..write('selectedGoalsJson: $selectedGoalsJson, ')
+          ..write('domainScoresJson: $domainScoresJson, ')
+          ..write('routineProfileJson: $routineProfileJson, ')
+          ..write('sleepProfileJson: $sleepProfileJson, ')
+          ..write('menstrualProfileJson: $menstrualProfileJson, ')
+          ..write('triggerWeightsJson: $triggerWeightsJson, ')
+          ..write('pathwayScoresJson: $pathwayScoresJson, ')
+          ..write('interventionPreferencesJson: $interventionPreferencesJson, ')
+          ..write('learningStateJson: $learningStateJson, ')
+          ..write('supportMapCompletedAt: $supportMapCompletedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    registrationProfileId,
+    selectedGoalsJson,
+    domainScoresJson,
+    routineProfileJson,
+    sleepProfileJson,
+    menstrualProfileJson,
+    triggerWeightsJson,
+    pathwayScoresJson,
+    interventionPreferencesJson,
+    learningStateJson,
+    supportMapCompletedAt,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SupportProfileSnapshot &&
+          other.id == this.id &&
+          other.registrationProfileId == this.registrationProfileId &&
+          other.selectedGoalsJson == this.selectedGoalsJson &&
+          other.domainScoresJson == this.domainScoresJson &&
+          other.routineProfileJson == this.routineProfileJson &&
+          other.sleepProfileJson == this.sleepProfileJson &&
+          other.menstrualProfileJson == this.menstrualProfileJson &&
+          other.triggerWeightsJson == this.triggerWeightsJson &&
+          other.pathwayScoresJson == this.pathwayScoresJson &&
+          other.interventionPreferencesJson ==
+              this.interventionPreferencesJson &&
+          other.learningStateJson == this.learningStateJson &&
+          other.supportMapCompletedAt == this.supportMapCompletedAt &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class SupportProfileSnapshotsCompanion
+    extends UpdateCompanion<SupportProfileSnapshot> {
+  final Value<int> id;
+  final Value<int> registrationProfileId;
+  final Value<String> selectedGoalsJson;
+  final Value<String> domainScoresJson;
+  final Value<String> routineProfileJson;
+  final Value<String> sleepProfileJson;
+  final Value<String?> menstrualProfileJson;
+  final Value<String> triggerWeightsJson;
+  final Value<String> pathwayScoresJson;
+  final Value<String> interventionPreferencesJson;
+  final Value<String> learningStateJson;
+  final Value<DateTime?> supportMapCompletedAt;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  const SupportProfileSnapshotsCompanion({
+    this.id = const Value.absent(),
+    this.registrationProfileId = const Value.absent(),
+    this.selectedGoalsJson = const Value.absent(),
+    this.domainScoresJson = const Value.absent(),
+    this.routineProfileJson = const Value.absent(),
+    this.sleepProfileJson = const Value.absent(),
+    this.menstrualProfileJson = const Value.absent(),
+    this.triggerWeightsJson = const Value.absent(),
+    this.pathwayScoresJson = const Value.absent(),
+    this.interventionPreferencesJson = const Value.absent(),
+    this.learningStateJson = const Value.absent(),
+    this.supportMapCompletedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  SupportProfileSnapshotsCompanion.insert({
+    this.id = const Value.absent(),
+    required int registrationProfileId,
+    this.selectedGoalsJson = const Value.absent(),
+    this.domainScoresJson = const Value.absent(),
+    this.routineProfileJson = const Value.absent(),
+    this.sleepProfileJson = const Value.absent(),
+    this.menstrualProfileJson = const Value.absent(),
+    this.triggerWeightsJson = const Value.absent(),
+    this.pathwayScoresJson = const Value.absent(),
+    this.interventionPreferencesJson = const Value.absent(),
+    this.learningStateJson = const Value.absent(),
+    this.supportMapCompletedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  }) : registrationProfileId = Value(registrationProfileId);
+  static Insertable<SupportProfileSnapshot> custom({
+    Expression<int>? id,
+    Expression<int>? registrationProfileId,
+    Expression<String>? selectedGoalsJson,
+    Expression<String>? domainScoresJson,
+    Expression<String>? routineProfileJson,
+    Expression<String>? sleepProfileJson,
+    Expression<String>? menstrualProfileJson,
+    Expression<String>? triggerWeightsJson,
+    Expression<String>? pathwayScoresJson,
+    Expression<String>? interventionPreferencesJson,
+    Expression<String>? learningStateJson,
+    Expression<DateTime>? supportMapCompletedAt,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (registrationProfileId != null)
+        'registration_profile_id': registrationProfileId,
+      if (selectedGoalsJson != null) 'selected_goals_json': selectedGoalsJson,
+      if (domainScoresJson != null) 'domain_scores_json': domainScoresJson,
+      if (routineProfileJson != null)
+        'routine_profile_json': routineProfileJson,
+      if (sleepProfileJson != null) 'sleep_profile_json': sleepProfileJson,
+      if (menstrualProfileJson != null)
+        'menstrual_profile_json': menstrualProfileJson,
+      if (triggerWeightsJson != null)
+        'trigger_weights_json': triggerWeightsJson,
+      if (pathwayScoresJson != null) 'pathway_scores_json': pathwayScoresJson,
+      if (interventionPreferencesJson != null)
+        'intervention_preferences_json': interventionPreferencesJson,
+      if (learningStateJson != null) 'learning_state_json': learningStateJson,
+      if (supportMapCompletedAt != null)
+        'support_map_completed_at': supportMapCompletedAt,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  SupportProfileSnapshotsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? registrationProfileId,
+    Value<String>? selectedGoalsJson,
+    Value<String>? domainScoresJson,
+    Value<String>? routineProfileJson,
+    Value<String>? sleepProfileJson,
+    Value<String?>? menstrualProfileJson,
+    Value<String>? triggerWeightsJson,
+    Value<String>? pathwayScoresJson,
+    Value<String>? interventionPreferencesJson,
+    Value<String>? learningStateJson,
+    Value<DateTime?>? supportMapCompletedAt,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+  }) {
+    return SupportProfileSnapshotsCompanion(
+      id: id ?? this.id,
+      registrationProfileId:
+          registrationProfileId ?? this.registrationProfileId,
+      selectedGoalsJson: selectedGoalsJson ?? this.selectedGoalsJson,
+      domainScoresJson: domainScoresJson ?? this.domainScoresJson,
+      routineProfileJson: routineProfileJson ?? this.routineProfileJson,
+      sleepProfileJson: sleepProfileJson ?? this.sleepProfileJson,
+      menstrualProfileJson: menstrualProfileJson ?? this.menstrualProfileJson,
+      triggerWeightsJson: triggerWeightsJson ?? this.triggerWeightsJson,
+      pathwayScoresJson: pathwayScoresJson ?? this.pathwayScoresJson,
+      interventionPreferencesJson:
+          interventionPreferencesJson ?? this.interventionPreferencesJson,
+      learningStateJson: learningStateJson ?? this.learningStateJson,
+      supportMapCompletedAt:
+          supportMapCompletedAt ?? this.supportMapCompletedAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (registrationProfileId.present) {
+      map['registration_profile_id'] = Variable<int>(
+        registrationProfileId.value,
+      );
+    }
+    if (selectedGoalsJson.present) {
+      map['selected_goals_json'] = Variable<String>(selectedGoalsJson.value);
+    }
+    if (domainScoresJson.present) {
+      map['domain_scores_json'] = Variable<String>(domainScoresJson.value);
+    }
+    if (routineProfileJson.present) {
+      map['routine_profile_json'] = Variable<String>(routineProfileJson.value);
+    }
+    if (sleepProfileJson.present) {
+      map['sleep_profile_json'] = Variable<String>(sleepProfileJson.value);
+    }
+    if (menstrualProfileJson.present) {
+      map['menstrual_profile_json'] = Variable<String>(
+        menstrualProfileJson.value,
+      );
+    }
+    if (triggerWeightsJson.present) {
+      map['trigger_weights_json'] = Variable<String>(triggerWeightsJson.value);
+    }
+    if (pathwayScoresJson.present) {
+      map['pathway_scores_json'] = Variable<String>(pathwayScoresJson.value);
+    }
+    if (interventionPreferencesJson.present) {
+      map['intervention_preferences_json'] = Variable<String>(
+        interventionPreferencesJson.value,
+      );
+    }
+    if (learningStateJson.present) {
+      map['learning_state_json'] = Variable<String>(learningStateJson.value);
+    }
+    if (supportMapCompletedAt.present) {
+      map['support_map_completed_at'] = Variable<DateTime>(
+        supportMapCompletedAt.value,
+      );
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SupportProfileSnapshotsCompanion(')
+          ..write('id: $id, ')
+          ..write('registrationProfileId: $registrationProfileId, ')
+          ..write('selectedGoalsJson: $selectedGoalsJson, ')
+          ..write('domainScoresJson: $domainScoresJson, ')
+          ..write('routineProfileJson: $routineProfileJson, ')
+          ..write('sleepProfileJson: $sleepProfileJson, ')
+          ..write('menstrualProfileJson: $menstrualProfileJson, ')
+          ..write('triggerWeightsJson: $triggerWeightsJson, ')
+          ..write('pathwayScoresJson: $pathwayScoresJson, ')
+          ..write('interventionPreferencesJson: $interventionPreferencesJson, ')
+          ..write('learningStateJson: $learningStateJson, ')
+          ..write('supportMapCompletedAt: $supportMapCompletedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RegistrationProfilesTable extends RegistrationProfiles
+    with TableInfo<$RegistrationProfilesTable, RegistrationProfile> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RegistrationProfilesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _appInstallIdMeta = const VerificationMeta(
+    'appInstallId',
+  );
+  @override
+  late final GeneratedColumn<String> appInstallId = GeneratedColumn<String>(
+    'app_install_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _displayNameMeta = const VerificationMeta(
+    'displayName',
+  );
+  @override
+  late final GeneratedColumn<String> displayName = GeneratedColumn<String>(
+    'display_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _emailMeta = const VerificationMeta('email');
+  @override
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
+    'email',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _phoneMeta = const VerificationMeta('phone');
+  @override
+  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
+    'phone',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ageBandMeta = const VerificationMeta(
+    'ageBand',
+  );
+  @override
+  late final GeneratedColumn<String> ageBand = GeneratedColumn<String>(
+    'age_band',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _genderMeta = const VerificationMeta('gender');
+  @override
+  late final GeneratedColumn<String> gender = GeneratedColumn<String>(
+    'gender',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _countryCodeMeta = const VerificationMeta(
+    'countryCode',
+  );
+  @override
+  late final GeneratedColumn<String> countryCode = GeneratedColumn<String>(
+    'country_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _regionNameMeta = const VerificationMeta(
+    'regionName',
+  );
+  @override
+  late final GeneratedColumn<String> regionName = GeneratedColumn<String>(
+    'region_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _timezoneMeta = const VerificationMeta(
+    'timezone',
+  );
+  @override
+  late final GeneratedColumn<String> timezone = GeneratedColumn<String>(
+    'timezone',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _privacyAcknowledgedMeta =
+      const VerificationMeta('privacyAcknowledged');
+  @override
+  late final GeneratedColumn<bool> privacyAcknowledged = GeneratedColumn<bool>(
+    'privacy_acknowledged',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("privacy_acknowledged" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _marketingConsentMeta = const VerificationMeta(
+    'marketingConsent',
+  );
+  @override
+  late final GeneratedColumn<bool> marketingConsent = GeneratedColumn<bool>(
+    'marketing_consent',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("marketing_consent" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _webhookSyncStatusMeta = const VerificationMeta(
+    'webhookSyncStatus',
+  );
+  @override
+  late final GeneratedColumn<String> webhookSyncStatus =
+      GeneratedColumn<String>(
+        'webhook_sync_status',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('notAttempted'),
+      );
+  static const VerificationMeta _webhookLastAttemptAtMeta =
+      const VerificationMeta('webhookLastAttemptAt');
+  @override
+  late final GeneratedColumn<DateTime> webhookLastAttemptAt =
+      GeneratedColumn<DateTime>(
+        'webhook_last_attempt_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _signupCompletedAtMeta = const VerificationMeta(
+    'signupCompletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> signupCompletedAt =
+      GeneratedColumn<DateTime>(
+        'signup_completed_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    appInstallId,
+    displayName,
+    email,
+    phone,
+    ageBand,
+    gender,
+    countryCode,
+    regionName,
+    timezone,
+    privacyAcknowledged,
+    marketingConsent,
+    webhookSyncStatus,
+    webhookLastAttemptAt,
+    signupCompletedAt,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'registration_profiles';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RegistrationProfile> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('app_install_id')) {
+      context.handle(
+        _appInstallIdMeta,
+        appInstallId.isAcceptableOrUnknown(
+          data['app_install_id']!,
+          _appInstallIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_appInstallIdMeta);
+    }
+    if (data.containsKey('display_name')) {
+      context.handle(
+        _displayNameMeta,
+        displayName.isAcceptableOrUnknown(
+          data['display_name']!,
+          _displayNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_displayNameMeta);
+    }
+    if (data.containsKey('email')) {
+      context.handle(
+        _emailMeta,
+        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_emailMeta);
+    }
+    if (data.containsKey('phone')) {
+      context.handle(
+        _phoneMeta,
+        phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_phoneMeta);
+    }
+    if (data.containsKey('age_band')) {
+      context.handle(
+        _ageBandMeta,
+        ageBand.isAcceptableOrUnknown(data['age_band']!, _ageBandMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ageBandMeta);
+    }
+    if (data.containsKey('gender')) {
+      context.handle(
+        _genderMeta,
+        gender.isAcceptableOrUnknown(data['gender']!, _genderMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_genderMeta);
+    }
+    if (data.containsKey('country_code')) {
+      context.handle(
+        _countryCodeMeta,
+        countryCode.isAcceptableOrUnknown(
+          data['country_code']!,
+          _countryCodeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_countryCodeMeta);
+    }
+    if (data.containsKey('region_name')) {
+      context.handle(
+        _regionNameMeta,
+        regionName.isAcceptableOrUnknown(data['region_name']!, _regionNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_regionNameMeta);
+    }
+    if (data.containsKey('timezone')) {
+      context.handle(
+        _timezoneMeta,
+        timezone.isAcceptableOrUnknown(data['timezone']!, _timezoneMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_timezoneMeta);
+    }
+    if (data.containsKey('privacy_acknowledged')) {
+      context.handle(
+        _privacyAcknowledgedMeta,
+        privacyAcknowledged.isAcceptableOrUnknown(
+          data['privacy_acknowledged']!,
+          _privacyAcknowledgedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_privacyAcknowledgedMeta);
+    }
+    if (data.containsKey('marketing_consent')) {
+      context.handle(
+        _marketingConsentMeta,
+        marketingConsent.isAcceptableOrUnknown(
+          data['marketing_consent']!,
+          _marketingConsentMeta,
+        ),
+      );
+    }
+    if (data.containsKey('webhook_sync_status')) {
+      context.handle(
+        _webhookSyncStatusMeta,
+        webhookSyncStatus.isAcceptableOrUnknown(
+          data['webhook_sync_status']!,
+          _webhookSyncStatusMeta,
+        ),
+      );
+    }
+    if (data.containsKey('webhook_last_attempt_at')) {
+      context.handle(
+        _webhookLastAttemptAtMeta,
+        webhookLastAttemptAt.isAcceptableOrUnknown(
+          data['webhook_last_attempt_at']!,
+          _webhookLastAttemptAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('signup_completed_at')) {
+      context.handle(
+        _signupCompletedAtMeta,
+        signupCompletedAt.isAcceptableOrUnknown(
+          data['signup_completed_at']!,
+          _signupCompletedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RegistrationProfile map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RegistrationProfile(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      appInstallId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}app_install_id'],
+      )!,
+      displayName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}display_name'],
+      )!,
+      email: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}email'],
+      )!,
+      phone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}phone'],
+      )!,
+      ageBand: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}age_band'],
+      )!,
+      gender: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}gender'],
+      )!,
+      countryCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}country_code'],
+      )!,
+      regionName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}region_name'],
+      )!,
+      timezone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}timezone'],
+      )!,
+      privacyAcknowledged: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}privacy_acknowledged'],
+      )!,
+      marketingConsent: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}marketing_consent'],
+      )!,
+      webhookSyncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}webhook_sync_status'],
+      )!,
+      webhookLastAttemptAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}webhook_last_attempt_at'],
+      ),
+      signupCompletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}signup_completed_at'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $RegistrationProfilesTable createAlias(String alias) {
+    return $RegistrationProfilesTable(attachedDatabase, alias);
+  }
+}
+
+class RegistrationProfile extends DataClass
+    implements Insertable<RegistrationProfile> {
+  final int id;
+  final String appInstallId;
+  final String displayName;
+  final String email;
+  final String phone;
+  final String ageBand;
+  final String gender;
+  final String countryCode;
+  final String regionName;
+  final String timezone;
+  final bool privacyAcknowledged;
+  final bool marketingConsent;
+  final String webhookSyncStatus;
+  final DateTime? webhookLastAttemptAt;
+  final DateTime? signupCompletedAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const RegistrationProfile({
+    required this.id,
+    required this.appInstallId,
+    required this.displayName,
+    required this.email,
+    required this.phone,
+    required this.ageBand,
+    required this.gender,
+    required this.countryCode,
+    required this.regionName,
+    required this.timezone,
+    required this.privacyAcknowledged,
+    required this.marketingConsent,
+    required this.webhookSyncStatus,
+    this.webhookLastAttemptAt,
+    this.signupCompletedAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['app_install_id'] = Variable<String>(appInstallId);
+    map['display_name'] = Variable<String>(displayName);
+    map['email'] = Variable<String>(email);
+    map['phone'] = Variable<String>(phone);
+    map['age_band'] = Variable<String>(ageBand);
+    map['gender'] = Variable<String>(gender);
+    map['country_code'] = Variable<String>(countryCode);
+    map['region_name'] = Variable<String>(regionName);
+    map['timezone'] = Variable<String>(timezone);
+    map['privacy_acknowledged'] = Variable<bool>(privacyAcknowledged);
+    map['marketing_consent'] = Variable<bool>(marketingConsent);
+    map['webhook_sync_status'] = Variable<String>(webhookSyncStatus);
+    if (!nullToAbsent || webhookLastAttemptAt != null) {
+      map['webhook_last_attempt_at'] = Variable<DateTime>(webhookLastAttemptAt);
+    }
+    if (!nullToAbsent || signupCompletedAt != null) {
+      map['signup_completed_at'] = Variable<DateTime>(signupCompletedAt);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  RegistrationProfilesCompanion toCompanion(bool nullToAbsent) {
+    return RegistrationProfilesCompanion(
+      id: Value(id),
+      appInstallId: Value(appInstallId),
+      displayName: Value(displayName),
+      email: Value(email),
+      phone: Value(phone),
+      ageBand: Value(ageBand),
+      gender: Value(gender),
+      countryCode: Value(countryCode),
+      regionName: Value(regionName),
+      timezone: Value(timezone),
+      privacyAcknowledged: Value(privacyAcknowledged),
+      marketingConsent: Value(marketingConsent),
+      webhookSyncStatus: Value(webhookSyncStatus),
+      webhookLastAttemptAt: webhookLastAttemptAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(webhookLastAttemptAt),
+      signupCompletedAt: signupCompletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(signupCompletedAt),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory RegistrationProfile.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RegistrationProfile(
+      id: serializer.fromJson<int>(json['id']),
+      appInstallId: serializer.fromJson<String>(json['appInstallId']),
+      displayName: serializer.fromJson<String>(json['displayName']),
+      email: serializer.fromJson<String>(json['email']),
+      phone: serializer.fromJson<String>(json['phone']),
+      ageBand: serializer.fromJson<String>(json['ageBand']),
+      gender: serializer.fromJson<String>(json['gender']),
+      countryCode: serializer.fromJson<String>(json['countryCode']),
+      regionName: serializer.fromJson<String>(json['regionName']),
+      timezone: serializer.fromJson<String>(json['timezone']),
+      privacyAcknowledged: serializer.fromJson<bool>(
+        json['privacyAcknowledged'],
+      ),
+      marketingConsent: serializer.fromJson<bool>(json['marketingConsent']),
+      webhookSyncStatus: serializer.fromJson<String>(json['webhookSyncStatus']),
+      webhookLastAttemptAt: serializer.fromJson<DateTime?>(
+        json['webhookLastAttemptAt'],
+      ),
+      signupCompletedAt: serializer.fromJson<DateTime?>(
+        json['signupCompletedAt'],
+      ),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'appInstallId': serializer.toJson<String>(appInstallId),
+      'displayName': serializer.toJson<String>(displayName),
+      'email': serializer.toJson<String>(email),
+      'phone': serializer.toJson<String>(phone),
+      'ageBand': serializer.toJson<String>(ageBand),
+      'gender': serializer.toJson<String>(gender),
+      'countryCode': serializer.toJson<String>(countryCode),
+      'regionName': serializer.toJson<String>(regionName),
+      'timezone': serializer.toJson<String>(timezone),
+      'privacyAcknowledged': serializer.toJson<bool>(privacyAcknowledged),
+      'marketingConsent': serializer.toJson<bool>(marketingConsent),
+      'webhookSyncStatus': serializer.toJson<String>(webhookSyncStatus),
+      'webhookLastAttemptAt': serializer.toJson<DateTime?>(
+        webhookLastAttemptAt,
+      ),
+      'signupCompletedAt': serializer.toJson<DateTime?>(signupCompletedAt),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  RegistrationProfile copyWith({
+    int? id,
+    String? appInstallId,
+    String? displayName,
+    String? email,
+    String? phone,
+    String? ageBand,
+    String? gender,
+    String? countryCode,
+    String? regionName,
+    String? timezone,
+    bool? privacyAcknowledged,
+    bool? marketingConsent,
+    String? webhookSyncStatus,
+    Value<DateTime?> webhookLastAttemptAt = const Value.absent(),
+    Value<DateTime?> signupCompletedAt = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => RegistrationProfile(
+    id: id ?? this.id,
+    appInstallId: appInstallId ?? this.appInstallId,
+    displayName: displayName ?? this.displayName,
+    email: email ?? this.email,
+    phone: phone ?? this.phone,
+    ageBand: ageBand ?? this.ageBand,
+    gender: gender ?? this.gender,
+    countryCode: countryCode ?? this.countryCode,
+    regionName: regionName ?? this.regionName,
+    timezone: timezone ?? this.timezone,
+    privacyAcknowledged: privacyAcknowledged ?? this.privacyAcknowledged,
+    marketingConsent: marketingConsent ?? this.marketingConsent,
+    webhookSyncStatus: webhookSyncStatus ?? this.webhookSyncStatus,
+    webhookLastAttemptAt: webhookLastAttemptAt.present
+        ? webhookLastAttemptAt.value
+        : this.webhookLastAttemptAt,
+    signupCompletedAt: signupCompletedAt.present
+        ? signupCompletedAt.value
+        : this.signupCompletedAt,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  RegistrationProfile copyWithCompanion(RegistrationProfilesCompanion data) {
+    return RegistrationProfile(
+      id: data.id.present ? data.id.value : this.id,
+      appInstallId: data.appInstallId.present
+          ? data.appInstallId.value
+          : this.appInstallId,
+      displayName: data.displayName.present
+          ? data.displayName.value
+          : this.displayName,
+      email: data.email.present ? data.email.value : this.email,
+      phone: data.phone.present ? data.phone.value : this.phone,
+      ageBand: data.ageBand.present ? data.ageBand.value : this.ageBand,
+      gender: data.gender.present ? data.gender.value : this.gender,
+      countryCode: data.countryCode.present
+          ? data.countryCode.value
+          : this.countryCode,
+      regionName: data.regionName.present
+          ? data.regionName.value
+          : this.regionName,
+      timezone: data.timezone.present ? data.timezone.value : this.timezone,
+      privacyAcknowledged: data.privacyAcknowledged.present
+          ? data.privacyAcknowledged.value
+          : this.privacyAcknowledged,
+      marketingConsent: data.marketingConsent.present
+          ? data.marketingConsent.value
+          : this.marketingConsent,
+      webhookSyncStatus: data.webhookSyncStatus.present
+          ? data.webhookSyncStatus.value
+          : this.webhookSyncStatus,
+      webhookLastAttemptAt: data.webhookLastAttemptAt.present
+          ? data.webhookLastAttemptAt.value
+          : this.webhookLastAttemptAt,
+      signupCompletedAt: data.signupCompletedAt.present
+          ? data.signupCompletedAt.value
+          : this.signupCompletedAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RegistrationProfile(')
+          ..write('id: $id, ')
+          ..write('appInstallId: $appInstallId, ')
+          ..write('displayName: $displayName, ')
+          ..write('email: $email, ')
+          ..write('phone: $phone, ')
+          ..write('ageBand: $ageBand, ')
+          ..write('gender: $gender, ')
+          ..write('countryCode: $countryCode, ')
+          ..write('regionName: $regionName, ')
+          ..write('timezone: $timezone, ')
+          ..write('privacyAcknowledged: $privacyAcknowledged, ')
+          ..write('marketingConsent: $marketingConsent, ')
+          ..write('webhookSyncStatus: $webhookSyncStatus, ')
+          ..write('webhookLastAttemptAt: $webhookLastAttemptAt, ')
+          ..write('signupCompletedAt: $signupCompletedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    appInstallId,
+    displayName,
+    email,
+    phone,
+    ageBand,
+    gender,
+    countryCode,
+    regionName,
+    timezone,
+    privacyAcknowledged,
+    marketingConsent,
+    webhookSyncStatus,
+    webhookLastAttemptAt,
+    signupCompletedAt,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RegistrationProfile &&
+          other.id == this.id &&
+          other.appInstallId == this.appInstallId &&
+          other.displayName == this.displayName &&
+          other.email == this.email &&
+          other.phone == this.phone &&
+          other.ageBand == this.ageBand &&
+          other.gender == this.gender &&
+          other.countryCode == this.countryCode &&
+          other.regionName == this.regionName &&
+          other.timezone == this.timezone &&
+          other.privacyAcknowledged == this.privacyAcknowledged &&
+          other.marketingConsent == this.marketingConsent &&
+          other.webhookSyncStatus == this.webhookSyncStatus &&
+          other.webhookLastAttemptAt == this.webhookLastAttemptAt &&
+          other.signupCompletedAt == this.signupCompletedAt &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class RegistrationProfilesCompanion
+    extends UpdateCompanion<RegistrationProfile> {
+  final Value<int> id;
+  final Value<String> appInstallId;
+  final Value<String> displayName;
+  final Value<String> email;
+  final Value<String> phone;
+  final Value<String> ageBand;
+  final Value<String> gender;
+  final Value<String> countryCode;
+  final Value<String> regionName;
+  final Value<String> timezone;
+  final Value<bool> privacyAcknowledged;
+  final Value<bool> marketingConsent;
+  final Value<String> webhookSyncStatus;
+  final Value<DateTime?> webhookLastAttemptAt;
+  final Value<DateTime?> signupCompletedAt;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  const RegistrationProfilesCompanion({
+    this.id = const Value.absent(),
+    this.appInstallId = const Value.absent(),
+    this.displayName = const Value.absent(),
+    this.email = const Value.absent(),
+    this.phone = const Value.absent(),
+    this.ageBand = const Value.absent(),
+    this.gender = const Value.absent(),
+    this.countryCode = const Value.absent(),
+    this.regionName = const Value.absent(),
+    this.timezone = const Value.absent(),
+    this.privacyAcknowledged = const Value.absent(),
+    this.marketingConsent = const Value.absent(),
+    this.webhookSyncStatus = const Value.absent(),
+    this.webhookLastAttemptAt = const Value.absent(),
+    this.signupCompletedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  RegistrationProfilesCompanion.insert({
+    this.id = const Value.absent(),
+    required String appInstallId,
+    required String displayName,
+    required String email,
+    required String phone,
+    required String ageBand,
+    required String gender,
+    required String countryCode,
+    required String regionName,
+    required String timezone,
+    required bool privacyAcknowledged,
+    this.marketingConsent = const Value.absent(),
+    this.webhookSyncStatus = const Value.absent(),
+    this.webhookLastAttemptAt = const Value.absent(),
+    this.signupCompletedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  }) : appInstallId = Value(appInstallId),
+       displayName = Value(displayName),
+       email = Value(email),
+       phone = Value(phone),
+       ageBand = Value(ageBand),
+       gender = Value(gender),
+       countryCode = Value(countryCode),
+       regionName = Value(regionName),
+       timezone = Value(timezone),
+       privacyAcknowledged = Value(privacyAcknowledged);
+  static Insertable<RegistrationProfile> custom({
+    Expression<int>? id,
+    Expression<String>? appInstallId,
+    Expression<String>? displayName,
+    Expression<String>? email,
+    Expression<String>? phone,
+    Expression<String>? ageBand,
+    Expression<String>? gender,
+    Expression<String>? countryCode,
+    Expression<String>? regionName,
+    Expression<String>? timezone,
+    Expression<bool>? privacyAcknowledged,
+    Expression<bool>? marketingConsent,
+    Expression<String>? webhookSyncStatus,
+    Expression<DateTime>? webhookLastAttemptAt,
+    Expression<DateTime>? signupCompletedAt,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (appInstallId != null) 'app_install_id': appInstallId,
+      if (displayName != null) 'display_name': displayName,
+      if (email != null) 'email': email,
+      if (phone != null) 'phone': phone,
+      if (ageBand != null) 'age_band': ageBand,
+      if (gender != null) 'gender': gender,
+      if (countryCode != null) 'country_code': countryCode,
+      if (regionName != null) 'region_name': regionName,
+      if (timezone != null) 'timezone': timezone,
+      if (privacyAcknowledged != null)
+        'privacy_acknowledged': privacyAcknowledged,
+      if (marketingConsent != null) 'marketing_consent': marketingConsent,
+      if (webhookSyncStatus != null) 'webhook_sync_status': webhookSyncStatus,
+      if (webhookLastAttemptAt != null)
+        'webhook_last_attempt_at': webhookLastAttemptAt,
+      if (signupCompletedAt != null) 'signup_completed_at': signupCompletedAt,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  RegistrationProfilesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? appInstallId,
+    Value<String>? displayName,
+    Value<String>? email,
+    Value<String>? phone,
+    Value<String>? ageBand,
+    Value<String>? gender,
+    Value<String>? countryCode,
+    Value<String>? regionName,
+    Value<String>? timezone,
+    Value<bool>? privacyAcknowledged,
+    Value<bool>? marketingConsent,
+    Value<String>? webhookSyncStatus,
+    Value<DateTime?>? webhookLastAttemptAt,
+    Value<DateTime?>? signupCompletedAt,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+  }) {
+    return RegistrationProfilesCompanion(
+      id: id ?? this.id,
+      appInstallId: appInstallId ?? this.appInstallId,
+      displayName: displayName ?? this.displayName,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      ageBand: ageBand ?? this.ageBand,
+      gender: gender ?? this.gender,
+      countryCode: countryCode ?? this.countryCode,
+      regionName: regionName ?? this.regionName,
+      timezone: timezone ?? this.timezone,
+      privacyAcknowledged: privacyAcknowledged ?? this.privacyAcknowledged,
+      marketingConsent: marketingConsent ?? this.marketingConsent,
+      webhookSyncStatus: webhookSyncStatus ?? this.webhookSyncStatus,
+      webhookLastAttemptAt: webhookLastAttemptAt ?? this.webhookLastAttemptAt,
+      signupCompletedAt: signupCompletedAt ?? this.signupCompletedAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (appInstallId.present) {
+      map['app_install_id'] = Variable<String>(appInstallId.value);
+    }
+    if (displayName.present) {
+      map['display_name'] = Variable<String>(displayName.value);
+    }
+    if (email.present) {
+      map['email'] = Variable<String>(email.value);
+    }
+    if (phone.present) {
+      map['phone'] = Variable<String>(phone.value);
+    }
+    if (ageBand.present) {
+      map['age_band'] = Variable<String>(ageBand.value);
+    }
+    if (gender.present) {
+      map['gender'] = Variable<String>(gender.value);
+    }
+    if (countryCode.present) {
+      map['country_code'] = Variable<String>(countryCode.value);
+    }
+    if (regionName.present) {
+      map['region_name'] = Variable<String>(regionName.value);
+    }
+    if (timezone.present) {
+      map['timezone'] = Variable<String>(timezone.value);
+    }
+    if (privacyAcknowledged.present) {
+      map['privacy_acknowledged'] = Variable<bool>(privacyAcknowledged.value);
+    }
+    if (marketingConsent.present) {
+      map['marketing_consent'] = Variable<bool>(marketingConsent.value);
+    }
+    if (webhookSyncStatus.present) {
+      map['webhook_sync_status'] = Variable<String>(webhookSyncStatus.value);
+    }
+    if (webhookLastAttemptAt.present) {
+      map['webhook_last_attempt_at'] = Variable<DateTime>(
+        webhookLastAttemptAt.value,
+      );
+    }
+    if (signupCompletedAt.present) {
+      map['signup_completed_at'] = Variable<DateTime>(signupCompletedAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RegistrationProfilesCompanion(')
+          ..write('id: $id, ')
+          ..write('appInstallId: $appInstallId, ')
+          ..write('displayName: $displayName, ')
+          ..write('email: $email, ')
+          ..write('phone: $phone, ')
+          ..write('ageBand: $ageBand, ')
+          ..write('gender: $gender, ')
+          ..write('countryCode: $countryCode, ')
+          ..write('regionName: $regionName, ')
+          ..write('timezone: $timezone, ')
+          ..write('privacyAcknowledged: $privacyAcknowledged, ')
+          ..write('marketingConsent: $marketingConsent, ')
+          ..write('webhookSyncStatus: $webhookSyncStatus, ')
+          ..write('webhookLastAttemptAt: $webhookLastAttemptAt, ')
+          ..write('signupCompletedAt: $signupCompletedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $QuestionnaireSessionsTable extends QuestionnaireSessions
+    with TableInfo<$QuestionnaireSessionsTable, QuestionnaireSession> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $QuestionnaireSessionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _registrationProfileIdMeta =
+      const VerificationMeta('registrationProfileId');
+  @override
+  late final GeneratedColumn<int> registrationProfileId = GeneratedColumn<int>(
+    'registration_profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currentSectionIdMeta = const VerificationMeta(
+    'currentSectionId',
+  );
+  @override
+  late final GeneratedColumn<String> currentSectionId = GeneratedColumn<String>(
+    'current_section_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('intro'),
+  );
+  static const VerificationMeta _currentQuestionIdMeta = const VerificationMeta(
+    'currentQuestionId',
+  );
+  @override
+  late final GeneratedColumn<String> currentQuestionId =
+      GeneratedColumn<String>(
+        'current_question_id',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('start'),
+      );
+  static const VerificationMeta _completedSectionsJsonMeta =
+      const VerificationMeta('completedSectionsJson');
+  @override
+  late final GeneratedColumn<String> completedSectionsJson =
+      GeneratedColumn<String>(
+        'completed_sections_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('[]'),
+      );
+  static const VerificationMeta _answersJsonMeta = const VerificationMeta(
+    'answersJson',
+  );
+  @override
+  late final GeneratedColumn<String> answersJson = GeneratedColumn<String>(
+    'answers_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('{}'),
+  );
+  static const VerificationMeta _answerCountMeta = const VerificationMeta(
+    'answerCount',
+  );
+  @override
+  late final GeneratedColumn<int> answerCount = GeneratedColumn<int>(
+    'answer_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _isCompletedMeta = const VerificationMeta(
+    'isCompleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isCompleted = GeneratedColumn<bool>(
+    'is_completed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_completed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _startedAtMeta = const VerificationMeta(
+    'startedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startedAt = GeneratedColumn<DateTime>(
+    'started_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _completedAtMeta = const VerificationMeta(
+    'completedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> completedAt = GeneratedColumn<DateTime>(
+    'completed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    registrationProfileId,
+    currentSectionId,
+    currentQuestionId,
+    completedSectionsJson,
+    answersJson,
+    answerCount,
+    isCompleted,
+    startedAt,
+    updatedAt,
+    completedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'questionnaire_sessions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<QuestionnaireSession> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('registration_profile_id')) {
+      context.handle(
+        _registrationProfileIdMeta,
+        registrationProfileId.isAcceptableOrUnknown(
+          data['registration_profile_id']!,
+          _registrationProfileIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_registrationProfileIdMeta);
+    }
+    if (data.containsKey('current_section_id')) {
+      context.handle(
+        _currentSectionIdMeta,
+        currentSectionId.isAcceptableOrUnknown(
+          data['current_section_id']!,
+          _currentSectionIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('current_question_id')) {
+      context.handle(
+        _currentQuestionIdMeta,
+        currentQuestionId.isAcceptableOrUnknown(
+          data['current_question_id']!,
+          _currentQuestionIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('completed_sections_json')) {
+      context.handle(
+        _completedSectionsJsonMeta,
+        completedSectionsJson.isAcceptableOrUnknown(
+          data['completed_sections_json']!,
+          _completedSectionsJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('answers_json')) {
+      context.handle(
+        _answersJsonMeta,
+        answersJson.isAcceptableOrUnknown(
+          data['answers_json']!,
+          _answersJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('answer_count')) {
+      context.handle(
+        _answerCountMeta,
+        answerCount.isAcceptableOrUnknown(
+          data['answer_count']!,
+          _answerCountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_completed')) {
+      context.handle(
+        _isCompletedMeta,
+        isCompleted.isAcceptableOrUnknown(
+          data['is_completed']!,
+          _isCompletedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('started_at')) {
+      context.handle(
+        _startedAtMeta,
+        startedAt.isAcceptableOrUnknown(data['started_at']!, _startedAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('completed_at')) {
+      context.handle(
+        _completedAtMeta,
+        completedAt.isAcceptableOrUnknown(
+          data['completed_at']!,
+          _completedAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  QuestionnaireSession map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return QuestionnaireSession(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      registrationProfileId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}registration_profile_id'],
+      )!,
+      currentSectionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}current_section_id'],
+      )!,
+      currentQuestionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}current_question_id'],
+      )!,
+      completedSectionsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}completed_sections_json'],
+      )!,
+      answersJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}answers_json'],
+      )!,
+      answerCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}answer_count'],
+      )!,
+      isCompleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_completed'],
+      )!,
+      startedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}started_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      completedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}completed_at'],
+      ),
+    );
+  }
+
+  @override
+  $QuestionnaireSessionsTable createAlias(String alias) {
+    return $QuestionnaireSessionsTable(attachedDatabase, alias);
+  }
+}
+
+class QuestionnaireSession extends DataClass
+    implements Insertable<QuestionnaireSession> {
+  final int id;
+  final int registrationProfileId;
+  final String currentSectionId;
+  final String currentQuestionId;
+  final String completedSectionsJson;
+  final String answersJson;
+  final int answerCount;
+  final bool isCompleted;
+  final DateTime startedAt;
+  final DateTime updatedAt;
+  final DateTime? completedAt;
+  const QuestionnaireSession({
+    required this.id,
+    required this.registrationProfileId,
+    required this.currentSectionId,
+    required this.currentQuestionId,
+    required this.completedSectionsJson,
+    required this.answersJson,
+    required this.answerCount,
+    required this.isCompleted,
+    required this.startedAt,
+    required this.updatedAt,
+    this.completedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['registration_profile_id'] = Variable<int>(registrationProfileId);
+    map['current_section_id'] = Variable<String>(currentSectionId);
+    map['current_question_id'] = Variable<String>(currentQuestionId);
+    map['completed_sections_json'] = Variable<String>(completedSectionsJson);
+    map['answers_json'] = Variable<String>(answersJson);
+    map['answer_count'] = Variable<int>(answerCount);
+    map['is_completed'] = Variable<bool>(isCompleted);
+    map['started_at'] = Variable<DateTime>(startedAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || completedAt != null) {
+      map['completed_at'] = Variable<DateTime>(completedAt);
+    }
+    return map;
+  }
+
+  QuestionnaireSessionsCompanion toCompanion(bool nullToAbsent) {
+    return QuestionnaireSessionsCompanion(
+      id: Value(id),
+      registrationProfileId: Value(registrationProfileId),
+      currentSectionId: Value(currentSectionId),
+      currentQuestionId: Value(currentQuestionId),
+      completedSectionsJson: Value(completedSectionsJson),
+      answersJson: Value(answersJson),
+      answerCount: Value(answerCount),
+      isCompleted: Value(isCompleted),
+      startedAt: Value(startedAt),
+      updatedAt: Value(updatedAt),
+      completedAt: completedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completedAt),
+    );
+  }
+
+  factory QuestionnaireSession.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return QuestionnaireSession(
+      id: serializer.fromJson<int>(json['id']),
+      registrationProfileId: serializer.fromJson<int>(
+        json['registrationProfileId'],
+      ),
+      currentSectionId: serializer.fromJson<String>(json['currentSectionId']),
+      currentQuestionId: serializer.fromJson<String>(json['currentQuestionId']),
+      completedSectionsJson: serializer.fromJson<String>(
+        json['completedSectionsJson'],
+      ),
+      answersJson: serializer.fromJson<String>(json['answersJson']),
+      answerCount: serializer.fromJson<int>(json['answerCount']),
+      isCompleted: serializer.fromJson<bool>(json['isCompleted']),
+      startedAt: serializer.fromJson<DateTime>(json['startedAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'registrationProfileId': serializer.toJson<int>(registrationProfileId),
+      'currentSectionId': serializer.toJson<String>(currentSectionId),
+      'currentQuestionId': serializer.toJson<String>(currentQuestionId),
+      'completedSectionsJson': serializer.toJson<String>(completedSectionsJson),
+      'answersJson': serializer.toJson<String>(answersJson),
+      'answerCount': serializer.toJson<int>(answerCount),
+      'isCompleted': serializer.toJson<bool>(isCompleted),
+      'startedAt': serializer.toJson<DateTime>(startedAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'completedAt': serializer.toJson<DateTime?>(completedAt),
+    };
+  }
+
+  QuestionnaireSession copyWith({
+    int? id,
+    int? registrationProfileId,
+    String? currentSectionId,
+    String? currentQuestionId,
+    String? completedSectionsJson,
+    String? answersJson,
+    int? answerCount,
+    bool? isCompleted,
+    DateTime? startedAt,
+    DateTime? updatedAt,
+    Value<DateTime?> completedAt = const Value.absent(),
+  }) => QuestionnaireSession(
+    id: id ?? this.id,
+    registrationProfileId: registrationProfileId ?? this.registrationProfileId,
+    currentSectionId: currentSectionId ?? this.currentSectionId,
+    currentQuestionId: currentQuestionId ?? this.currentQuestionId,
+    completedSectionsJson: completedSectionsJson ?? this.completedSectionsJson,
+    answersJson: answersJson ?? this.answersJson,
+    answerCount: answerCount ?? this.answerCount,
+    isCompleted: isCompleted ?? this.isCompleted,
+    startedAt: startedAt ?? this.startedAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    completedAt: completedAt.present ? completedAt.value : this.completedAt,
+  );
+  QuestionnaireSession copyWithCompanion(QuestionnaireSessionsCompanion data) {
+    return QuestionnaireSession(
+      id: data.id.present ? data.id.value : this.id,
+      registrationProfileId: data.registrationProfileId.present
+          ? data.registrationProfileId.value
+          : this.registrationProfileId,
+      currentSectionId: data.currentSectionId.present
+          ? data.currentSectionId.value
+          : this.currentSectionId,
+      currentQuestionId: data.currentQuestionId.present
+          ? data.currentQuestionId.value
+          : this.currentQuestionId,
+      completedSectionsJson: data.completedSectionsJson.present
+          ? data.completedSectionsJson.value
+          : this.completedSectionsJson,
+      answersJson: data.answersJson.present
+          ? data.answersJson.value
+          : this.answersJson,
+      answerCount: data.answerCount.present
+          ? data.answerCount.value
+          : this.answerCount,
+      isCompleted: data.isCompleted.present
+          ? data.isCompleted.value
+          : this.isCompleted,
+      startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      completedAt: data.completedAt.present
+          ? data.completedAt.value
+          : this.completedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuestionnaireSession(')
+          ..write('id: $id, ')
+          ..write('registrationProfileId: $registrationProfileId, ')
+          ..write('currentSectionId: $currentSectionId, ')
+          ..write('currentQuestionId: $currentQuestionId, ')
+          ..write('completedSectionsJson: $completedSectionsJson, ')
+          ..write('answersJson: $answersJson, ')
+          ..write('answerCount: $answerCount, ')
+          ..write('isCompleted: $isCompleted, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('completedAt: $completedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    registrationProfileId,
+    currentSectionId,
+    currentQuestionId,
+    completedSectionsJson,
+    answersJson,
+    answerCount,
+    isCompleted,
+    startedAt,
+    updatedAt,
+    completedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is QuestionnaireSession &&
+          other.id == this.id &&
+          other.registrationProfileId == this.registrationProfileId &&
+          other.currentSectionId == this.currentSectionId &&
+          other.currentQuestionId == this.currentQuestionId &&
+          other.completedSectionsJson == this.completedSectionsJson &&
+          other.answersJson == this.answersJson &&
+          other.answerCount == this.answerCount &&
+          other.isCompleted == this.isCompleted &&
+          other.startedAt == this.startedAt &&
+          other.updatedAt == this.updatedAt &&
+          other.completedAt == this.completedAt);
+}
+
+class QuestionnaireSessionsCompanion
+    extends UpdateCompanion<QuestionnaireSession> {
+  final Value<int> id;
+  final Value<int> registrationProfileId;
+  final Value<String> currentSectionId;
+  final Value<String> currentQuestionId;
+  final Value<String> completedSectionsJson;
+  final Value<String> answersJson;
+  final Value<int> answerCount;
+  final Value<bool> isCompleted;
+  final Value<DateTime> startedAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> completedAt;
+  const QuestionnaireSessionsCompanion({
+    this.id = const Value.absent(),
+    this.registrationProfileId = const Value.absent(),
+    this.currentSectionId = const Value.absent(),
+    this.currentQuestionId = const Value.absent(),
+    this.completedSectionsJson = const Value.absent(),
+    this.answersJson = const Value.absent(),
+    this.answerCount = const Value.absent(),
+    this.isCompleted = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.completedAt = const Value.absent(),
+  });
+  QuestionnaireSessionsCompanion.insert({
+    this.id = const Value.absent(),
+    required int registrationProfileId,
+    this.currentSectionId = const Value.absent(),
+    this.currentQuestionId = const Value.absent(),
+    this.completedSectionsJson = const Value.absent(),
+    this.answersJson = const Value.absent(),
+    this.answerCount = const Value.absent(),
+    this.isCompleted = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.completedAt = const Value.absent(),
+  }) : registrationProfileId = Value(registrationProfileId);
+  static Insertable<QuestionnaireSession> custom({
+    Expression<int>? id,
+    Expression<int>? registrationProfileId,
+    Expression<String>? currentSectionId,
+    Expression<String>? currentQuestionId,
+    Expression<String>? completedSectionsJson,
+    Expression<String>? answersJson,
+    Expression<int>? answerCount,
+    Expression<bool>? isCompleted,
+    Expression<DateTime>? startedAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? completedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (registrationProfileId != null)
+        'registration_profile_id': registrationProfileId,
+      if (currentSectionId != null) 'current_section_id': currentSectionId,
+      if (currentQuestionId != null) 'current_question_id': currentQuestionId,
+      if (completedSectionsJson != null)
+        'completed_sections_json': completedSectionsJson,
+      if (answersJson != null) 'answers_json': answersJson,
+      if (answerCount != null) 'answer_count': answerCount,
+      if (isCompleted != null) 'is_completed': isCompleted,
+      if (startedAt != null) 'started_at': startedAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (completedAt != null) 'completed_at': completedAt,
+    });
+  }
+
+  QuestionnaireSessionsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? registrationProfileId,
+    Value<String>? currentSectionId,
+    Value<String>? currentQuestionId,
+    Value<String>? completedSectionsJson,
+    Value<String>? answersJson,
+    Value<int>? answerCount,
+    Value<bool>? isCompleted,
+    Value<DateTime>? startedAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? completedAt,
+  }) {
+    return QuestionnaireSessionsCompanion(
+      id: id ?? this.id,
+      registrationProfileId:
+          registrationProfileId ?? this.registrationProfileId,
+      currentSectionId: currentSectionId ?? this.currentSectionId,
+      currentQuestionId: currentQuestionId ?? this.currentQuestionId,
+      completedSectionsJson:
+          completedSectionsJson ?? this.completedSectionsJson,
+      answersJson: answersJson ?? this.answersJson,
+      answerCount: answerCount ?? this.answerCount,
+      isCompleted: isCompleted ?? this.isCompleted,
+      startedAt: startedAt ?? this.startedAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      completedAt: completedAt ?? this.completedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (registrationProfileId.present) {
+      map['registration_profile_id'] = Variable<int>(
+        registrationProfileId.value,
+      );
+    }
+    if (currentSectionId.present) {
+      map['current_section_id'] = Variable<String>(currentSectionId.value);
+    }
+    if (currentQuestionId.present) {
+      map['current_question_id'] = Variable<String>(currentQuestionId.value);
+    }
+    if (completedSectionsJson.present) {
+      map['completed_sections_json'] = Variable<String>(
+        completedSectionsJson.value,
+      );
+    }
+    if (answersJson.present) {
+      map['answers_json'] = Variable<String>(answersJson.value);
+    }
+    if (answerCount.present) {
+      map['answer_count'] = Variable<int>(answerCount.value);
+    }
+    if (isCompleted.present) {
+      map['is_completed'] = Variable<bool>(isCompleted.value);
+    }
+    if (startedAt.present) {
+      map['started_at'] = Variable<DateTime>(startedAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (completedAt.present) {
+      map['completed_at'] = Variable<DateTime>(completedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuestionnaireSessionsCompanion(')
+          ..write('id: $id, ')
+          ..write('registrationProfileId: $registrationProfileId, ')
+          ..write('currentSectionId: $currentSectionId, ')
+          ..write('currentQuestionId: $currentQuestionId, ')
+          ..write('completedSectionsJson: $completedSectionsJson, ')
+          ..write('answersJson: $answersJson, ')
+          ..write('answerCount: $answerCount, ')
+          ..write('isCompleted: $isCompleted, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('completedAt: $completedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $QuestionnaireAnswersTable extends QuestionnaireAnswers
+    with TableInfo<$QuestionnaireAnswersTable, QuestionnaireAnswer> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $QuestionnaireAnswersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _sessionIdMeta = const VerificationMeta(
+    'sessionId',
+  );
+  @override
+  late final GeneratedColumn<int> sessionId = GeneratedColumn<int>(
+    'session_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sectionIdMeta = const VerificationMeta(
+    'sectionId',
+  );
+  @override
+  late final GeneratedColumn<String> sectionId = GeneratedColumn<String>(
+    'section_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _questionIdMeta = const VerificationMeta(
+    'questionId',
+  );
+  @override
+  late final GeneratedColumn<String> questionId = GeneratedColumn<String>(
+    'question_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _answerJsonMeta = const VerificationMeta(
+    'answerJson',
+  );
+  @override
+  late final GeneratedColumn<String> answerJson = GeneratedColumn<String>(
+    'answer_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    sessionId,
+    sectionId,
+    questionId,
+    answerJson,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'questionnaire_answers';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<QuestionnaireAnswer> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('session_id')) {
+      context.handle(
+        _sessionIdMeta,
+        sessionId.isAcceptableOrUnknown(data['session_id']!, _sessionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sessionIdMeta);
+    }
+    if (data.containsKey('section_id')) {
+      context.handle(
+        _sectionIdMeta,
+        sectionId.isAcceptableOrUnknown(data['section_id']!, _sectionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sectionIdMeta);
+    }
+    if (data.containsKey('question_id')) {
+      context.handle(
+        _questionIdMeta,
+        questionId.isAcceptableOrUnknown(data['question_id']!, _questionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_questionIdMeta);
+    }
+    if (data.containsKey('answer_json')) {
+      context.handle(
+        _answerJsonMeta,
+        answerJson.isAcceptableOrUnknown(data['answer_json']!, _answerJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_answerJsonMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  QuestionnaireAnswer map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return QuestionnaireAnswer(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      sessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}session_id'],
+      )!,
+      sectionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}section_id'],
+      )!,
+      questionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}question_id'],
+      )!,
+      answerJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}answer_json'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $QuestionnaireAnswersTable createAlias(String alias) {
+    return $QuestionnaireAnswersTable(attachedDatabase, alias);
+  }
+}
+
+class QuestionnaireAnswer extends DataClass
+    implements Insertable<QuestionnaireAnswer> {
+  final int id;
+  final int sessionId;
+  final String sectionId;
+  final String questionId;
+  final String answerJson;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const QuestionnaireAnswer({
+    required this.id,
+    required this.sessionId,
+    required this.sectionId,
+    required this.questionId,
+    required this.answerJson,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['session_id'] = Variable<int>(sessionId);
+    map['section_id'] = Variable<String>(sectionId);
+    map['question_id'] = Variable<String>(questionId);
+    map['answer_json'] = Variable<String>(answerJson);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  QuestionnaireAnswersCompanion toCompanion(bool nullToAbsent) {
+    return QuestionnaireAnswersCompanion(
+      id: Value(id),
+      sessionId: Value(sessionId),
+      sectionId: Value(sectionId),
+      questionId: Value(questionId),
+      answerJson: Value(answerJson),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory QuestionnaireAnswer.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return QuestionnaireAnswer(
+      id: serializer.fromJson<int>(json['id']),
+      sessionId: serializer.fromJson<int>(json['sessionId']),
+      sectionId: serializer.fromJson<String>(json['sectionId']),
+      questionId: serializer.fromJson<String>(json['questionId']),
+      answerJson: serializer.fromJson<String>(json['answerJson']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'sessionId': serializer.toJson<int>(sessionId),
+      'sectionId': serializer.toJson<String>(sectionId),
+      'questionId': serializer.toJson<String>(questionId),
+      'answerJson': serializer.toJson<String>(answerJson),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  QuestionnaireAnswer copyWith({
+    int? id,
+    int? sessionId,
+    String? sectionId,
+    String? questionId,
+    String? answerJson,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => QuestionnaireAnswer(
+    id: id ?? this.id,
+    sessionId: sessionId ?? this.sessionId,
+    sectionId: sectionId ?? this.sectionId,
+    questionId: questionId ?? this.questionId,
+    answerJson: answerJson ?? this.answerJson,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  QuestionnaireAnswer copyWithCompanion(QuestionnaireAnswersCompanion data) {
+    return QuestionnaireAnswer(
+      id: data.id.present ? data.id.value : this.id,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      sectionId: data.sectionId.present ? data.sectionId.value : this.sectionId,
+      questionId: data.questionId.present
+          ? data.questionId.value
+          : this.questionId,
+      answerJson: data.answerJson.present
+          ? data.answerJson.value
+          : this.answerJson,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuestionnaireAnswer(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('sectionId: $sectionId, ')
+          ..write('questionId: $questionId, ')
+          ..write('answerJson: $answerJson, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    sessionId,
+    sectionId,
+    questionId,
+    answerJson,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is QuestionnaireAnswer &&
+          other.id == this.id &&
+          other.sessionId == this.sessionId &&
+          other.sectionId == this.sectionId &&
+          other.questionId == this.questionId &&
+          other.answerJson == this.answerJson &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class QuestionnaireAnswersCompanion
+    extends UpdateCompanion<QuestionnaireAnswer> {
+  final Value<int> id;
+  final Value<int> sessionId;
+  final Value<String> sectionId;
+  final Value<String> questionId;
+  final Value<String> answerJson;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  const QuestionnaireAnswersCompanion({
+    this.id = const Value.absent(),
+    this.sessionId = const Value.absent(),
+    this.sectionId = const Value.absent(),
+    this.questionId = const Value.absent(),
+    this.answerJson = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  QuestionnaireAnswersCompanion.insert({
+    this.id = const Value.absent(),
+    required int sessionId,
+    required String sectionId,
+    required String questionId,
+    required String answerJson,
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  }) : sessionId = Value(sessionId),
+       sectionId = Value(sectionId),
+       questionId = Value(questionId),
+       answerJson = Value(answerJson);
+  static Insertable<QuestionnaireAnswer> custom({
+    Expression<int>? id,
+    Expression<int>? sessionId,
+    Expression<String>? sectionId,
+    Expression<String>? questionId,
+    Expression<String>? answerJson,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (sessionId != null) 'session_id': sessionId,
+      if (sectionId != null) 'section_id': sectionId,
+      if (questionId != null) 'question_id': questionId,
+      if (answerJson != null) 'answer_json': answerJson,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  QuestionnaireAnswersCompanion copyWith({
+    Value<int>? id,
+    Value<int>? sessionId,
+    Value<String>? sectionId,
+    Value<String>? questionId,
+    Value<String>? answerJson,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+  }) {
+    return QuestionnaireAnswersCompanion(
+      id: id ?? this.id,
+      sessionId: sessionId ?? this.sessionId,
+      sectionId: sectionId ?? this.sectionId,
+      questionId: questionId ?? this.questionId,
+      answerJson: answerJson ?? this.answerJson,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (sessionId.present) {
+      map['session_id'] = Variable<int>(sessionId.value);
+    }
+    if (sectionId.present) {
+      map['section_id'] = Variable<String>(sectionId.value);
+    }
+    if (questionId.present) {
+      map['question_id'] = Variable<String>(questionId.value);
+    }
+    if (answerJson.present) {
+      map['answer_json'] = Variable<String>(answerJson.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuestionnaireAnswersCompanion(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('sectionId: $sectionId, ')
+          ..write('questionId: $questionId, ')
+          ..write('answerJson: $answerJson, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -19133,6 +22143,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $DailyTaskAssignmentsTable(this);
   late final $WeeklyAssessmentsTable weeklyAssessments =
       $WeeklyAssessmentsTable(this);
+  late final $SupportProfileSnapshotsTable supportProfileSnapshots =
+      $SupportProfileSnapshotsTable(this);
+  late final $RegistrationProfilesTable registrationProfiles =
+      $RegistrationProfilesTable(this);
+  late final $QuestionnaireSessionsTable questionnaireSessions =
+      $QuestionnaireSessionsTable(this);
+  late final $QuestionnaireAnswersTable questionnaireAnswers =
+      $QuestionnaireAnswersTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -19169,6 +22187,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     cyclePredictions,
     dailyTaskAssignments,
     weeklyAssessments,
+    supportProfileSnapshots,
+    registrationProfiles,
+    questionnaireSessions,
+    questionnaireAnswers,
   ];
 }
 
@@ -28524,6 +31546,1465 @@ typedef $$WeeklyAssessmentsTableProcessedTableManager =
       WeeklyAssessment,
       PrefetchHooks Function()
     >;
+typedef $$SupportProfileSnapshotsTableCreateCompanionBuilder =
+    SupportProfileSnapshotsCompanion Function({
+      Value<int> id,
+      required int registrationProfileId,
+      Value<String> selectedGoalsJson,
+      Value<String> domainScoresJson,
+      Value<String> routineProfileJson,
+      Value<String> sleepProfileJson,
+      Value<String?> menstrualProfileJson,
+      Value<String> triggerWeightsJson,
+      Value<String> pathwayScoresJson,
+      Value<String> interventionPreferencesJson,
+      Value<String> learningStateJson,
+      Value<DateTime?> supportMapCompletedAt,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+    });
+typedef $$SupportProfileSnapshotsTableUpdateCompanionBuilder =
+    SupportProfileSnapshotsCompanion Function({
+      Value<int> id,
+      Value<int> registrationProfileId,
+      Value<String> selectedGoalsJson,
+      Value<String> domainScoresJson,
+      Value<String> routineProfileJson,
+      Value<String> sleepProfileJson,
+      Value<String?> menstrualProfileJson,
+      Value<String> triggerWeightsJson,
+      Value<String> pathwayScoresJson,
+      Value<String> interventionPreferencesJson,
+      Value<String> learningStateJson,
+      Value<DateTime?> supportMapCompletedAt,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+    });
+
+class $$SupportProfileSnapshotsTableFilterComposer
+    extends Composer<_$AppDatabase, $SupportProfileSnapshotsTable> {
+  $$SupportProfileSnapshotsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get registrationProfileId => $composableBuilder(
+    column: $table.registrationProfileId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get selectedGoalsJson => $composableBuilder(
+    column: $table.selectedGoalsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get domainScoresJson => $composableBuilder(
+    column: $table.domainScoresJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get routineProfileJson => $composableBuilder(
+    column: $table.routineProfileJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sleepProfileJson => $composableBuilder(
+    column: $table.sleepProfileJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get menstrualProfileJson => $composableBuilder(
+    column: $table.menstrualProfileJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get triggerWeightsJson => $composableBuilder(
+    column: $table.triggerWeightsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get pathwayScoresJson => $composableBuilder(
+    column: $table.pathwayScoresJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get interventionPreferencesJson => $composableBuilder(
+    column: $table.interventionPreferencesJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get learningStateJson => $composableBuilder(
+    column: $table.learningStateJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get supportMapCompletedAt => $composableBuilder(
+    column: $table.supportMapCompletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SupportProfileSnapshotsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SupportProfileSnapshotsTable> {
+  $$SupportProfileSnapshotsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get registrationProfileId => $composableBuilder(
+    column: $table.registrationProfileId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get selectedGoalsJson => $composableBuilder(
+    column: $table.selectedGoalsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get domainScoresJson => $composableBuilder(
+    column: $table.domainScoresJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get routineProfileJson => $composableBuilder(
+    column: $table.routineProfileJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sleepProfileJson => $composableBuilder(
+    column: $table.sleepProfileJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get menstrualProfileJson => $composableBuilder(
+    column: $table.menstrualProfileJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get triggerWeightsJson => $composableBuilder(
+    column: $table.triggerWeightsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get pathwayScoresJson => $composableBuilder(
+    column: $table.pathwayScoresJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get interventionPreferencesJson => $composableBuilder(
+    column: $table.interventionPreferencesJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get learningStateJson => $composableBuilder(
+    column: $table.learningStateJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get supportMapCompletedAt => $composableBuilder(
+    column: $table.supportMapCompletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SupportProfileSnapshotsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SupportProfileSnapshotsTable> {
+  $$SupportProfileSnapshotsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get registrationProfileId => $composableBuilder(
+    column: $table.registrationProfileId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get selectedGoalsJson => $composableBuilder(
+    column: $table.selectedGoalsJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get domainScoresJson => $composableBuilder(
+    column: $table.domainScoresJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get routineProfileJson => $composableBuilder(
+    column: $table.routineProfileJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sleepProfileJson => $composableBuilder(
+    column: $table.sleepProfileJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get menstrualProfileJson => $composableBuilder(
+    column: $table.menstrualProfileJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get triggerWeightsJson => $composableBuilder(
+    column: $table.triggerWeightsJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get pathwayScoresJson => $composableBuilder(
+    column: $table.pathwayScoresJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get interventionPreferencesJson => $composableBuilder(
+    column: $table.interventionPreferencesJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get learningStateJson => $composableBuilder(
+    column: $table.learningStateJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get supportMapCompletedAt => $composableBuilder(
+    column: $table.supportMapCompletedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$SupportProfileSnapshotsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SupportProfileSnapshotsTable,
+          SupportProfileSnapshot,
+          $$SupportProfileSnapshotsTableFilterComposer,
+          $$SupportProfileSnapshotsTableOrderingComposer,
+          $$SupportProfileSnapshotsTableAnnotationComposer,
+          $$SupportProfileSnapshotsTableCreateCompanionBuilder,
+          $$SupportProfileSnapshotsTableUpdateCompanionBuilder,
+          (
+            SupportProfileSnapshot,
+            BaseReferences<
+              _$AppDatabase,
+              $SupportProfileSnapshotsTable,
+              SupportProfileSnapshot
+            >,
+          ),
+          SupportProfileSnapshot,
+          PrefetchHooks Function()
+        > {
+  $$SupportProfileSnapshotsTableTableManager(
+    _$AppDatabase db,
+    $SupportProfileSnapshotsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SupportProfileSnapshotsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$SupportProfileSnapshotsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$SupportProfileSnapshotsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> registrationProfileId = const Value.absent(),
+                Value<String> selectedGoalsJson = const Value.absent(),
+                Value<String> domainScoresJson = const Value.absent(),
+                Value<String> routineProfileJson = const Value.absent(),
+                Value<String> sleepProfileJson = const Value.absent(),
+                Value<String?> menstrualProfileJson = const Value.absent(),
+                Value<String> triggerWeightsJson = const Value.absent(),
+                Value<String> pathwayScoresJson = const Value.absent(),
+                Value<String> interventionPreferencesJson =
+                    const Value.absent(),
+                Value<String> learningStateJson = const Value.absent(),
+                Value<DateTime?> supportMapCompletedAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => SupportProfileSnapshotsCompanion(
+                id: id,
+                registrationProfileId: registrationProfileId,
+                selectedGoalsJson: selectedGoalsJson,
+                domainScoresJson: domainScoresJson,
+                routineProfileJson: routineProfileJson,
+                sleepProfileJson: sleepProfileJson,
+                menstrualProfileJson: menstrualProfileJson,
+                triggerWeightsJson: triggerWeightsJson,
+                pathwayScoresJson: pathwayScoresJson,
+                interventionPreferencesJson: interventionPreferencesJson,
+                learningStateJson: learningStateJson,
+                supportMapCompletedAt: supportMapCompletedAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int registrationProfileId,
+                Value<String> selectedGoalsJson = const Value.absent(),
+                Value<String> domainScoresJson = const Value.absent(),
+                Value<String> routineProfileJson = const Value.absent(),
+                Value<String> sleepProfileJson = const Value.absent(),
+                Value<String?> menstrualProfileJson = const Value.absent(),
+                Value<String> triggerWeightsJson = const Value.absent(),
+                Value<String> pathwayScoresJson = const Value.absent(),
+                Value<String> interventionPreferencesJson =
+                    const Value.absent(),
+                Value<String> learningStateJson = const Value.absent(),
+                Value<DateTime?> supportMapCompletedAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => SupportProfileSnapshotsCompanion.insert(
+                id: id,
+                registrationProfileId: registrationProfileId,
+                selectedGoalsJson: selectedGoalsJson,
+                domainScoresJson: domainScoresJson,
+                routineProfileJson: routineProfileJson,
+                sleepProfileJson: sleepProfileJson,
+                menstrualProfileJson: menstrualProfileJson,
+                triggerWeightsJson: triggerWeightsJson,
+                pathwayScoresJson: pathwayScoresJson,
+                interventionPreferencesJson: interventionPreferencesJson,
+                learningStateJson: learningStateJson,
+                supportMapCompletedAt: supportMapCompletedAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SupportProfileSnapshotsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SupportProfileSnapshotsTable,
+      SupportProfileSnapshot,
+      $$SupportProfileSnapshotsTableFilterComposer,
+      $$SupportProfileSnapshotsTableOrderingComposer,
+      $$SupportProfileSnapshotsTableAnnotationComposer,
+      $$SupportProfileSnapshotsTableCreateCompanionBuilder,
+      $$SupportProfileSnapshotsTableUpdateCompanionBuilder,
+      (
+        SupportProfileSnapshot,
+        BaseReferences<
+          _$AppDatabase,
+          $SupportProfileSnapshotsTable,
+          SupportProfileSnapshot
+        >,
+      ),
+      SupportProfileSnapshot,
+      PrefetchHooks Function()
+    >;
+typedef $$RegistrationProfilesTableCreateCompanionBuilder =
+    RegistrationProfilesCompanion Function({
+      Value<int> id,
+      required String appInstallId,
+      required String displayName,
+      required String email,
+      required String phone,
+      required String ageBand,
+      required String gender,
+      required String countryCode,
+      required String regionName,
+      required String timezone,
+      required bool privacyAcknowledged,
+      Value<bool> marketingConsent,
+      Value<String> webhookSyncStatus,
+      Value<DateTime?> webhookLastAttemptAt,
+      Value<DateTime?> signupCompletedAt,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+    });
+typedef $$RegistrationProfilesTableUpdateCompanionBuilder =
+    RegistrationProfilesCompanion Function({
+      Value<int> id,
+      Value<String> appInstallId,
+      Value<String> displayName,
+      Value<String> email,
+      Value<String> phone,
+      Value<String> ageBand,
+      Value<String> gender,
+      Value<String> countryCode,
+      Value<String> regionName,
+      Value<String> timezone,
+      Value<bool> privacyAcknowledged,
+      Value<bool> marketingConsent,
+      Value<String> webhookSyncStatus,
+      Value<DateTime?> webhookLastAttemptAt,
+      Value<DateTime?> signupCompletedAt,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+    });
+
+class $$RegistrationProfilesTableFilterComposer
+    extends Composer<_$AppDatabase, $RegistrationProfilesTable> {
+  $$RegistrationProfilesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get appInstallId => $composableBuilder(
+    column: $table.appInstallId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get phone => $composableBuilder(
+    column: $table.phone,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ageBand => $composableBuilder(
+    column: $table.ageBand,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gender => $composableBuilder(
+    column: $table.gender,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get countryCode => $composableBuilder(
+    column: $table.countryCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get regionName => $composableBuilder(
+    column: $table.regionName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get timezone => $composableBuilder(
+    column: $table.timezone,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get privacyAcknowledged => $composableBuilder(
+    column: $table.privacyAcknowledged,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get marketingConsent => $composableBuilder(
+    column: $table.marketingConsent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get webhookSyncStatus => $composableBuilder(
+    column: $table.webhookSyncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get webhookLastAttemptAt => $composableBuilder(
+    column: $table.webhookLastAttemptAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get signupCompletedAt => $composableBuilder(
+    column: $table.signupCompletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$RegistrationProfilesTableOrderingComposer
+    extends Composer<_$AppDatabase, $RegistrationProfilesTable> {
+  $$RegistrationProfilesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get appInstallId => $composableBuilder(
+    column: $table.appInstallId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get phone => $composableBuilder(
+    column: $table.phone,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ageBand => $composableBuilder(
+    column: $table.ageBand,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gender => $composableBuilder(
+    column: $table.gender,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get countryCode => $composableBuilder(
+    column: $table.countryCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get regionName => $composableBuilder(
+    column: $table.regionName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get timezone => $composableBuilder(
+    column: $table.timezone,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get privacyAcknowledged => $composableBuilder(
+    column: $table.privacyAcknowledged,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get marketingConsent => $composableBuilder(
+    column: $table.marketingConsent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get webhookSyncStatus => $composableBuilder(
+    column: $table.webhookSyncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get webhookLastAttemptAt => $composableBuilder(
+    column: $table.webhookLastAttemptAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get signupCompletedAt => $composableBuilder(
+    column: $table.signupCompletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RegistrationProfilesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RegistrationProfilesTable> {
+  $$RegistrationProfilesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get appInstallId => $composableBuilder(
+    column: $table.appInstallId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<String> get phone =>
+      $composableBuilder(column: $table.phone, builder: (column) => column);
+
+  GeneratedColumn<String> get ageBand =>
+      $composableBuilder(column: $table.ageBand, builder: (column) => column);
+
+  GeneratedColumn<String> get gender =>
+      $composableBuilder(column: $table.gender, builder: (column) => column);
+
+  GeneratedColumn<String> get countryCode => $composableBuilder(
+    column: $table.countryCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get regionName => $composableBuilder(
+    column: $table.regionName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get timezone =>
+      $composableBuilder(column: $table.timezone, builder: (column) => column);
+
+  GeneratedColumn<bool> get privacyAcknowledged => $composableBuilder(
+    column: $table.privacyAcknowledged,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get marketingConsent => $composableBuilder(
+    column: $table.marketingConsent,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get webhookSyncStatus => $composableBuilder(
+    column: $table.webhookSyncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get webhookLastAttemptAt => $composableBuilder(
+    column: $table.webhookLastAttemptAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get signupCompletedAt => $composableBuilder(
+    column: $table.signupCompletedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$RegistrationProfilesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RegistrationProfilesTable,
+          RegistrationProfile,
+          $$RegistrationProfilesTableFilterComposer,
+          $$RegistrationProfilesTableOrderingComposer,
+          $$RegistrationProfilesTableAnnotationComposer,
+          $$RegistrationProfilesTableCreateCompanionBuilder,
+          $$RegistrationProfilesTableUpdateCompanionBuilder,
+          (
+            RegistrationProfile,
+            BaseReferences<
+              _$AppDatabase,
+              $RegistrationProfilesTable,
+              RegistrationProfile
+            >,
+          ),
+          RegistrationProfile,
+          PrefetchHooks Function()
+        > {
+  $$RegistrationProfilesTableTableManager(
+    _$AppDatabase db,
+    $RegistrationProfilesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RegistrationProfilesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RegistrationProfilesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$RegistrationProfilesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> appInstallId = const Value.absent(),
+                Value<String> displayName = const Value.absent(),
+                Value<String> email = const Value.absent(),
+                Value<String> phone = const Value.absent(),
+                Value<String> ageBand = const Value.absent(),
+                Value<String> gender = const Value.absent(),
+                Value<String> countryCode = const Value.absent(),
+                Value<String> regionName = const Value.absent(),
+                Value<String> timezone = const Value.absent(),
+                Value<bool> privacyAcknowledged = const Value.absent(),
+                Value<bool> marketingConsent = const Value.absent(),
+                Value<String> webhookSyncStatus = const Value.absent(),
+                Value<DateTime?> webhookLastAttemptAt = const Value.absent(),
+                Value<DateTime?> signupCompletedAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => RegistrationProfilesCompanion(
+                id: id,
+                appInstallId: appInstallId,
+                displayName: displayName,
+                email: email,
+                phone: phone,
+                ageBand: ageBand,
+                gender: gender,
+                countryCode: countryCode,
+                regionName: regionName,
+                timezone: timezone,
+                privacyAcknowledged: privacyAcknowledged,
+                marketingConsent: marketingConsent,
+                webhookSyncStatus: webhookSyncStatus,
+                webhookLastAttemptAt: webhookLastAttemptAt,
+                signupCompletedAt: signupCompletedAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String appInstallId,
+                required String displayName,
+                required String email,
+                required String phone,
+                required String ageBand,
+                required String gender,
+                required String countryCode,
+                required String regionName,
+                required String timezone,
+                required bool privacyAcknowledged,
+                Value<bool> marketingConsent = const Value.absent(),
+                Value<String> webhookSyncStatus = const Value.absent(),
+                Value<DateTime?> webhookLastAttemptAt = const Value.absent(),
+                Value<DateTime?> signupCompletedAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => RegistrationProfilesCompanion.insert(
+                id: id,
+                appInstallId: appInstallId,
+                displayName: displayName,
+                email: email,
+                phone: phone,
+                ageBand: ageBand,
+                gender: gender,
+                countryCode: countryCode,
+                regionName: regionName,
+                timezone: timezone,
+                privacyAcknowledged: privacyAcknowledged,
+                marketingConsent: marketingConsent,
+                webhookSyncStatus: webhookSyncStatus,
+                webhookLastAttemptAt: webhookLastAttemptAt,
+                signupCompletedAt: signupCompletedAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$RegistrationProfilesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RegistrationProfilesTable,
+      RegistrationProfile,
+      $$RegistrationProfilesTableFilterComposer,
+      $$RegistrationProfilesTableOrderingComposer,
+      $$RegistrationProfilesTableAnnotationComposer,
+      $$RegistrationProfilesTableCreateCompanionBuilder,
+      $$RegistrationProfilesTableUpdateCompanionBuilder,
+      (
+        RegistrationProfile,
+        BaseReferences<
+          _$AppDatabase,
+          $RegistrationProfilesTable,
+          RegistrationProfile
+        >,
+      ),
+      RegistrationProfile,
+      PrefetchHooks Function()
+    >;
+typedef $$QuestionnaireSessionsTableCreateCompanionBuilder =
+    QuestionnaireSessionsCompanion Function({
+      Value<int> id,
+      required int registrationProfileId,
+      Value<String> currentSectionId,
+      Value<String> currentQuestionId,
+      Value<String> completedSectionsJson,
+      Value<String> answersJson,
+      Value<int> answerCount,
+      Value<bool> isCompleted,
+      Value<DateTime> startedAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> completedAt,
+    });
+typedef $$QuestionnaireSessionsTableUpdateCompanionBuilder =
+    QuestionnaireSessionsCompanion Function({
+      Value<int> id,
+      Value<int> registrationProfileId,
+      Value<String> currentSectionId,
+      Value<String> currentQuestionId,
+      Value<String> completedSectionsJson,
+      Value<String> answersJson,
+      Value<int> answerCount,
+      Value<bool> isCompleted,
+      Value<DateTime> startedAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> completedAt,
+    });
+
+class $$QuestionnaireSessionsTableFilterComposer
+    extends Composer<_$AppDatabase, $QuestionnaireSessionsTable> {
+  $$QuestionnaireSessionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get registrationProfileId => $composableBuilder(
+    column: $table.registrationProfileId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currentSectionId => $composableBuilder(
+    column: $table.currentSectionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currentQuestionId => $composableBuilder(
+    column: $table.currentQuestionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get completedSectionsJson => $composableBuilder(
+    column: $table.completedSectionsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get answersJson => $composableBuilder(
+    column: $table.answersJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get answerCount => $composableBuilder(
+    column: $table.answerCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isCompleted => $composableBuilder(
+    column: $table.isCompleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$QuestionnaireSessionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $QuestionnaireSessionsTable> {
+  $$QuestionnaireSessionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get registrationProfileId => $composableBuilder(
+    column: $table.registrationProfileId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currentSectionId => $composableBuilder(
+    column: $table.currentSectionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currentQuestionId => $composableBuilder(
+    column: $table.currentQuestionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get completedSectionsJson => $composableBuilder(
+    column: $table.completedSectionsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get answersJson => $composableBuilder(
+    column: $table.answersJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get answerCount => $composableBuilder(
+    column: $table.answerCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isCompleted => $composableBuilder(
+    column: $table.isCompleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$QuestionnaireSessionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $QuestionnaireSessionsTable> {
+  $$QuestionnaireSessionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get registrationProfileId => $composableBuilder(
+    column: $table.registrationProfileId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get currentSectionId => $composableBuilder(
+    column: $table.currentSectionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get currentQuestionId => $composableBuilder(
+    column: $table.currentQuestionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get completedSectionsJson => $composableBuilder(
+    column: $table.completedSectionsJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get answersJson => $composableBuilder(
+    column: $table.answersJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get answerCount => $composableBuilder(
+    column: $table.answerCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isCompleted => $composableBuilder(
+    column: $table.isCompleted,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$QuestionnaireSessionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $QuestionnaireSessionsTable,
+          QuestionnaireSession,
+          $$QuestionnaireSessionsTableFilterComposer,
+          $$QuestionnaireSessionsTableOrderingComposer,
+          $$QuestionnaireSessionsTableAnnotationComposer,
+          $$QuestionnaireSessionsTableCreateCompanionBuilder,
+          $$QuestionnaireSessionsTableUpdateCompanionBuilder,
+          (
+            QuestionnaireSession,
+            BaseReferences<
+              _$AppDatabase,
+              $QuestionnaireSessionsTable,
+              QuestionnaireSession
+            >,
+          ),
+          QuestionnaireSession,
+          PrefetchHooks Function()
+        > {
+  $$QuestionnaireSessionsTableTableManager(
+    _$AppDatabase db,
+    $QuestionnaireSessionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$QuestionnaireSessionsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$QuestionnaireSessionsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$QuestionnaireSessionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> registrationProfileId = const Value.absent(),
+                Value<String> currentSectionId = const Value.absent(),
+                Value<String> currentQuestionId = const Value.absent(),
+                Value<String> completedSectionsJson = const Value.absent(),
+                Value<String> answersJson = const Value.absent(),
+                Value<int> answerCount = const Value.absent(),
+                Value<bool> isCompleted = const Value.absent(),
+                Value<DateTime> startedAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> completedAt = const Value.absent(),
+              }) => QuestionnaireSessionsCompanion(
+                id: id,
+                registrationProfileId: registrationProfileId,
+                currentSectionId: currentSectionId,
+                currentQuestionId: currentQuestionId,
+                completedSectionsJson: completedSectionsJson,
+                answersJson: answersJson,
+                answerCount: answerCount,
+                isCompleted: isCompleted,
+                startedAt: startedAt,
+                updatedAt: updatedAt,
+                completedAt: completedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int registrationProfileId,
+                Value<String> currentSectionId = const Value.absent(),
+                Value<String> currentQuestionId = const Value.absent(),
+                Value<String> completedSectionsJson = const Value.absent(),
+                Value<String> answersJson = const Value.absent(),
+                Value<int> answerCount = const Value.absent(),
+                Value<bool> isCompleted = const Value.absent(),
+                Value<DateTime> startedAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> completedAt = const Value.absent(),
+              }) => QuestionnaireSessionsCompanion.insert(
+                id: id,
+                registrationProfileId: registrationProfileId,
+                currentSectionId: currentSectionId,
+                currentQuestionId: currentQuestionId,
+                completedSectionsJson: completedSectionsJson,
+                answersJson: answersJson,
+                answerCount: answerCount,
+                isCompleted: isCompleted,
+                startedAt: startedAt,
+                updatedAt: updatedAt,
+                completedAt: completedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$QuestionnaireSessionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $QuestionnaireSessionsTable,
+      QuestionnaireSession,
+      $$QuestionnaireSessionsTableFilterComposer,
+      $$QuestionnaireSessionsTableOrderingComposer,
+      $$QuestionnaireSessionsTableAnnotationComposer,
+      $$QuestionnaireSessionsTableCreateCompanionBuilder,
+      $$QuestionnaireSessionsTableUpdateCompanionBuilder,
+      (
+        QuestionnaireSession,
+        BaseReferences<
+          _$AppDatabase,
+          $QuestionnaireSessionsTable,
+          QuestionnaireSession
+        >,
+      ),
+      QuestionnaireSession,
+      PrefetchHooks Function()
+    >;
+typedef $$QuestionnaireAnswersTableCreateCompanionBuilder =
+    QuestionnaireAnswersCompanion Function({
+      Value<int> id,
+      required int sessionId,
+      required String sectionId,
+      required String questionId,
+      required String answerJson,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+    });
+typedef $$QuestionnaireAnswersTableUpdateCompanionBuilder =
+    QuestionnaireAnswersCompanion Function({
+      Value<int> id,
+      Value<int> sessionId,
+      Value<String> sectionId,
+      Value<String> questionId,
+      Value<String> answerJson,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+    });
+
+class $$QuestionnaireAnswersTableFilterComposer
+    extends Composer<_$AppDatabase, $QuestionnaireAnswersTable> {
+  $$QuestionnaireAnswersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sectionId => $composableBuilder(
+    column: $table.sectionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get questionId => $composableBuilder(
+    column: $table.questionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get answerJson => $composableBuilder(
+    column: $table.answerJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$QuestionnaireAnswersTableOrderingComposer
+    extends Composer<_$AppDatabase, $QuestionnaireAnswersTable> {
+  $$QuestionnaireAnswersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sectionId => $composableBuilder(
+    column: $table.sectionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get questionId => $composableBuilder(
+    column: $table.questionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get answerJson => $composableBuilder(
+    column: $table.answerJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$QuestionnaireAnswersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $QuestionnaireAnswersTable> {
+  $$QuestionnaireAnswersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get sessionId =>
+      $composableBuilder(column: $table.sessionId, builder: (column) => column);
+
+  GeneratedColumn<String> get sectionId =>
+      $composableBuilder(column: $table.sectionId, builder: (column) => column);
+
+  GeneratedColumn<String> get questionId => $composableBuilder(
+    column: $table.questionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get answerJson => $composableBuilder(
+    column: $table.answerJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$QuestionnaireAnswersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $QuestionnaireAnswersTable,
+          QuestionnaireAnswer,
+          $$QuestionnaireAnswersTableFilterComposer,
+          $$QuestionnaireAnswersTableOrderingComposer,
+          $$QuestionnaireAnswersTableAnnotationComposer,
+          $$QuestionnaireAnswersTableCreateCompanionBuilder,
+          $$QuestionnaireAnswersTableUpdateCompanionBuilder,
+          (
+            QuestionnaireAnswer,
+            BaseReferences<
+              _$AppDatabase,
+              $QuestionnaireAnswersTable,
+              QuestionnaireAnswer
+            >,
+          ),
+          QuestionnaireAnswer,
+          PrefetchHooks Function()
+        > {
+  $$QuestionnaireAnswersTableTableManager(
+    _$AppDatabase db,
+    $QuestionnaireAnswersTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$QuestionnaireAnswersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$QuestionnaireAnswersTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$QuestionnaireAnswersTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> sessionId = const Value.absent(),
+                Value<String> sectionId = const Value.absent(),
+                Value<String> questionId = const Value.absent(),
+                Value<String> answerJson = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => QuestionnaireAnswersCompanion(
+                id: id,
+                sessionId: sessionId,
+                sectionId: sectionId,
+                questionId: questionId,
+                answerJson: answerJson,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int sessionId,
+                required String sectionId,
+                required String questionId,
+                required String answerJson,
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => QuestionnaireAnswersCompanion.insert(
+                id: id,
+                sessionId: sessionId,
+                sectionId: sectionId,
+                questionId: questionId,
+                answerJson: answerJson,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$QuestionnaireAnswersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $QuestionnaireAnswersTable,
+      QuestionnaireAnswer,
+      $$QuestionnaireAnswersTableFilterComposer,
+      $$QuestionnaireAnswersTableOrderingComposer,
+      $$QuestionnaireAnswersTableAnnotationComposer,
+      $$QuestionnaireAnswersTableCreateCompanionBuilder,
+      $$QuestionnaireAnswersTableUpdateCompanionBuilder,
+      (
+        QuestionnaireAnswer,
+        BaseReferences<
+          _$AppDatabase,
+          $QuestionnaireAnswersTable,
+          QuestionnaireAnswer
+        >,
+      ),
+      QuestionnaireAnswer,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -28593,4 +33074,15 @@ class $AppDatabaseManager {
       $$DailyTaskAssignmentsTableTableManager(_db, _db.dailyTaskAssignments);
   $$WeeklyAssessmentsTableTableManager get weeklyAssessments =>
       $$WeeklyAssessmentsTableTableManager(_db, _db.weeklyAssessments);
+  $$SupportProfileSnapshotsTableTableManager get supportProfileSnapshots =>
+      $$SupportProfileSnapshotsTableTableManager(
+        _db,
+        _db.supportProfileSnapshots,
+      );
+  $$RegistrationProfilesTableTableManager get registrationProfiles =>
+      $$RegistrationProfilesTableTableManager(_db, _db.registrationProfiles);
+  $$QuestionnaireSessionsTableTableManager get questionnaireSessions =>
+      $$QuestionnaireSessionsTableTableManager(_db, _db.questionnaireSessions);
+  $$QuestionnaireAnswersTableTableManager get questionnaireAnswers =>
+      $$QuestionnaireAnswersTableTableManager(_db, _db.questionnaireAnswers);
 }

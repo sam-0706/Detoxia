@@ -2,6 +2,7 @@ import 'package:detoxia/core/constants/enums.dart';
 import 'package:detoxia/presentation/onboarding/onboarding_screen.dart';
 import 'package:detoxia/presentation/widgets/big_card_selector.dart';
 import 'package:detoxia/presentation/widgets/time_picker_row.dart';
+import 'package:detoxia/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,9 +32,9 @@ class LifeStructurePage extends ConsumerWidget {
           const SizedBox(height: 28),
 
           // Role selection
-          const Text('I am a...',
+          Text('I am a...',
               style: TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.w600)),
+                  color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
           BigCardSelector<RoleType>(
             options: RoleType.values,
@@ -61,9 +62,9 @@ class LifeStructurePage extends ConsumerWidget {
           if (state.roleType == RoleType.working ||
               state.roleType == RoleType.student) ...[
             const SizedBox(height: 20),
-            const Text('My work/study days',
+            Text('My work/study days',
                 style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w600)),
+                    color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
             _DayToggleRow(
               selected: state.workDays,
@@ -75,9 +76,9 @@ class LifeStructurePage extends ConsumerWidget {
             ),
 
             const SizedBox(height: 20),
-            const Text('Work/study hours',
+            Text('Work/study hours',
                 style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w600)),
+                    color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -111,9 +112,9 @@ class LifeStructurePage extends ConsumerWidget {
           ],
 
           const SizedBox(height: 24),
-          const Text('Your typical day',
+          Text('Your typical day',
               style: TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.w600)),
+                  color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
           TimePickerRow(
             label: 'Wake up around',
@@ -139,9 +140,9 @@ class LifeStructurePage extends ConsumerWidget {
           if (state.roleType != null &&
               state.roleType != RoleType.notWorking) ...[
             const SizedBox(height: 20),
-            const Text('What about your off days?',
+            Text('What about your off days?',
                 style: TextStyle(
-                    color: Colors.white70,
+                    color: AppTheme.palette(context).textSecondary,
                     fontWeight: FontWeight.w500)),
             const SizedBox(height: 12),
             TimePickerRow(
@@ -211,13 +212,13 @@ class _DayToggleRow extends StatelessWidget {
               shape: BoxShape.circle,
               color: isOn
                   ? Theme.of(context).primaryColor
-                  : Colors.white12,
+                  : AppTheme.palette(context).borderSubtle,
             ),
             child: Center(
               child: Text(
                 days[i],
                 style: TextStyle(
-                  color: isOn ? Colors.white : Colors.white54,
+                  color: isOn ? AppTheme.palette(context).textPrimary : AppTheme.palette(context).textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),

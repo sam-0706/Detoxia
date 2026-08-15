@@ -1,4 +1,5 @@
 import 'package:detoxia/presentation/onboarding/onboarding_screen.dart';
+import 'package:detoxia/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -140,7 +141,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
           const SizedBox(height: 8),
           TextField(
             controller: _nameCtrl,
-            style: const TextStyle(color: Colors.white),
+            style:  TextStyle(color: AppTheme.palette(context).textPrimary),
             textCapitalization: TextCapitalization.words,
             onChanged: (_) => setState(() {}),
             decoration: _inputDeco(
@@ -156,7 +157,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
           TextField(
             controller: _emailCtrl,
             keyboardType: TextInputType.emailAddress,
-            style: const TextStyle(color: Colors.white),
+            style:  TextStyle(color: AppTheme.palette(context).textPrimary),
             onChanged: (_) {
               _validateEmail();
               setState(() {});
@@ -175,7 +176,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
           DropdownButtonFormField<String>(
             initialValue: _selectedCountry?.name,
             dropdownColor: const Color(0xFF1E1E2E),
-            style: const TextStyle(color: Colors.white),
+            style:  TextStyle(color: AppTheme.palette(context).textPrimary),
             isExpanded: true,
             decoration: _inputDeco(
               hint: 'Select your country',
@@ -207,15 +208,15 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                 height: 56,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.06),
+                  color: AppTheme.palette(context).textPrimary.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   _selectedCountry?.dialCode ?? '+--',
                   style: TextStyle(
                     color: _selectedCountry != null
-                        ? Colors.white
-                        : Colors.white38,
+                        ? AppTheme.palette(context).textPrimary
+                        : AppTheme.palette(context).textTertiary,
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
                   ),
@@ -226,7 +227,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                 child: TextField(
                   controller: _phoneCtrl,
                   keyboardType: TextInputType.phone,
-                  style: const TextStyle(color: Colors.white),
+                  style:  TextStyle(color: AppTheme.palette(context).textPrimary),
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(
                         RegExp(r'[0-9 \-]')),
@@ -245,15 +246,15 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.04),
+              color: AppTheme.palette(context).textPrimary.withValues(alpha: 0.04),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white12),
+              border: Border.all(color: AppTheme.palette(context).borderSubtle),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.lock_outline,
-                    color: Colors.white38, size: 18),
+                Icon(Icons.lock_outline,
+                    color: AppTheme.palette(context).textTertiary, size: 18),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -262,7 +263,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                     'updates. Your wellness data never leaves your '
                     'device. Contact info may be used for product updates.',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.5),
+                      color: AppTheme.palette(context).textPrimary.withValues(alpha: 0.5),
                       fontSize: 12,
                       height: 1.4,
                     ),
@@ -292,8 +293,8 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
   Widget _buildLabel(String text) {
     return Text(
       text,
-      style: const TextStyle(
-          color: Colors.white, fontWeight: FontWeight.w600),
+      style: TextStyle(
+          color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600),
     );
   }
 
@@ -303,13 +304,13 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
     String? errorText,
   }) {
     return InputDecoration(
-      prefixIcon: Icon(icon, color: Colors.white38),
+      prefixIcon: Icon(icon, color: AppTheme.palette(context).textTertiary),
       hintText: hint,
-      hintStyle: const TextStyle(color: Colors.white38),
+      hintStyle:  TextStyle(color: AppTheme.palette(context).textTertiary),
       errorText: errorText,
       errorStyle: const TextStyle(color: Color(0xFFEF5350), fontSize: 12),
       filled: true,
-      fillColor: Colors.white.withValues(alpha: 0.06),
+      fillColor: AppTheme.palette(context).textPrimary.withValues(alpha: 0.06),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,

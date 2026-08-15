@@ -4,7 +4,7 @@ import 'package:detoxia/core/constants/enums.dart';
 import 'package:detoxia/core/utils/time_utils.dart';
 import 'package:detoxia/data/database/app_database.dart';
 import 'package:detoxia/domain/entities/user_profile.dart';
-import 'package:drift/drift.dart';
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserRepository {
@@ -76,8 +76,26 @@ class UserRepository {
   }
 
   Future<bool> hasCheckedInToday() async {
-    final row = await _db.select(_db.users).getSingleOrNull();
-    return row?.checkedInToday ?? false;
+    final now = DateTime.now();
+    final start = DateTime(now.year, now.month, now.day);
+    final end = start.add(const Duration(days: 1));
+    final checkin = await (_db.select(_db.dailyCheckins)
+          ..where((t) => t.date.isBetweenValues(start, end)))
+        .getSingleOrNull();
+    if (checkin != null) return true;
+
+    // Legacy flag fallback (reset if stale — new calendar day)
+    final user = await _db.select(_db.users).getSingleOrNull();
+    if (user == null || !user.checkedInToday) return false;
+
+    final updated = user.updatedAt;
+    final updatedDay =
+        DateTime(updated.year, updated.month, updated.day);
+    if (updatedDay.isBefore(start)) {
+      await markCheckedIn(false);
+      return false;
+    }
+    return true;
   }
 
   UserProfile _fromRow(User row) {

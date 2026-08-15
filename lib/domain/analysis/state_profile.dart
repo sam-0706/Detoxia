@@ -111,9 +111,9 @@ class DownstreamImpact {
   String get moodInsight =>
       'Your mood averages ${moodAfterSlip.toStringAsFixed(1)}/10 '
       'the day after a slip vs '
-      '${moodAfterClean.toStringAsFixed(1)}/10 after a clean day.';
+      '${moodAfterClean.toStringAsFixed(1)}/10 after a steady day.';
 
   String get sleepInsight =>
       'You sleep ${sleepDelta.toStringAsFixed(1)} points better '
-      'on clean nights.';
+      'on steady nights.';
 }

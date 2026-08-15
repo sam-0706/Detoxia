@@ -92,7 +92,7 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Thought record saved'),
-          backgroundColor: AppTheme.success,
+          backgroundColor: AppTheme.palette(context).success,
         ),
       );
       Navigator.pop(context);
@@ -108,8 +108,8 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
           preferredSize: const Size.fromHeight(4),
           child: LinearProgressIndicator(
             value: (_currentStep + 1) / _totalSteps,
-            backgroundColor: Colors.white12,
-            color: AppTheme.accent,
+            backgroundColor: AppTheme.palette(context).borderSubtle,
+            color: AppTheme.palette(context).accent,
           ),
         ),
       ),
@@ -150,12 +150,12 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
         children: [
           Text(
             stepLabel,
-            style: TextStyle(color: AppTheme.accent, fontSize: 13, fontWeight: FontWeight.w600),
+            style: TextStyle(color: AppTheme.palette(context).accent, fontSize: 13, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           Text(
             prompt,
-            style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
+            style:  TextStyle(color: AppTheme.palette(context).textPrimary, fontSize: 20, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 20),
           child,
@@ -171,10 +171,10 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
       child: TextField(
         controller: _situationController,
         maxLines: 4,
-        style: const TextStyle(color: Colors.white),
-        decoration: const InputDecoration(
+        style:  TextStyle(color: AppTheme.palette(context).textPrimary),
+        decoration: InputDecoration(
           hintText: 'Describe the situation briefly...',
-          hintStyle: TextStyle(color: Colors.white30),
+          hintStyle: TextStyle(color: AppTheme.palette(context).textTertiary),
         ),
       ),
     );
@@ -190,10 +190,10 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
           TextField(
             controller: _thoughtController,
             maxLines: 4,
-            style: const TextStyle(color: Colors.white),
-            decoration: const InputDecoration(
+            style:  TextStyle(color: AppTheme.palette(context).textPrimary),
+            decoration: InputDecoration(
               hintText: 'Write the automatic thought...',
-              hintStyle: TextStyle(color: Colors.white30),
+              hintStyle: TextStyle(color: AppTheme.palette(context).textTertiary),
             ),
           ),
           if (_detectedDistortion != null) ...[
@@ -214,19 +214,19 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
         children: [
           TextField(
             controller: _emotionController,
-            style: const TextStyle(color: Colors.white),
-            decoration: const InputDecoration(
+            style:  TextStyle(color: AppTheme.palette(context).textPrimary),
+            decoration: InputDecoration(
               hintText: 'Name the emotion (e.g. sad, anxious, angry)...',
-              hintStyle: TextStyle(color: Colors.white30),
+              hintStyle: TextStyle(color: AppTheme.palette(context).textTertiary),
             ),
           ),
           const SizedBox(height: 20),
-          const Text('Intensity',
-              style: TextStyle(color: Colors.white70, fontSize: 14)),
+          Text('Intensity',
+              style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 14)),
           const SizedBox(height: 4),
           Row(
             children: [
-              const Text('Low', style: TextStyle(color: Colors.white38, fontSize: 12)),
+               Text('Low', style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 12)),
               Expanded(
                 child: Slider(
                   value: _emotionIntensity,
@@ -234,17 +234,17 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
                   max: 10,
                   divisions: 10,
                   label: '${_emotionIntensity.round()}',
-                  activeColor: AppTheme.accent,
+                  activeColor: AppTheme.palette(context).accent,
                   onChanged: (v) => setState(() => _emotionIntensity = v),
                 ),
               ),
-              const Text('High', style: TextStyle(color: Colors.white38, fontSize: 12)),
+               Text('High', style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 12)),
             ],
           ),
           Center(
             child: Text(
               '${_emotionIntensity.round()} / 10',
-              style: TextStyle(color: AppTheme.accent, fontWeight: FontWeight.bold),
+              style: TextStyle(color: AppTheme.palette(context).accent, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -259,18 +259,18 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'What facts support this thought being true?',
-            style: TextStyle(color: Colors.white54, fontSize: 13),
+            style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _evidenceForController,
             maxLines: 4,
-            style: const TextStyle(color: Colors.white),
-            decoration: const InputDecoration(
+            style:  TextStyle(color: AppTheme.palette(context).textPrimary),
+            decoration: InputDecoration(
               hintText: 'List the evidence...',
-              hintStyle: TextStyle(color: Colors.white30),
+              hintStyle: TextStyle(color: AppTheme.palette(context).textTertiary),
             ),
           ),
           if (_detectedDistortion != null) ...[
@@ -289,18 +289,18 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'What facts suggest this thought might not be completely true?',
-            style: TextStyle(color: Colors.white54, fontSize: 13),
+            style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _evidenceAgainstController,
             maxLines: 4,
-            style: const TextStyle(color: Colors.white),
-            decoration: const InputDecoration(
+            style:  TextStyle(color: AppTheme.palette(context).textPrimary),
+            decoration: InputDecoration(
               hintText: 'List the counter-evidence...',
-              hintStyle: TextStyle(color: Colors.white30),
+              hintStyle: TextStyle(color: AppTheme.palette(context).textTertiary),
             ),
           ),
           if (_detectedDistortion != null) ...[
@@ -319,18 +319,18 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Considering the evidence for and against, write a more balanced thought.',
-            style: TextStyle(color: Colors.white54, fontSize: 13),
+            style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _balancedController,
             maxLines: 4,
-            style: const TextStyle(color: Colors.white),
-            decoration: const InputDecoration(
+            style:  TextStyle(color: AppTheme.palette(context).textPrimary),
+            decoration: InputDecoration(
               hintText: 'Write a balanced thought...',
-              hintStyle: TextStyle(color: Colors.white30),
+              hintStyle: TextStyle(color: AppTheme.palette(context).textTertiary),
             ),
           ),
         ],
@@ -348,17 +348,17 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
           Text(
             'You said you felt "${_emotionController.text}" at '
             '${_emotionIntensity.round()}/10.',
-            style: const TextStyle(color: Colors.white54, fontSize: 14),
+            style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 14),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'After examining the evidence, how intense is that feeling now?',
-            style: TextStyle(color: Colors.white70, fontSize: 14),
+            style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 14),
           ),
           const SizedBox(height: 12),
           Row(
             children: [
-              const Text('Low', style: TextStyle(color: Colors.white38, fontSize: 12)),
+               Text('Low', style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 12)),
               Expanded(
                 child: Slider(
                   value: _newIntensity,
@@ -366,17 +366,17 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
                   max: 10,
                   divisions: 10,
                   label: '${_newIntensity.round()}',
-                  activeColor: AppTheme.success,
+                  activeColor: AppTheme.palette(context).success,
                   onChanged: (v) => setState(() => _newIntensity = v),
                 ),
               ),
-              const Text('High', style: TextStyle(color: Colors.white38, fontSize: 12)),
+               Text('High', style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 12)),
             ],
           ),
           Center(
             child: Text(
               '${_newIntensity.round()} / 10',
-              style: TextStyle(color: AppTheme.success, fontWeight: FontWeight.bold, fontSize: 18),
+              style: TextStyle(color: AppTheme.palette(context).success, fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ),
           const SizedBox(height: 20),
@@ -384,19 +384,19 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppTheme.success.withValues(alpha: 0.1),
+                color: AppTheme.palette(context).success.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.success.withValues(alpha: 0.3)),
+                border: Border.all(color: AppTheme.palette(context).success.withValues(alpha: 0.3)),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.trending_down, color: AppTheme.success, size: 20),
+                  Icon(Icons.trending_down, color: AppTheme.palette(context).success, size: 20),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       'Your intensity dropped by ${(_emotionIntensity - _newIntensity).round()} points. '
                       'Challenging thoughts works.',
-                      style: TextStyle(color: AppTheme.success, fontSize: 13),
+                      style: TextStyle(color: AppTheme.palette(context).success, fontSize: 13),
                     ),
                   ),
                 ],
@@ -412,14 +412,14 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppTheme.warning.withValues(alpha: 0.1),
+        color: AppTheme.palette(context).warning.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.warning.withValues(alpha: 0.3)),
+        border: Border.all(color: AppTheme.palette(context).warning.withValues(alpha: 0.3)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.lightbulb_outline, color: AppTheme.warning, size: 18),
+          Icon(Icons.lightbulb_outline, color: AppTheme.palette(context).warning, size: 18),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -428,7 +428,7 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
                 Text(
                   'Possible pattern: ${_distortionLabel(distortion)}',
                   style: TextStyle(
-                    color: AppTheme.warning,
+                    color: AppTheme.palette(context).warning,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
@@ -436,7 +436,7 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
                 const SizedBox(height: 4),
                 Text(
                   ThoughtChallenger.distortionDescriptions[distortion] ?? '',
-                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                  style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 12),
                 ),
               ],
             ),
@@ -452,9 +452,9 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppTheme.accent.withValues(alpha: 0.08),
+        color: AppTheme.palette(context).accent.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.accent.withValues(alpha: 0.2)),
+        border: Border.all(color: AppTheme.palette(context).accent.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -462,7 +462,7 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
           Text(
             'Questions to consider:',
             style: TextStyle(
-              color: AppTheme.accent,
+              color: AppTheme.palette(context).accent,
               fontWeight: FontWeight.w600,
               fontSize: 13,
             ),
@@ -473,11 +473,11 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('• ', style: TextStyle(color: AppTheme.accent)),
+                    Text('• ', style: TextStyle(color: AppTheme.palette(context).accent)),
                     Expanded(
                       child: Text(q,
-                          style: const TextStyle(
-                              color: Colors.white60, fontSize: 13)),
+                          style: TextStyle(
+                              color: AppTheme.palette(context).textSecondary, fontSize: 13)),
                     ),
                   ],
                 ),
@@ -491,8 +491,8 @@ class _ThoughtRecordScreenState extends ConsumerState<ThoughtRecordScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
-        border: Border(top: BorderSide(color: Colors.white12)),
+        color: AppTheme.palette(context).surface,
+        border: Border(top: BorderSide(color: AppTheme.palette(context).borderSubtle)),
       ),
       child: Row(
         children: [

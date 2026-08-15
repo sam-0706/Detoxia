@@ -98,12 +98,12 @@ class _DepressionInsightsScreenState
           children: [
             Row(
               children: [
-                Icon(Icons.calendar_today, color: AppTheme.accent, size: 20),
+                Icon(Icons.calendar_today, color: AppTheme.palette(context).accent, size: 20),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'This Week',
                   style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w600),
+                      color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -113,19 +113,19 @@ class _DepressionInsightsScreenState
                 _StatTile(
                   label: 'Activities',
                   value: '$_activitiesThisWeek',
-                  color: AppTheme.accent,
+                  color: AppTheme.palette(context).accent,
                 ),
                 const SizedBox(width: 12),
                 _StatTile(
                   label: 'Avg Pleasure',
                   value: _avgPleasure.toStringAsFixed(1),
-                  color: AppTheme.success,
+                  color: AppTheme.palette(context).success,
                 ),
                 const SizedBox(width: 12),
                 _StatTile(
                   label: 'Avg Mastery',
                   value: _avgMastery.toStringAsFixed(1),
-                  color: AppTheme.warning,
+                  color: AppTheme.palette(context).warning,
                 ),
               ],
             ),
@@ -144,20 +144,20 @@ class _DepressionInsightsScreenState
           children: [
             Row(
               children: [
-                Icon(Icons.star, color: AppTheme.warning, size: 20),
+                Icon(Icons.star, color: AppTheme.palette(context).warning, size: 20),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'Top Activities by Pleasure',
                   style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w600),
+                      color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
             const SizedBox(height: 12),
             if (_topByPleasure.isEmpty)
-              const Text(
+              Text(
                 'Complete some activities with pleasure ratings to see your favorites.',
-                style: TextStyle(color: Colors.white38, fontSize: 13),
+                style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 13),
               )
             else
               ..._topByPleasure.take(5).map((a) => Padding(
@@ -168,14 +168,14 @@ class _DepressionInsightsScreenState
                           width: 32,
                           height: 32,
                           decoration: BoxDecoration(
-                            color: AppTheme.success.withValues(alpha: 0.15),
+                            color: AppTheme.palette(context).success.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           alignment: Alignment.center,
                           child: Text(
                             '${a.pleasureRating}',
                             style: TextStyle(
-                              color: AppTheme.success,
+                              color: AppTheme.palette(context).success,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
@@ -187,11 +187,11 @@ class _DepressionInsightsScreenState
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(a.activityType,
-                                  style: const TextStyle(
-                                      color: Colors.white, fontSize: 14)),
+                                  style: TextStyle(
+                                      color: AppTheme.palette(context).textPrimary, fontSize: 14)),
                               Text(a.category,
-                                  style: const TextStyle(
-                                      color: Colors.white38, fontSize: 11)),
+                                  style: TextStyle(
+                                      color: AppTheme.palette(context).textTertiary, fontSize: 11)),
                             ],
                           ),
                         ),
@@ -199,13 +199,13 @@ class _DepressionInsightsScreenState
                           padding: const EdgeInsets.symmetric(
                               horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: AppTheme.warning.withValues(alpha: 0.2),
+                            color: AppTheme.palette(context).warning.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             'M:${a.masteryRating}',
                             style: TextStyle(
-                                color: AppTheme.warning, fontSize: 11),
+                                color: AppTheme.palette(context).warning, fontSize: 11),
                           ),
                         ),
                       ],
@@ -238,20 +238,20 @@ class _DepressionInsightsScreenState
           children: [
             Row(
               children: [
-                Icon(Icons.auto_graph, color: AppTheme.accent, size: 20),
+                Icon(Icons.auto_graph, color: AppTheme.palette(context).accent, size: 20),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'Activity–Mood Correlation',
                   style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w600),
+                      color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
             const SizedBox(height: 12),
             if (sortedCategories.isEmpty)
-              const Text(
+              Text(
                 'Log activities this week to see patterns.',
-                style: TextStyle(color: Colors.white38, fontSize: 13),
+                style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 13),
               )
             else
               ...sortedCategories.take(5).map((cat) {
@@ -271,8 +271,8 @@ class _DepressionInsightsScreenState
                             width: 80,
                             child: Text(
                               cat,
-                              style: const TextStyle(
-                                  color: Colors.white60, fontSize: 12),
+                              style: TextStyle(
+                                  color: AppTheme.palette(context).textSecondary, fontSize: 12),
                             ),
                           ),
                           Expanded(
@@ -281,7 +281,7 @@ class _DepressionInsightsScreenState
                                 Container(
                                   height: 16,
                                   decoration: BoxDecoration(
-                                    color: Colors.white10,
+                                    color: AppTheme.palette(context).borderSubtle,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                 ),
@@ -289,7 +289,7 @@ class _DepressionInsightsScreenState
                                   height: 16,
                                   width: barWidth.clamp(8, double.infinity),
                                   decoration: BoxDecoration(
-                                    color: AppTheme.accent.withValues(alpha: 0.6),
+                                    color: AppTheme.palette(context).accent.withValues(alpha: 0.6),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                 ),
@@ -299,8 +299,8 @@ class _DepressionInsightsScreenState
                           const SizedBox(width: 8),
                           Text(
                             '$count',
-                            style: const TextStyle(
-                                color: Colors.white54, fontSize: 12),
+                            style: TextStyle(
+                                color: AppTheme.palette(context).textSecondary, fontSize: 12),
                           ),
                         ],
                       ),
@@ -308,8 +308,8 @@ class _DepressionInsightsScreenState
                         padding: const EdgeInsets.only(left: 80, top: 2),
                         child: Text(
                           'Avg pleasure: ${avgP.toStringAsFixed(1)}',
-                          style: const TextStyle(
-                              color: Colors.white30, fontSize: 10),
+                          style: TextStyle(
+                              color: AppTheme.palette(context).textTertiary, fontSize: 10),
                         ),
                       ),
                     ],
@@ -334,20 +334,20 @@ class _DepressionInsightsScreenState
           children: [
             Row(
               children: [
-                Icon(Icons.show_chart, color: AppTheme.accent, size: 20),
+                Icon(Icons.show_chart, color: AppTheme.palette(context).accent, size: 20),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'Weekly Assessment Trend',
                   style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w600),
+                      color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
             const SizedBox(height: 16),
             if (_assessments.isEmpty)
-              const Text(
+              Text(
                 'Complete weekly check-ins to track your progress over time.',
-                style: TextStyle(color: Colors.white38, fontSize: 13),
+                style: TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 13),
               )
             else ...[
               SizedBox(
@@ -365,9 +365,9 @@ class _DepressionInsightsScreenState
                       _ => Icons.trending_flat,
                     },
                     color: switch (trend) {
-                      'improving' => AppTheme.success,
-                      'worsening' => AppTheme.danger,
-                      _ => Colors.white54,
+                      'improving' => AppTheme.palette(context).success,
+                      'worsening' => AppTheme.palette(context).danger,
+                      _ => AppTheme.palette(context).textSecondary,
                     },
                     size: 20,
                   ),
@@ -380,9 +380,9 @@ class _DepressionInsightsScreenState
                     },
                     style: TextStyle(
                       color: switch (trend) {
-                        'improving' => AppTheme.success,
-                        'worsening' => AppTheme.danger,
-                        _ => Colors.white54,
+                        'improving' => AppTheme.palette(context).success,
+                        'worsening' => AppTheme.palette(context).danger,
+                        _ => AppTheme.palette(context).textSecondary,
                       },
                       fontSize: 14,
                     ),
@@ -426,7 +426,7 @@ class _StatTile extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(label,
-                style: const TextStyle(color: Colors.white54, fontSize: 11)),
+                style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 11)),
           ],
         ),
       ),
@@ -448,22 +448,28 @@ class _AssessmentChart extends StatelessWidget {
     return CustomPaint(
       size: const Size(double.infinity, 120),
       painter: _ChartPainter(
+                palette: AppTheme.palette(context),
         scores: assessments.map((a) => a.totalScore.toDouble()).toList(),
         maxValue: maxScore,
-        lineColor: AppTheme.accent,
-        fillColor: AppTheme.accent.withValues(alpha: 0.15),
+        lineColor: AppTheme.palette(context).accent,
+        fillColor: AppTheme.palette(context).accent.withValues(alpha: 0.15),
       ),
     );
   }
 }
 
 class _ChartPainter extends CustomPainter {
+  /// Painters have no BuildContext, so the active palette is
+  /// handed in at construction.
+  final AppPalette palette;
+
   final List<double> scores;
   final double maxValue;
   final Color lineColor;
   final Color fillColor;
 
   _ChartPainter({
+    required this.palette,
     required this.scores,
     required this.maxValue,
     required this.lineColor,
@@ -512,7 +518,7 @@ class _ChartPainter extends CustomPainter {
       final textPainter = TextPainter(
         text: TextSpan(
           text: scores[i].round().toString(),
-          style: const TextStyle(color: Colors.white54, fontSize: 10),
+          style:  TextStyle(color: palette.textSecondary, fontSize: 10),
         ),
         textDirection: TextDirection.ltr,
       )..layout();

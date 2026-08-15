@@ -13,28 +13,28 @@ class MaintenanceScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         children: [
           Card(
-            color: AppTheme.success.withValues(alpha: 0.1),
+            color: AppTheme.palette(context).success.withValues(alpha: 0.1),
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
                   Icon(Icons.verified,
-                      color: AppTheme.success, size: 48),
+                      color: AppTheme.palette(context).success, size: 48),
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     'Program Complete',
                     style: TextStyle(
-                        color: Colors.white,
+                        color: AppTheme.palette(context).textPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'You have graduated from the 12-week program. '
                     'The app continues to watch for regression '
                     'and supports your long-term recovery.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white54),
+                    style: TextStyle(color: AppTheme.palette(context).textSecondary),
                   ),
                 ],
               ),
@@ -54,7 +54,7 @@ class MaintenanceScreen extends ConsumerWidget {
             title: 'Active Protection',
             description:
                 'Risk calendar and notifications remain active, '
-                'firing only for high-risk windows (score > 0.8).',
+                'firing only for support windows (score > 0.8).',
           ),
           _MaintenanceCard(
             icon: Icons.warning_amber,
@@ -101,13 +101,13 @@ class _MaintenanceCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Card(
         child: ListTile(
-          leading: Icon(icon, color: AppTheme.accent),
+          leading: Icon(icon, color: AppTheme.palette(context).accent),
           title: Text(title,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.w600)),
+              style: TextStyle(
+                  color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600)),
           subtitle: Text(description,
-              style: const TextStyle(
-                  color: Colors.white54, fontSize: 13)),
+              style: TextStyle(
+                  color: AppTheme.palette(context).textSecondary, fontSize: 13)),
         ),
       ),
     );

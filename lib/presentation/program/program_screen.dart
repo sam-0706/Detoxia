@@ -1,27 +1,84 @@
-import 'package:detoxia/core/constants/enums.dart';
 import 'package:detoxia/core/theme/app_theme.dart';
+import 'package:detoxia/data/repositories/registration_repository.dart';
+import 'package:detoxia/data/repositories/support_profile_repository.dart';
+import 'package:detoxia/domain/program/adaptive_program_resolver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ProgramScreen extends ConsumerWidget {
-  const ProgramScreen({super.key});
+class ProgramScreen extends ConsumerStatefulWidget {
+  final AdaptiveProgramPlan? planOverride;
+
+  const ProgramScreen({super.key, this.planOverride});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProgramScreen> createState() => _ProgramScreenState();
+}
+
+class _ProgramScreenState extends ConsumerState<ProgramScreen> {
+  final AdaptiveProgramResolver _resolver = const AdaptiveProgramResolver();
+  AdaptiveProgramPlan? _plan;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final override = widget.planOverride;
+    if (override != null) {
+      setState(() => _plan = override);
+      return;
+    }
+
+    final registration = await ref.read(registrationRepositoryProvider).getProfile();
+    final supportProfile = registration == null
+        ? null
+        : await ref
+              .read(supportProfileRepositoryProvider)
+              .getLatestProfile(registration.id);
+    final plan = _resolver.resolve(supportProfile: supportProfile);
+    if (!mounted) return;
+    setState(() => _plan = plan);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final plan = _plan;
+    if (plan == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('12-Week Program')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildProgressHeader(context),
+          _buildProgressHeader(context, plan),
+          const SizedBox(height: 12),
+          if (plan.isLocked)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Text(
+                  plan.starterGuidance,
+                  style:  TextStyle(color: AppTheme.palette(context).textSecondary, height: 1.3),
+                ),
+              ),
+            )
+          else
+            Text(
+              plan.starterGuidance,
+              style:  TextStyle(color: AppTheme.palette(context).textSecondary),
+            ),
           const SizedBox(height: 24),
-          ..._buildPhases(context),
+          ..._buildPhases(context, plan),
         ],
       ),
     );
   }
 
-  Widget _buildProgressHeader(BuildContext context) {
+  Widget _buildProgressHeader(BuildContext context, AdaptiveProgramPlan plan) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -31,31 +88,30 @@ class ProgramScreen extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Week 1 of 12',
+                Text(plan.weekLabel,
                     style: Theme.of(context).textTheme.titleLarge),
                 Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppTheme.accent.withValues(alpha: 0.2),
+                    color: AppTheme.palette(context).accent.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text('Phase 1',
+                  child: Text(plan.phaseLabel,
                       style: TextStyle(
-                          color: AppTheme.accent, fontSize: 12)),
+                          color: AppTheme.palette(context).accent, fontSize: 12)),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            LinearProgressIndicator(
-              value: 1 / 12,
-              backgroundColor: Colors.white12,
-              borderRadius: BorderRadius.circular(4),
+            Text(
+              plan.phaseLabel,
+              style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 12),
             ),
-            const SizedBox(height: 8),
-            const Text(
-              'Baseline + Map: Understanding your patterns',
-              style: TextStyle(color: Colors.white54),
+            const SizedBox(height: 6),
+            Text(
+              plan.subtitle,
+              style:  TextStyle(color: AppTheme.palette(context).textSecondary),
             ),
           ],
         ),
@@ -63,148 +119,26 @@ class ProgramScreen extends ConsumerWidget {
     );
   }
 
-  List<Widget> _buildPhases(BuildContext context) {
-    return [
-      _PhaseCard(
-        phase: ProgramPhase.baseline,
-        title: 'Phase 1: Baseline + Map',
-        weeks: 'Weeks 1-2',
-        isActive: true,
-        modules: const [
-          _Module(
-            title: 'Establish check-in habit',
-            description: 'Complete daily check-ins to build your data.',
-            complete: false,
-          ),
-          _Module(
-            title: 'Identify top triggers',
-            description:
-                'The system is learning your top 3 triggers and risk windows.',
-            complete: false,
-          ),
-          _Module(
-            title: 'Set one boundary',
-            description:
-                'Choose one non-negotiable: phone outside bedroom.',
-            complete: false,
-          ),
-          _Module(
-            title: 'How habit loops work',
-            description:
-                'Understand cue-behavior-reward and the scrolling connection.',
-            complete: false,
-          ),
-        ],
-      ),
-      _PhaseCard(
-        phase: ProgramPhase.interrupt,
-        title: 'Phase 2: Interrupt + Stabilize',
-        weeks: 'Weeks 3-5',
-        isActive: false,
-        modules: const [
-          _Module(
-            title: 'Target late-night exposure',
-            description: 'The strongest evidence-supported surface.',
-            complete: false,
-          ),
-          _Module(
-            title: 'Build urge surfing skill',
-            description: '10-minute delay timer, breathing exercises.',
-            complete: false,
-          ),
-          _Module(
-            title: 'Replacement routines',
-            description: 'Build alternatives for your top 2 triggers.',
-            complete: false,
-          ),
-          _Module(
-            title: 'Sleep boundary enforcement',
-            description: 'Phone away 30 minutes before sleep.',
-            complete: false,
-          ),
-        ],
-      ),
-      _PhaseCard(
-        phase: ProgramPhase.rebuild,
-        title: 'Phase 3: Rebuild Control',
-        weeks: 'Weeks 6-8',
-        isActive: false,
-        modules: const [
-          _Module(
-            title: 'CBT chain analysis',
-            description: 'Break down recurring slip patterns.',
-            complete: false,
-          ),
-          _Module(
-            title: 'ACT values clarification',
-            description: 'Define who you want to become.',
-            complete: false,
-          ),
-          _Module(
-            title: 'Weekend defense mode',
-            description: 'Structured blocks for unstructured days.',
-            complete: false,
-          ),
-          _Module(
-            title: 'Stress coping alternatives',
-            description: 'Exercise, journaling, social connection.',
-            complete: false,
-          ),
-        ],
-      ),
-      _PhaseCard(
-        phase: ProgramPhase.maintain,
-        title: 'Phase 4: Maintain + Prevent',
-        weeks: 'Weeks 9-12',
-        isActive: false,
-        modules: const [
-          _Module(
-            title: 'Relapse prevention drills',
-            description: '"If X happens, I do Y" plans.',
-            complete: false,
-          ),
-          _Module(
-            title: 'Self-compassion module',
-            description: 'Prevent shame spirals after slips.',
-            complete: false,
-          ),
-          _Module(
-            title: 'Maintenance plan',
-            description: 'Weekly self-audits, quarterly rescreening.',
-            complete: false,
-          ),
-          _Module(
-            title: 'Escalation guidance',
-            description: 'When to seek professional help.',
-            complete: false,
-          ),
-        ],
-      ),
-    ];
+  List<Widget> _buildPhases(BuildContext context, AdaptiveProgramPlan plan) {
+    return List.generate(plan.phases.length, (index) {
+      final phase = plan.phases[index];
+      return _PhaseCard(
+        title: phase.title,
+        weeks: phase.weeks,
+        isActive: index == 0,
+        modules: phase.modules,
+      );
+    });
   }
 }
 
-class _Module {
-  final String title;
-  final String description;
-  final bool complete;
-
-  const _Module({
-    required this.title,
-    required this.description,
-    required this.complete,
-  });
-}
-
 class _PhaseCard extends StatelessWidget {
-  final ProgramPhase phase;
   final String title;
   final String weeks;
   final bool isActive;
-  final List<_Module> modules;
+  final List<ProgramModuleItem> modules;
 
   const _PhaseCard({
-    required this.phase,
     required this.title,
     required this.weeks,
     required this.isActive,
@@ -216,23 +150,23 @@ class _PhaseCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Card(
-        color: isActive ? null : AppTheme.card.withValues(alpha: 0.5),
+        color: isActive ? null : AppTheme.palette(context).surfaceRaised.withValues(alpha: 0.5),
         child: ExpansionTile(
           initiallyExpanded: isActive,
           tilePadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           leading: Icon(
             isActive ? Icons.play_circle_fill : Icons.lock_outline,
-            color: isActive ? AppTheme.accent : Colors.white24,
+            color: isActive ? AppTheme.palette(context).accent : AppTheme.palette(context).borderStrong,
           ),
           title: Text(title,
               style: TextStyle(
-                color: isActive ? Colors.white : Colors.white38,
+                color: isActive ? AppTheme.palette(context).textPrimary : AppTheme.palette(context).textTertiary,
                 fontWeight: FontWeight.w600,
               )),
           subtitle: Text(weeks,
               style: TextStyle(
-                color: isActive ? Colors.white54 : Colors.white24,
+                color: isActive ? AppTheme.palette(context).textSecondary : AppTheme.palette(context).borderStrong,
                 fontSize: 12,
               )),
           children: modules
@@ -242,21 +176,21 @@ class _PhaseCard extends StatelessWidget {
                           ? Icons.check_circle
                           : Icons.radio_button_unchecked,
                       color:
-                          m.complete ? AppTheme.success : Colors.white24,
+                          m.complete ? AppTheme.palette(context).success : AppTheme.palette(context).borderStrong,
                       size: 20,
                     ),
                     title: Text(m.title,
                         style: TextStyle(
                           color: isActive
-                              ? Colors.white
-                              : Colors.white38,
+                              ? AppTheme.palette(context).textPrimary
+                              : AppTheme.palette(context).textTertiary,
                           fontSize: 14,
                         )),
                     subtitle: Text(m.description,
                         style: TextStyle(
                           color: isActive
-                              ? Colors.white54
-                              : Colors.white24,
+                              ? AppTheme.palette(context).textSecondary
+                              : AppTheme.palette(context).borderStrong,
                           fontSize: 12,
                         )),
                   ))

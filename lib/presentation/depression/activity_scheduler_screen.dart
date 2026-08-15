@@ -64,17 +64,17 @@ class _ActivitySchedulerScreenState
                   child: FilterChip(
                     selected: selected,
                     label: Text(activityCategoryLabel(cat)),
-                    selectedColor: AppTheme.accent.withValues(alpha: 0.3),
-                    checkmarkColor: AppTheme.accent,
+                    selectedColor: AppTheme.palette(context).accent.withValues(alpha: 0.3),
+                    checkmarkColor: AppTheme.palette(context).accent,
                     labelStyle: TextStyle(
-                      color: selected ? AppTheme.accent : Colors.white60,
+                      color: selected ? AppTheme.palette(context).accent : AppTheme.palette(context).textSecondary,
                       fontSize: 13,
                     ),
-                    backgroundColor: AppTheme.card,
+                    backgroundColor: AppTheme.palette(context).surfaceRaised,
                     side: BorderSide(
                       color: selected
-                          ? AppTheme.accent.withValues(alpha: 0.5)
-                          : Colors.white12,
+                          ? AppTheme.palette(context).accent.withValues(alpha: 0.5)
+                          : AppTheme.palette(context).borderSubtle,
                     ),
                     onSelected: (_) => setState(() => _selectedCategory = cat),
                   ),
@@ -122,7 +122,7 @@ class _ActivitySchedulerScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Scheduled: ${activity.title}'),
-          backgroundColor: AppTheme.success,
+          backgroundColor: AppTheme.palette(context).success,
         ),
       );
       _loadCompleted();
@@ -137,38 +137,38 @@ class _ActivitySchedulerScreenState
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          backgroundColor: AppTheme.surface,
-          title: const Text('Rate this activity',
-              style: TextStyle(color: Colors.white)),
+          backgroundColor: AppTheme.palette(context).surface,
+          title: Text('Rate this activity',
+              style: TextStyle(color: AppTheme.palette(context).textPrimary)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(activity.title,
-                  style: TextStyle(color: AppTheme.accent, fontSize: 15)),
+                  style: TextStyle(color: AppTheme.palette(context).accent, fontSize: 15)),
               const SizedBox(height: 16),
-              const Text('Pleasure (how enjoyable was it?)',
-                  style: TextStyle(color: Colors.white70, fontSize: 13)),
+              Text('Pleasure (how enjoyable was it?)',
+                  style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13)),
               Slider(
                 value: pleasure.toDouble(),
                 min: 0,
                 max: 10,
                 divisions: 10,
                 label: '$pleasure',
-                activeColor: AppTheme.accent,
+                activeColor: AppTheme.palette(context).accent,
                 onChanged: (v) =>
                     setDialogState(() => pleasure = v.round()),
               ),
               const SizedBox(height: 8),
-              const Text('Mastery (sense of accomplishment)',
-                  style: TextStyle(color: Colors.white70, fontSize: 13)),
+              Text('Mastery (sense of accomplishment)',
+                  style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13)),
               Slider(
                 value: mastery.toDouble(),
                 min: 0,
                 max: 10,
                 divisions: 10,
                 label: '$mastery',
-                activeColor: AppTheme.success,
+                activeColor: AppTheme.palette(context).success,
                 onChanged: (v) =>
                     setDialogState(() => mastery = v.round()),
               ),
@@ -205,7 +205,7 @@ class _ActivitySchedulerScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Completed: ${activity.title}'),
-            backgroundColor: AppTheme.success,
+            backgroundColor: AppTheme.palette(context).success,
           ),
         );
         _loadCompleted();
@@ -233,7 +233,7 @@ class _ActivityCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: Card(
         color: completed
-            ? AppTheme.success.withValues(alpha: 0.1)
+            ? AppTheme.palette(context).success.withValues(alpha: 0.1)
             : null,
         child: Padding(
           padding: const EdgeInsets.all(14),
@@ -244,16 +244,16 @@ class _ActivityCard extends StatelessWidget {
                 children: [
                   if (completed)
                     Icon(Icons.check_circle,
-                        color: AppTheme.success, size: 20)
+                        color: AppTheme.palette(context).success, size: 20)
                   else
                     Icon(Icons.radio_button_unchecked,
-                        color: Colors.white24, size: 20),
+                        color: AppTheme.palette(context).borderStrong, size: 20),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       activity.title,
                       style: TextStyle(
-                        color: completed ? AppTheme.success : Colors.white,
+                        color: completed ? AppTheme.palette(context).success : AppTheme.palette(context).textPrimary,
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
                       ),
@@ -263,13 +263,13 @@ class _ActivityCard extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: Colors.white10,
+                      color: AppTheme.palette(context).borderSubtle,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       '${activity.durationMinutes} min',
                       style:
-                          const TextStyle(color: Colors.white54, fontSize: 12),
+                           TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 12),
                     ),
                   ),
                 ],
@@ -277,7 +277,7 @@ class _ActivityCard extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 activity.description,
-                style: const TextStyle(color: Colors.white38, fontSize: 13),
+                style:  TextStyle(color: AppTheme.palette(context).textTertiary, fontSize: 13),
               ),
               const SizedBox(height: 10),
               Row(
@@ -288,7 +288,7 @@ class _ActivityCard extends StatelessWidget {
                       onPressed: onSchedule,
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(
-                            color: AppTheme.accent.withValues(alpha: 0.5)),
+                            color: AppTheme.palette(context).accent.withValues(alpha: 0.5)),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
                       ),
@@ -301,7 +301,7 @@ class _ActivityCard extends StatelessWidget {
                     onPressed: onComplete,
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
-                          completed ? Colors.white12 : AppTheme.success,
+                          completed ? AppTheme.palette(context).borderSubtle : AppTheme.palette(context).success,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
                     ),

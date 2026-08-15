@@ -539,6 +539,93 @@ class WeeklyAssessments extends Table {
   TextColumn get trend => text().nullable()();
 }
 
+class SupportProfileSnapshots extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get registrationProfileId => integer()();
+  TextColumn get selectedGoalsJson =>
+      text().withDefault(const Constant('[]'))();
+  TextColumn get domainScoresJson =>
+      text().withDefault(const Constant('[]'))();
+  TextColumn get routineProfileJson =>
+      text().withDefault(const Constant('{}'))();
+  TextColumn get sleepProfileJson =>
+      text().withDefault(const Constant('{}'))();
+  TextColumn get menstrualProfileJson => text().nullable()();
+  TextColumn get triggerWeightsJson =>
+      text().withDefault(const Constant('[]'))();
+  TextColumn get pathwayScoresJson =>
+      text().withDefault(const Constant('[]'))();
+  TextColumn get interventionPreferencesJson =>
+      text().withDefault(const Constant('{}'))();
+  TextColumn get learningStateJson =>
+      text().withDefault(const Constant('{}'))();
+  DateTimeColumn get supportMapCompletedAt => dateTime().nullable()();
+  DateTimeColumn get createdAt =>
+      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt =>
+      dateTime().withDefault(currentDateAndTime)();
+}
+
+// ─── Phase 0 Registration Profile ───
+class RegistrationProfiles extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get appInstallId => text().unique()();
+  TextColumn get displayName => text()();
+  TextColumn get email => text()();
+  TextColumn get phone => text()();
+  TextColumn get ageBand => text()();
+  TextColumn get gender => text()();
+  TextColumn get countryCode => text()();
+  TextColumn get regionName => text()();
+  TextColumn get timezone => text()();
+  BoolColumn get privacyAcknowledged => boolean()();
+  BoolColumn get marketingConsent =>
+      boolean().withDefault(const Constant(false))();
+  TextColumn get webhookSyncStatus =>
+      text().withDefault(const Constant('notAttempted'))();
+  DateTimeColumn get webhookLastAttemptAt => dateTime().nullable()();
+  DateTimeColumn get signupCompletedAt => dateTime().nullable()();
+  DateTimeColumn get createdAt =>
+      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt =>
+      dateTime().withDefault(currentDateAndTime)();
+}
+
+// ─── Phase 0 Questionnaire Resume Shell ───
+class QuestionnaireSessions extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get registrationProfileId => integer()();
+  TextColumn get currentSectionId =>
+      text().withDefault(const Constant('intro'))();
+  TextColumn get currentQuestionId =>
+      text().withDefault(const Constant('start'))();
+  TextColumn get completedSectionsJson =>
+      text().withDefault(const Constant('[]'))();
+  TextColumn get answersJson =>
+      text().withDefault(const Constant('{}'))();
+  IntColumn get answerCount =>
+      integer().withDefault(const Constant(0))();
+  BoolColumn get isCompleted =>
+      boolean().withDefault(const Constant(false))();
+  DateTimeColumn get startedAt =>
+      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt =>
+      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get completedAt => dateTime().nullable()();
+}
+
+class QuestionnaireAnswers extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get sessionId => integer()();
+  TextColumn get sectionId => text()();
+  TextColumn get questionId => text()();
+  TextColumn get answerJson => text()();
+  DateTimeColumn get createdAt =>
+      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt =>
+      dateTime().withDefault(currentDateAndTime)();
+}
+
 @DriftDatabase(tables: [
   Users,
   PeakNodes,
@@ -571,12 +658,18 @@ class WeeklyAssessments extends Table {
   CyclePredictions,
   DailyTaskAssignments,
   WeeklyAssessments,
+  SupportProfileSnapshots,
+  RegistrationProfiles,
+  QuestionnaireSessions,
+  QuestionnaireAnswers,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
+  AppDatabase.forTesting(super.executor);
+
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -603,6 +696,14 @@ class AppDatabase extends _$AppDatabase {
             await migrator.createTable(dailyTaskAssignments);
             await migrator.createTable(weeklyAssessments);
           }
+          if (from < 4) {
+            await migrator.createTable(registrationProfiles);
+            await migrator.createTable(questionnaireSessions);
+            await migrator.createTable(questionnaireAnswers);
+          }
+          if (from < 5) {
+            await migrator.createTable(supportProfileSnapshots);
+          }
         },
       );
 
@@ -610,7 +711,11 @@ class AppDatabase extends _$AppDatabase {
     return LazyDatabase(() async {
       final dir = await safeAppDocumentsDirectory();
       final file = File(p.join(dir.path, 'detoxia.db'));
-      return NativeDatabase.createInBackground(file);
+      final parent = file.parent;
+      if (!await parent.exists()) {
+        await parent.create(recursive: true);
+      }
+      return NativeDatabase(file);
     });
   }
 }

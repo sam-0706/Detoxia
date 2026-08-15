@@ -2,6 +2,7 @@ import 'package:detoxia/core/constants/enums.dart';
 import 'package:detoxia/presentation/onboarding/onboarding_screen.dart';
 import 'package:detoxia/presentation/widgets/big_card_selector.dart';
 import 'package:detoxia/presentation/widgets/choice_chip_group.dart';
+import 'package:detoxia/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -72,10 +73,10 @@ class _DetoxGoalPage extends StatelessWidget {
           ),
 
           const SizedBox(height: 28),
-          const Text(
+          Text(
             'This matters because...',
             style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w600),
+                color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
           ChoiceChipGroup<MotivationType>(
@@ -184,8 +185,8 @@ class _WellnessGoalPage extends StatelessWidget {
                         children: [
                           Text(
                             config.title,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: AppTheme.palette(context).textPrimary,
                               fontWeight: FontWeight.w600,
                               fontSize: 15,
                             ),
@@ -193,8 +194,8 @@ class _WellnessGoalPage extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             config.description,
-                            style: const TextStyle(
-                                color: Colors.white54, fontSize: 12),
+                            style: TextStyle(
+                                color: AppTheme.palette(context).textSecondary, fontSize: 12),
                           ),
                         ],
                       ),
@@ -209,10 +210,10 @@ class _WellnessGoalPage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          const Text(
+          Text(
             'What motivates you?',
             style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w600),
+                color: AppTheme.palette(context).textPrimary, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
           ChoiceChipGroup<MotivationType>(
@@ -304,7 +305,7 @@ _ConditionSummaryConfig _conditionSummary(ConditionType c) {
     case ConditionType.detoxRecovery:
       return const _ConditionSummaryConfig(
         'Detox Recovery',
-        'Relapse prediction, risk timeline, and 12-week program',
+        'Direction insights, support timeline, and 12-week program',
         Icons.shield,
         Color(0xFF6C63FF),
       );

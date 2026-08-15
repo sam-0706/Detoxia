@@ -91,17 +91,17 @@ class _FilterChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: selected
-              ? AppTheme.accent.withValues(alpha: 0.2)
-              : AppTheme.card,
+              ? AppTheme.palette(context).accent.withValues(alpha: 0.2)
+              : AppTheme.palette(context).surfaceRaised,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: selected ? AppTheme.accent : Colors.transparent,
+            color: selected ? AppTheme.palette(context).accent : Colors.transparent,
           ),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? AppTheme.accent : Colors.white70,
+            color: selected ? AppTheme.palette(context).accent : AppTheme.palette(context).textSecondary,
             fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
             fontSize: 14,
           ),
@@ -124,10 +124,10 @@ class _ActivityCard extends StatelessWidget {
         DopamineCategory.sensory => Icons.touch_app,
       };
 
-  Color get _categoryColor => switch (activity.category) {
-        DopamineCategory.quick => AppTheme.warning,
-        DopamineCategory.physical => AppTheme.success,
-        DopamineCategory.creative => AppTheme.accent,
+  Color _categoryColor(BuildContext context) => switch (activity.category) {
+        DopamineCategory.quick => AppTheme.palette(context).warning,
+        DopamineCategory.physical => AppTheme.palette(context).success,
+        DopamineCategory.creative => AppTheme.palette(context).accent,
         DopamineCategory.social => AppTheme.pinkAccent,
         DopamineCategory.sensory => const Color(0xFF26C6DA),
       };
@@ -144,10 +144,10 @@ class _ActivityCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: _categoryColor.withValues(alpha: 0.15),
+                color: _categoryColor(context).withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(_categoryIcon, color: _categoryColor, size: 22),
+              child: Icon(_categoryIcon, color: _categoryColor(context), size: 22),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -159,8 +159,8 @@ class _ActivityCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           activity.title,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: AppTheme.palette(context).textPrimary,
                             fontWeight: FontWeight.w600,
                             fontSize: 15,
                           ),
@@ -170,13 +170,13 @@ class _ActivityCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Colors.white12,
+                          color: AppTheme.palette(context).borderSubtle,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
                           '${activity.durationMinutes}m',
-                          style: const TextStyle(
-                              color: Colors.white54, fontSize: 12),
+                          style: TextStyle(
+                              color: AppTheme.palette(context).textSecondary, fontSize: 12),
                         ),
                       ),
                     ],
@@ -184,8 +184,8 @@ class _ActivityCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     activity.description,
-                    style: const TextStyle(
-                        color: Colors.white54, fontSize: 13, height: 1.3),
+                    style: TextStyle(
+                        color: AppTheme.palette(context).textSecondary, fontSize: 13, height: 1.3),
                   ),
                   const SizedBox(height: 8),
                   SizedBox(
@@ -195,7 +195,7 @@ class _ActivityCard extends StatelessWidget {
                       icon: const Icon(Icons.play_arrow, size: 16),
                       label: const Text('Do it now', style: TextStyle(fontSize: 12)),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _categoryColor,
+                        backgroundColor: _categoryColor(context),
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -214,7 +214,7 @@ class _ActivityCard extends StatelessWidget {
   void _startActivityTimer(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppTheme.surface,
+      backgroundColor: AppTheme.palette(context).surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -276,15 +276,15 @@ class _ActivityTimerSheetState extends State<_ActivityTimerSheet> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.white24,
+              color: AppTheme.palette(context).borderStrong,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
           const SizedBox(height: 20),
           Text(
             widget.activity.title,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: AppTheme.palette(context).textPrimary,
               fontSize: 20,
               fontWeight: FontWeight.w600,
             ),
@@ -295,7 +295,7 @@ class _ActivityTimerSheetState extends State<_ActivityTimerSheet> {
                 ? 'Done!'
                 : '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
             style: TextStyle(
-              color: _completed ? AppTheme.success : Colors.white,
+              color: _completed ? AppTheme.palette(context).success : AppTheme.palette(context).textPrimary,
               fontSize: 56,
               fontWeight: FontWeight.w300,
               fontFeatures: const [FontFeature.tabularFigures()],
@@ -308,7 +308,7 @@ class _ActivityTimerSheetState extends State<_ActivityTimerSheet> {
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor:
-                    _completed ? AppTheme.success : Colors.white24,
+                    _completed ? AppTheme.palette(context).success : AppTheme.palette(context).borderStrong,
               ),
               child: Text(_completed ? 'Great job!' : 'Cancel'),
             ),

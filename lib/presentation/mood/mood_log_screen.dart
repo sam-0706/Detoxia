@@ -110,20 +110,20 @@ class _MoodLogScreenState extends ConsumerState<MoodLogScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const Text('Mood',
+            Text('Mood',
                 style: TextStyle(
-                    color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                    color: AppTheme.palette(context).textPrimary, fontSize: 16, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
             Text(_moodFaces[idx], style: const TextStyle(fontSize: 48)),
             const SizedBox(height: 4),
             Text('${_mood.round()}/10',
-                style: const TextStyle(color: Colors.white70)),
+                style:  TextStyle(color: AppTheme.palette(context).textSecondary)),
             Slider(
               value: _mood,
               min: 1,
               max: 10,
               divisions: 9,
-              activeColor: AppTheme.accent,
+              activeColor: AppTheme.palette(context).accent,
               onChanged: (v) => setState(() => _mood = v),
             ),
             Row(
@@ -149,18 +149,18 @@ class _MoodLogScreenState extends ConsumerState<MoodLogScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const Text('Energy',
+            Text('Energy',
                 style: TextStyle(
-                    color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                    color: AppTheme.palette(context).textPrimary, fontSize: 16, fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Text('${_energy.round()}/10',
-                style: const TextStyle(color: Colors.white70)),
+                style:  TextStyle(color: AppTheme.palette(context).textSecondary)),
             Slider(
               value: _energy,
               min: 1,
               max: 10,
               divisions: 9,
-              activeColor: AppTheme.success,
+              activeColor: AppTheme.palette(context).success,
               onChanged: (v) => setState(() => _energy = v),
             ),
             const Row(
@@ -182,15 +182,15 @@ class _MoodLogScreenState extends ConsumerState<MoodLogScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('How do you feel?',
+        Text('How do you feel?',
             style: TextStyle(
-                color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                color: AppTheme.palette(context).textPrimary, fontSize: 16, fontWeight: FontWeight.w600)),
         const SizedBox(height: 12),
         for (final cat in EmotionCategory.values) ...[
           Padding(
             padding: const EdgeInsets.only(top: 8, bottom: 4),
             child: Text(categoryLabel(cat),
-                style: const TextStyle(color: Colors.white54, fontSize: 13)),
+                style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 13)),
           ),
           Wrap(
             spacing: 8,
@@ -200,13 +200,13 @@ class _MoodLogScreenState extends ConsumerState<MoodLogScreen> {
               return FilterChip(
                 label: Text('${e.emoji} ${e.name}'),
                 selected: selected,
-                selectedColor: AppTheme.accent.withValues(alpha: .25),
-                checkmarkColor: AppTheme.accent,
+                selectedColor: AppTheme.palette(context).accent.withValues(alpha: .25),
+                checkmarkColor: AppTheme.palette(context).accent,
                 labelStyle: TextStyle(
-                  color: selected ? Colors.white : Colors.white70,
+                  color: selected ? AppTheme.palette(context).textPrimary : AppTheme.palette(context).textSecondary,
                   fontSize: 13,
                 ),
-                backgroundColor: AppTheme.surface,
+                backgroundColor: AppTheme.palette(context).surface,
                 onSelected: (v) {
                   setState(() {
                     v ? _selectedEmotions.add(e.name)
@@ -227,9 +227,9 @@ class _MoodLogScreenState extends ConsumerState<MoodLogScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Activities',
+        Text('Activities',
             style: TextStyle(
-                color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                color: AppTheme.palette(context).textPrimary, fontSize: 16, fontWeight: FontWeight.w600)),
         const SizedBox(height: 12),
         Wrap(
           spacing: 8,
@@ -239,13 +239,13 @@ class _MoodLogScreenState extends ConsumerState<MoodLogScreen> {
             return FilterChip(
               label: Text(tag),
               selected: selected,
-              selectedColor: AppTheme.success.withValues(alpha: .25),
-              checkmarkColor: AppTheme.success,
+              selectedColor: AppTheme.palette(context).success.withValues(alpha: .25),
+              checkmarkColor: AppTheme.palette(context).success,
               labelStyle: TextStyle(
-                color: selected ? Colors.white : Colors.white70,
+                color: selected ? AppTheme.palette(context).textPrimary : AppTheme.palette(context).textSecondary,
                 fontSize: 13,
               ),
-              backgroundColor: AppTheme.surface,
+              backgroundColor: AppTheme.palette(context).surface,
               onSelected: (v) {
                 setState(() {
                   v ? _selectedActivities.add(tag)
@@ -265,17 +265,17 @@ class _MoodLogScreenState extends ConsumerState<MoodLogScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Note (optional)',
+        Text('Note (optional)',
             style: TextStyle(
-                color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                color: AppTheme.palette(context).textPrimary, fontSize: 16, fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
         TextField(
           controller: _noteController,
           maxLines: 3,
-          style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
+          style:  TextStyle(color: AppTheme.palette(context).textPrimary),
+          decoration: InputDecoration(
             hintText: 'Anything on your mind...',
-            hintStyle: TextStyle(color: Colors.white38),
+            hintStyle: TextStyle(color: AppTheme.palette(context).textTertiary),
           ),
         ),
       ],

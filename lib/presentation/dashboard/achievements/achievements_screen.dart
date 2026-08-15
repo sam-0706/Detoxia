@@ -26,10 +26,10 @@ class AchievementsScreen extends ConsumerWidget {
           Text('Your journey',
               style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Achievements are never erased. '
             'Even after a slip, your progress is real.',
-            style: TextStyle(color: Colors.white54),
+            style: TextStyle(color: AppTheme.palette(context).textSecondary),
           ),
           const SizedBox(height: 24),
 
@@ -61,20 +61,20 @@ class AchievementsScreen extends ConsumerWidget {
                   Row(
                     children: [
                       Icon(Icons.rocket_launch,
-                          color: AppTheme.accent, size: 20),
+                          color: AppTheme.palette(context).accent, size: 20),
                       const SizedBox(width: 8),
-                      const Text('Next milestone',
+                      Text('Next milestone',
                           style: TextStyle(
-                              color: Colors.white,
+                              color: AppTheme.palette(context).textPrimary,
                               fontWeight: FontWeight.w600)),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'If you hold your current pace, you will reach '
                     '"One Week Strong" in 2 days.',
                     style: TextStyle(
-                        color: Colors.white70, fontSize: 13),
+                        color: AppTheme.palette(context).textSecondary, fontSize: 13),
                   ),
                 ],
               ),
@@ -114,17 +114,17 @@ class _AchievementCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Card(
-        color: unlocked ? AppTheme.accent.withValues(alpha: 0.1) : null,
+        color: unlocked ? AppTheme.palette(context).accent.withValues(alpha: 0.1) : null,
         child: ListTile(
           leading: Icon(
             unlocked ? Icons.emoji_events : Icons.lock_outline,
-            color: unlocked ? Colors.amber : Colors.white24,
+            color: unlocked ? Colors.amber : AppTheme.palette(context).borderStrong,
             size: 28,
           ),
           title: Text(
             def.title,
             style: TextStyle(
-              color: unlocked ? Colors.white : Colors.white38,
+              color: unlocked ? AppTheme.palette(context).textPrimary : AppTheme.palette(context).textTertiary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -133,14 +133,14 @@ class _AchievementCard extends StatelessWidget {
             children: [
               Text(def.description,
                   style: TextStyle(
-                    color: unlocked ? Colors.white54 : Colors.white24,
+                    color: unlocked ? AppTheme.palette(context).textSecondary : AppTheme.palette(context).borderStrong,
                     fontSize: 12,
                   )),
               if (unlocked) ...[
                 const SizedBox(height: 4),
                 Text(def.insight,
                     style: TextStyle(
-                      color: AppTheme.accent,
+                      color: AppTheme.palette(context).accent,
                       fontSize: 11,
                       fontStyle: FontStyle.italic,
                     )),

@@ -1,44 +1,84 @@
 import 'package:detoxia/core/theme/app_theme.dart';
-import 'package:detoxia/domain/analysis/state_profile.dart';
+import 'package:detoxia/data/repositories/event_repository.dart';
+import 'package:detoxia/data/repositories/registration_repository.dart';
+import 'package:detoxia/data/repositories/support_profile_repository.dart';
+import 'package:detoxia/domain/home/where_you_stand_metric_resolver.dart';
+import 'package:detoxia/domain/scoring/models/support_profile.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ConfidenceScreen extends ConsumerWidget {
-  const ConfidenceScreen({super.key});
+class ConfidenceScreen extends ConsumerStatefulWidget {
+  final SupportProfile? supportProfileOverride;
+  final List<Map<String, dynamic>>? checkinsOverride;
+
+  const ConfidenceScreen({
+    super.key,
+    this.supportProfileOverride,
+    this.checkinsOverride,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final profile = StateProfile.compute(
-      streakScore: 45,
-      rescueSuccessRate: 0.6,
-      selfReportedConfidenceAvg: 5.0,
-      improvementTrend: 0.2,
-      urgesResisted: 15,
-      totalUrges: 25,
-      sleepBoundaryCompliance: 0.7,
-      sleepQualityAvg: 3.5,
-      stressAvg: 5.0,
-      confidenceTomorrowAvg: 5.5,
-      recentSlip: false,
-      triggerSlipRates: {
-        'boredom': 0.68,
-        'stress': 0.22,
-        'loneliness': 0.45,
-        'scrolling': 0.55,
-      },
-      slipFrequencyTrend: -0.15,
-      impact: const DownstreamImpact(
-        moodAfterSlip: 3.2,
-        moodAfterClean: 6.8,
-        sleepOnSlipNight: 2.0,
-        sleepOnCleanNight: 3.5,
-        confidenceAfterSlip: 3.0,
-        confidenceAfterClean: 7.0,
-        stressInSlipWeek: 8.1,
-        stressInCleanWeek: 4.3,
-      ),
-    );
+  ConsumerState<ConfidenceScreen> createState() => _ConfidenceScreenState();
+}
+
+class _ConfidenceScreenState extends ConsumerState<ConfidenceScreen> {
+  final WhereYouStandMetricResolver _resolver = const WhereYouStandMetricResolver();
+  WhereYouStandMetricResult? _result;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final overrideProfile = widget.supportProfileOverride;
+    final overrideCheckins = widget.checkinsOverride;
+    if (overrideProfile != null && overrideCheckins != null) {
+      if (!mounted) return;
+      setState(() {
+        _result = _resolver.resolve(
+          supportProfile: overrideProfile,
+          recentCheckins: overrideCheckins,
+        );
+      });
+      return;
+    }
+
+    final registration = await ref.read(registrationRepositoryProvider).getProfile();
+    final supportProfile = registration == null
+        ? null
+        : await ref
+              .read(supportProfileRepositoryProvider)
+              .getLatestProfile(registration.id);
+    final checkins = await ref.read(eventRepositoryProvider).getCheckinsLastDays(7);
+    final checkinMaps = checkins
+        .map(
+          (row) => <String, dynamic>{
+            'sleepQuality': row.sleepQuality,
+            'mood': row.mood,
+            'stress': row.stress,
+            'confidenceTomorrow': row.confidenceTomorrow,
+          },
+        )
+        .toList(growable: false);
+
+    if (!mounted) return;
+    setState(() {
+      _result = _resolver.resolve(
+        supportProfile: supportProfile,
+        recentCheckins: checkinMaps,
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final result = _result;
+    if (result == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Where You Stand')),
@@ -47,20 +87,47 @@ class ConfidenceScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildRadarChart(profile),
+            if (result.isLocked)
+              _buildLockedState(result.lockedReason)
+            else ...[
+              _buildRadarChart(result.metrics),
+              const SizedBox(height: 24),
+              _buildMetricCards(result.metrics),
+              const SizedBox(height: 24),
+              _buildInsights(result.metrics),
+            ],
             const SizedBox(height: 24),
-            _buildDimensionCards(profile),
-            const SizedBox(height: 24),
-            _buildInsights(profile),
-            const SizedBox(height: 24),
-            _buildDownstreamImpact(profile.downstreamImpact),
+            _buildLearningFooter(result),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildRadarChart(StateProfile profile) {
+  Widget _buildLockedState(String? reason) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Metrics are still learning',
+              style: TextStyle(color: AppTheme.palette(context).textPrimary, fontSize: 18, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              reason ?? 'Complete more local check-ins to unlock dynamic metrics.',
+              style:  TextStyle(color: AppTheme.palette(context).textSecondary, height: 1.4),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRadarChart(List<WhereYouStandMetric> metrics) {
+    final limited = metrics.take(5).toList(growable: false);
     return SizedBox(
       height: 260,
       child: RadarChart(
@@ -68,39 +135,25 @@ class ConfidenceScreen extends ConsumerWidget {
           radarTouchData: RadarTouchData(enabled: false),
           dataSets: [
             RadarDataSet(
-              dataEntries: [
-                RadarEntry(value: profile.confidenceIndex),
-                RadarEntry(value: profile.selfControlRating),
-                RadarEntry(value: 100 - profile.vulnerabilityIndex),
-                RadarEntry(value: profile.recoveryMomentum.abs()),
-                RadarEntry(
-                    value: profile.downstreamImpact.moodDelta * 10),
-              ],
-              borderColor: AppTheme.accent,
-              fillColor: AppTheme.accent.withValues(alpha: 0.2),
+              dataEntries: limited.map((metric) => RadarEntry(value: metric.value0To10)).toList(),
+              borderColor: AppTheme.palette(context).accent,
+              fillColor: AppTheme.palette(context).accent.withValues(alpha: 0.2),
               borderWidth: 2,
             ),
           ],
           titlePositionPercentageOffset: 0.15,
           getTitle: (index, _) => RadarChartTitle(
-            text: switch (index) {
-              0 => 'Confidence',
-              1 => 'Self-Control',
-              2 => 'Resilience',
-              3 => 'Momentum',
-              4 => 'Impact',
-              _ => '',
-            },
+            text: index < limited.length ? limited[index].label : '',
             angle: 0,
           ),
           borderData: FlBorderData(show: false),
           radarBorderData:
-              const BorderSide(color: Colors.white12, width: 1),
+               BorderSide(color: AppTheme.palette(context).borderSubtle, width: 1),
           tickBorderData:
-              const BorderSide(color: Colors.white12, width: 1),
+               BorderSide(color: AppTheme.palette(context).borderSubtle, width: 1),
           gridBorderData:
-              const BorderSide(color: Colors.white12, width: 1),
-          tickCount: 4,
+               BorderSide(color: AppTheme.palette(context).borderSubtle, width: 1),
+          tickCount: 5,
           ticksTextStyle:
               const TextStyle(color: Colors.transparent, fontSize: 0),
         ),
@@ -108,68 +161,40 @@ class ConfidenceScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDimensionCards(StateProfile profile) {
+  Widget _buildMetricCards(List<WhereYouStandMetric> metrics) {
     return Column(
-      children: [
-        _DimensionCard(
-          label: 'Confidence',
-          value: profile.confidenceIndex,
-          subtitle: profile.confidenceText,
-          color: AppTheme.accent,
-        ),
-        _DimensionCard(
-          label: 'Self-Control',
-          value: profile.selfControlRating,
-          subtitle:
-              '${(profile.selfControlRating / 10).toStringAsFixed(0)}/10',
-          color: AppTheme.success,
-        ),
-        _DimensionCard(
-          label: 'Vulnerability',
-          value: profile.vulnerabilityIndex,
-          subtitle: profile.vulnerabilityIndex > 60
-              ? 'Elevated risk'
-              : 'Manageable',
-          color: AppTheme.warning,
-        ),
-        _DimensionCard(
-          label: 'Recovery Momentum',
-          value: profile.recoveryMomentum.abs(),
-          subtitle: profile.momentumText,
-          color: profile.recoveryMomentum > 0
-              ? AppTheme.success
-              : AppTheme.danger,
-        ),
-      ],
+      children: metrics
+          .map(
+            (metric) => _DimensionCard(
+              label: metric.label,
+              value: metric.value0To10,
+              subtitle: metric.explanation,
+              color: _colorForMetric(metric.value0To10),
+            ),
+          )
+          .toList(growable: false),
     );
   }
 
-  Widget _buildInsights(StateProfile profile) {
-    final insights = <String>[];
-
-    final topTrigger = profile.triggerSensitivity.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-    if (topTrigger.isNotEmpty) {
-      final t = topTrigger.first;
-      insights.add(
-        '${t.key} is your most challenging trigger. '
-        '${(t.value * 100).round()}% of the time, it leads to a setback.',
-      );
-    }
-
-    insights.add(profile.downstreamImpact.moodInsight);
-    insights.add(profile.downstreamImpact.sleepInsight);
+  Widget _buildInsights(List<WhereYouStandMetric> metrics) {
+    final ordered = metrics.toList()..sort((a, b) => a.value0To10.compareTo(b.value0To10));
+    final growthAreas = ordered.take(2).toList(growable: false);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Insights',
+        Text('Growth areas',
             style: TextStyle(
-                color: Colors.white,
+                color: AppTheme.palette(context).textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w600)),
+        const SizedBox(height: 6),
+        Text(
+          'These are not failures. They are places where a small reset or clearer routine may help.',
+          style: TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 12, height: 1.35),
+        ),
         const SizedBox(height: 12),
-        ...insights.map((insight) => Padding(
+        ...growthAreas.map((metric) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Card(
                 child: Padding(
@@ -178,12 +203,13 @@ class ConfidenceScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(Icons.lightbulb_outline,
-                          color: AppTheme.accent, size: 20),
+                          color: AppTheme.palette(context).accent, size: 20),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: Text(insight,
-                            style: const TextStyle(
-                                color: Colors.white70, fontSize: 13)),
+                        child: Text(
+                            '${metric.label} could use a little more support. ${metric.explanation}',
+                            style: TextStyle(
+                                color: AppTheme.palette(context).textSecondary, fontSize: 13)),
                       ),
                     ],
                   ),
@@ -194,52 +220,19 @@ class ConfidenceScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDownstreamImpact(DownstreamImpact impact) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('How setbacks affect your life',
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w600)),
-        const SizedBox(height: 4),
-        const Text(
-          'Compare how you feel after a setback vs. a clean day:',
-          style: TextStyle(color: Colors.white38, fontSize: 12),
-        ),
-        const SizedBox(height: 12),
-        _ImpactRow(
-            label: 'Your mood',
-            value: impact.moodAfterSlip,
-            compareValue: impact.moodAfterClean,
-            lowLabel: 'After setback',
-            highLabel: 'Clean day',
-            unit: '/10'),
-        _ImpactRow(
-            label: 'Sleep quality',
-            value: impact.sleepOnSlipNight,
-            compareValue: impact.sleepOnCleanNight,
-            lowLabel: 'Setback night',
-            highLabel: 'Clean night',
-            unit: '/5'),
-        _ImpactRow(
-            label: 'Confidence',
-            value: impact.confidenceAfterSlip,
-            compareValue: impact.confidenceAfterClean,
-            lowLabel: 'After setback',
-            highLabel: 'Clean day',
-            unit: '/10'),
-        _ImpactRow(
-            label: 'Stress level',
-            value: impact.stressInSlipWeek,
-            compareValue: impact.stressInCleanWeek,
-            lowLabel: 'Setback week',
-            highLabel: 'Clean week',
-            unit: '/10',
-            invertColors: true),
-      ],
+  Widget _buildLearningFooter(WhereYouStandMetricResult result) {
+    return Text(
+      result.isLocked
+          ? 'Detoxia is learning from local check-ins before rendering dynamic metric trends.'
+          : 'Metrics are derived from your local support profile, recent check-ins, pathway signals, and recovery momentum.',
+      style:  TextStyle(color: AppTheme.palette(context).textSecondary, fontSize: 12),
     );
+  }
+
+  Color _colorForMetric(double value0To10) {
+    if (value0To10 >= 7) return AppTheme.palette(context).success;
+    if (value0To10 >= 4) return AppTheme.palette(context).supportNeeded;
+    return AppTheme.palette(context).protectMoment;
   }
 }
 
@@ -272,14 +265,14 @@ class _DimensionCard extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     CircularProgressIndicator(
-                      value: value / 100,
+                      value: value / 10,
                       strokeWidth: 4,
-                      backgroundColor: Colors.white12,
+                      backgroundColor: AppTheme.palette(context).borderSubtle,
                       color: color,
                     ),
                     Center(
                       child: Text(
-                        value.round().toString(),
+                        value.toStringAsFixed(1),
                         style: TextStyle(
                             color: color,
                             fontWeight: FontWeight.bold,
@@ -295,119 +288,18 @@ class _DimensionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(label,
-                        style: const TextStyle(
-                            color: Colors.white,
+                        style: TextStyle(
+                            color: AppTheme.palette(context).textPrimary,
                             fontWeight: FontWeight.w500)),
                     Text(subtitle,
-                        style: const TextStyle(
-                            color: Colors.white54, fontSize: 12)),
+                        style: TextStyle(
+                            color: AppTheme.palette(context).textSecondary, fontSize: 12)),
                   ],
                 ),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _ImpactRow extends StatelessWidget {
-  final String label;
-  final double value;
-  final double compareValue;
-  final String unit;
-  final String lowLabel;
-  final String highLabel;
-  final bool invertColors;
-
-  const _ImpactRow({
-    required this.label,
-    required this.value,
-    required this.compareValue,
-    required this.unit,
-    this.lowLabel = '',
-    this.highLabel = '',
-    this.invertColors = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isWorse = invertColors ? value > compareValue : value < compareValue;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label,
-              style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500)),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                  decoration: BoxDecoration(
-                    color: (isWorse ? AppTheme.danger : AppTheme.warning)
-                        .withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        '${value.toStringAsFixed(1)}$unit',
-                        style: TextStyle(
-                          color: isWorse ? AppTheme.danger : AppTheme.warning,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
-                      if (lowLabel.isNotEmpty)
-                        Text(lowLabel,
-                            style: const TextStyle(
-                                color: Colors.white38, fontSize: 10)),
-                    ],
-                  ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Icon(Icons.arrow_forward,
-                    color: Colors.white24, size: 16),
-              ),
-              Expanded(
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                  decoration: BoxDecoration(
-                    color: AppTheme.success.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        '${compareValue.toStringAsFixed(1)}$unit',
-                        style: TextStyle(
-                          color: AppTheme.success,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
-                      if (highLabel.isNotEmpty)
-                        Text(highLabel,
-                            style: const TextStyle(
-                                color: Colors.white38, fontSize: 10)),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
